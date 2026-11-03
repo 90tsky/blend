@@ -89,18 +89,27 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
   useEffect(() => {
     firstRender.current = false
   }, [])
-  // While the empty box shrinks into it, the add card stays hidden; then it takes over.
+  // While the empty box shrinks into it, the add card stays hidden; then it takes over. That's also the case when
+  // Undo comes so fast that this content was still on its way out and simply stays.
   const [arriving, setArriving] = useState(entered)
+  const wasLeaving = useRef(false)
+  useEffect(() => {
+    if (isPresent && wasLeaving.current) setArriving(true)
+    wasLeaving.current = !isPresent
+  }, [isPresent])
   useEffect(() => {
     if (!arriving) return
     const t = setTimeout(() => setArriving(false), reduced ? 0 : SLIDE.duration * 1000)
     return () => clearTimeout(t)
   }, [arriving, reduced])
+  // safeToRemove changes with every store update; the timer shouldn't restart for that.
+  const remove_ = useRef(safeToRemove)
+  remove_.current = safeToRemove
   useEffect(() => {
     if (isPresent) return
-    const t = setTimeout(safeToRemove, reduced ? 0 : SLIDE.duration * 1000 + 20)
+    const t = setTimeout(() => remove_.current?.(), reduced ? 0 : SLIDE.duration * 1000 + 20)
     return () => clearTimeout(t)
-  }, [isPresent, safeToRemove, reduced])
+  }, [isPresent, reduced])
 
   const n = items.length
   const index = Math.max(0, items.findIndex((p) => p.id === currentId))
@@ -169,10 +178,11 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
         <Box variant="plate" notch={notch} className="cr-plate" />
       </motion.div>
       <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
-        {/* custom: is the whole slot leaving, and which way the removed piece goes. An exiting piece keeps its last
-            props, so its exit reads this instead. */}
+        {/* custom: which way a removed piece goes (an exiting piece keeps its last props, so its exit reads this).
+            When the whole slot leaves, its last piece slides out through `animate`, not an exit: these pieces stay
+            mounted with the slot until it is removed. */}
         {b && (
-          <AnimatePresence initial={entered} propagate custom={{ leaving, out }}>
+          <AnimatePresence initial={entered} custom={out}>
             {items.map((p, i) => {
               const rel = i - index
               const cur = place(p, side, b.current, false)
@@ -199,14 +209,12 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
                   className="cr-piece"
                   style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1 }}
                   initial={back}
-                  animate={target}
+                  animate={leaving && rel === 0 ? offLeft : target}
                   variants={{
-                    out: (c: { leaving: boolean; out: 1 | -1 }) =>
-                      c.leaving || (rel === 0 && c.out === 1)
-                        ? { ...offLeft, transition: SLIDE }
-                        : rel === 0
-                          ? { ...offRight, transition: SLIDE }
-                          : { ...gone, transition: { duration: 0.3, ease: 'easeIn' } },
+                    out: (dir: 1 | -1) =>
+                      rel !== 0
+                        ? { ...gone, transition: { duration: 0.3, ease: 'easeIn' } }
+                        : { ...(dir === 1 ? offLeft : offRight), transition: SLIDE },
                   }}
                   exit="out"
                   transition={SLIDE}

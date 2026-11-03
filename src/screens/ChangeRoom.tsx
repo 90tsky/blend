@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { Outlet, useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import { EmptyBoxes } from '../components/change-room/EmptyBoxes'
@@ -17,6 +17,9 @@ export function ChangeRoom() {
   const navigate = useNavigate()
   const tops = useMemo(() => items.filter((p) => p.slot === 'top'), [items])
   const bottoms = useMemo(() => items.filter((p) => p.slot === 'bottom'), [items])
+  // Try it on keeps its old click handler while it slides out of an emptied room; it reads the count from here.
+  const count = useRef(items.length)
+  count.current = items.length
 
   // "+ Add a top" and "No tops yet" open Events with the Tops chip on; the empty room opens plain Events.
   const openEvents = (slot?: Slot) => {
@@ -40,6 +43,7 @@ export function ChangeRoom() {
                 icon="ai-sparkle"
                 label="Try it on"
                 onClick={() => {
+                  if (!count.current) return
                   dispatch({ type: 'toast', toast: null })
                   navigate('/change-room/try-on')
                 }}
