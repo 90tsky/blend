@@ -94,19 +94,15 @@
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.15));
 }
 
+/* The same on every screen, photos included (the user, 3 Nov; Figma still shows it white over photos). */
 .logo path {
-  fill: var(--logo-fill, var(--color-primary));
+  fill: var(--color-primary);
   stroke: var(--color-on-primary);
 }
 
 /* In the top bar the letters start 8 in (Figma's logo frame padding), centred in the 70. */
 .top-bar__logo {
   margin-left: var(--space-8);
-}
-
-/* Over a photo the letters are always white. */
-.top-bar--overlay .logo {
-  --logo-fill: var(--color-always-white);
 }
 
 /* Header: ← or ✕, then the title (title style, x 44) and an optional subtitle in the hint style. */

@@ -119,7 +119,7 @@ The rules every helper follows when it designs, writes, animates or reviews in t
 - Icons: the camera's Switch camera button uses "switch camera · simple" 1928:14947: two arrows round a circle, one filled shape on color/on-surface (2026-11-02, the user: the old cameraswitch 1734:227 was "to busy"; it's kept, unused). New icons should match: 24 box, one filled shape about 16–18 across, and no extra details.
 - Events and every screen copied from it that opens on a banner (the 3 search states and the filtered states with a banner first, 12 in all) have no plain strip at the top (the user: "remove this empty space", 2026-11-02):
   - content "categories" paddingTop 0, so the banner starts at y 0;
-  - the fixed top bar has a shade fill (black 35% → 0, top to bottom), a white logo (vectors on color/always white) and the menu.
+  - the fixed top bar has a shade fill (black 35% → 0, top to bottom), the logo and the menu. **The logo is the same on every screen, photos included** (the user, 2026-11-03: "the same on every page … like it is on the changeroom page"): letters on color/primary, 1px outline on color/on-primary. The code follows this; Figma (locked) still has the white "always white" version here.
   - The banners are sticky, so a photo always sits under the fixed logo.
   - New Events copies must keep this. States that open on a message (wedding, no match) or have no banner (offline, load error, loading) keep the plain strip.
 - The 8 event pages are on Archive since 2026-11-02 (the user: "we dont need those screens anymore"), with their loading, offline and load-error states (section 1899:28763):
