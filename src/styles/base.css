@@ -15,6 +15,9 @@ body,
 html {
   background: var(--color-background);
   color-scheme: light;
+  /* Events scrolls and the change room doesn't. Where scrollbars take space (desktop), keeping the gutter stops
+     the column jumping sideways when you switch tabs. */
+  scrollbar-gutter: stable;
 }
 
 :root[data-theme='dark'] {

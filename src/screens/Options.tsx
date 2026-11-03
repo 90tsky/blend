@@ -82,7 +82,7 @@ export function Options() {
                     aria-pressed={on}
                     onClick={() => dispatch({ type: 'setGender', gender: on ? null : g.value })}
                   >
-                    <img src={asset(`try-on/gender-${g.value}.webp`)} alt="" width={117} height={216} />
+                    <img src={asset(`gender/${g.value}.webp`)} alt="" width={117} height={216} />
                   </button>
                 )
               })}

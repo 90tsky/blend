@@ -74,7 +74,6 @@
   width: 117px;
   height: 216px;
   filter: grayscale(1);
-  mix-blend-mode: multiply;
   transition: filter 0.3s ease-out;
 }
 

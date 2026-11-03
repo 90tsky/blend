@@ -61,7 +61,7 @@ export function Start({ blocked = false }: { blocked?: boolean }) {
             </figcaption>
           </figure>
           <figure className="example">
-            <img src={asset('try-on/example-not-like.webp')} alt="" width={185} height={322} />
+            <img src={asset('try-on/example-not-like-this.webp')} alt="" width={185} height={322} />
             <figcaption>
               <span className="badge">
                 <Icon name="cross" className="badge__no" />

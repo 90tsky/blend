@@ -359,6 +359,14 @@ Saved before: **"Before clean-up batch"**. Two designers finished:
   - ~~"CHANGE ROOM" still gets cut on 320-wide phones.~~ Fixed (3 Nov, late morning): below 360 the label wraps to CHANGE / ROOM (NavSwitch.css).
 - **Narrow-phone fixes (3 Nov, late morning), checked at 320–430 in Chrome, build passes:**
   - CHECKOUT clipped its total below ~375 ("ECKOUT 528.00 E"). The button is now a size container: below 209 wide the currency is hidden from view (still read out), below 171 the label is 13px, and under 360 the bottom bar's search / Turn around pills are 56 wide. The longest total (2,5xx.00) keeps at least 8 each side at every width.
+- **Figma assets (3 Nov, ~11:30):** the new Figma token is in `.figma-token` (git-ignored; the user had put it in a file name, now removed). `npm run figma:assets` ran. Now wired:
+  - **Banners:** Office hours had been showing the Day off garden photo (old `work.webp`); now each event uses its own Figma photo, and **Day off has its banner**. The old banner files are only used by src/legacy.
+  - **Gender photos:** `public/gender/` (2×, transparent), so the **white box behind the female model is gone**; `mix-blend-mode: multiply` removed from Options.css.
+  - **Try-On:** the demo person and the "not like this" example are the full-size Figma photos.
+  - Removed 5 images nothing used (business-casual, demo-person, example-not-like, gender-women, gender-men).
+- **Tab-switch jump (user, 3 Nov):** on desktop the page scrollbar came and went between Events (scrolls) and the change room (doesn't), shifting the column ~10px. Fixed with `scrollbar-gutter: stable` on html (base.css); positions now match on both tabs.
+- **Logo on photos (user, 3 Nov): "isn't like it should be".** The code matches Figma exactly (Layer_1 export: same paths, white fill + white 1px outline, 15% shadow, at 20 / 27.2). Asked the user what should change.
+- **Git:** first commit made (90tsky, noreply email). `gh repo create` was blocked by Claude Code's permission check (public repo); the user runs it or approves it.
 - **Lost session (3 Nov):** clicking a Windows notification opened the session's *current* folder (e.g. Blend) in VS Code, which reloaded the window and dropped the chat. Fixed in D:\Kris Work\Claude\hooks\notify.ps1: the click now opens the folder the session started in (`CLAUDE_PROJECT_DIR`), so VS Code only brings the window forward. notify.log shows the click target on each line.
 - **Next:** once `gh auth login` is done, set the repo-local git name and noreply email from `gh api user`, commit, create the public repo "blend", push, switch Pages to GitHub Actions, and check the deploy.
 

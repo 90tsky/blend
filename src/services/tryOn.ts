@@ -24,7 +24,7 @@ export type TryOnResult = { imageUrl: string; isDemo: boolean; revoke?: () => vo
 // Any try-on provider: takes the request, resolves with the preview image. Swap the one below for a real one later.
 export type TryOnProvider = (request: TryOnRequest, signal?: AbortSignal) => Promise<TryOnResult>
 
-export const DEMO_PHOTO = asset('try-on/demo-person.webp')
+export const DEMO_PHOTO = asset('try-on/person-demo.webp')
 export const MOCK_DELAY_MS = 3000
 
 // The designer's mock, not real AI: it waits about 3 seconds like a render would, then shows the shopper's own photo
