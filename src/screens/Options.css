@@ -36,8 +36,11 @@
   opacity: 1;
 }
 
-/* Gender: the two photos on one white card; the chosen one is in colour on a soft accent glow. */
+/* Gender (Figma gender-button 576:127): the two photos on one white card; the chosen one is in colour, and an
+   accent wash turns in behind it. */
 .gender {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 240px;
@@ -47,13 +50,31 @@
   box-shadow: 0 8px 24px -6px var(--effect-glow), 0 1px 3px 0 var(--effect-contact);
 }
 
+/* The wash (Figma "background", 759 × 766, layer blur 12.7): a blurred angular gradient, an accent wedge between
+   plate white, pivoting on a point under the middle of the card (288 down on the 240 card). With nothing chosen the
+   wedge points down, out of view; it turns ±91° to the chosen side (rotate in Options.tsx). */
+.gender__wash {
+  position: absolute;
+  z-index: -1;
+  top: calc(120.2% - 383px);
+  left: calc(50% - 383px);
+  width: 766px;
+  height: 766px;
+  background: conic-gradient(
+    var(--color-photo-plate) 0 72.7deg,
+    var(--color-accent) 126deg 234deg,
+    var(--color-photo-plate) 287.3deg
+  );
+  filter: blur(6px);
+  pointer-events: none;
+}
+
 .gender__option {
   position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding-top: var(--space-12);
-  transition: background-color 0.3s ease-out;
 }
 
 /* The floor shadow under the feet. */
@@ -77,8 +98,9 @@
   transition: filter 0.3s ease-out;
 }
 
-.gender__option--on {
-  background: radial-gradient(55% 50% at 50% 50%, color-mix(in srgb, var(--color-accent) 45%, transparent), transparent);
+/* Pressing the other photo previews it half in colour (Figma "photo hint", 50%). */
+.gender__option:not(.gender__option--on):active img {
+  filter: grayscale(0.5);
 }
 
 .gender__option--on img {

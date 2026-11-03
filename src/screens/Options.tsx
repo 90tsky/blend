@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { motion } from 'motion/react'
 import type { Slot } from '../data/products'
 import { SIZE_KEYS, SIZE_SYSTEMS, sizeLabel } from '../data/sizes'
 import { asset } from '../lib/asset'
@@ -19,6 +20,9 @@ const GENDERS = [
   { value: 'women', label: 'Women’s' },
   { value: 'men', label: 'Men’s' },
 ] as const
+// The wash behind the photos turns to the chosen side (Figma gender-button: ±91°, Smart animate on the Gentle spring).
+const WASH_TURN = { women: 91, men: -91 } as const
+const GENTLE = { type: 'spring', stiffness: 100, damping: 15, mass: 1 } as const
 const NAME_KEY = 'blend:name'
 
 function savedName() {
@@ -71,6 +75,13 @@ export function Options() {
               Gender
             </h2>
             <div className="gender" role="group" aria-labelledby="options-gender">
+              <motion.span
+                className="gender__wash"
+                aria-hidden="true"
+                initial={false}
+                animate={{ rotate: state.gender ? WASH_TURN[state.gender] : 0 }}
+                transition={GENTLE}
+              />
               {GENDERS.map((g) => {
                 const on = state.gender === g.value
                 return (

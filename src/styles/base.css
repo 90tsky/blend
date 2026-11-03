@@ -25,6 +25,8 @@ html {
 }
 
 body {
+  /* Pieces, chips and Try it on slide past the screen edge in the change room; that must never scroll the page sideways. */
+  overflow-x: clip;
   background: var(--color-background);
   color: var(--color-on-surface);
   font-family: var(--font-ui);

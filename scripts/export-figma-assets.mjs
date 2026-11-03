@@ -28,6 +28,11 @@ const PHOTOS = {
 const RENDERS = {
   'gender/women.webp': 'I578:9476;588:136',
   'gender/men.webp': 'I578:9476;588:138',
+  // Try-On build figures in colour (try-on figure, gender=none, route=model); the grey and the floor shadow are CSS.
+  'try-on/build-even.webp': '1345:31',
+  'try-on/build-hips.webp': '1345:38',
+  'try-on/build-shoulders.webp': '1345:45',
+  'try-on/build-middle.webp': '1345:52',
 }
 
 // Icon components, saved as SVG with their fill switched to currentColor.

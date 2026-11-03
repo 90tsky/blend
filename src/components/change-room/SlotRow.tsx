@@ -1,17 +1,15 @@
-import { useEffect, useRef, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { AnimatePresence, animate, motion, useMotionValue, type PanInfo } from 'motion/react'
+import { AnimatePresence, animate, motion, useMotionValue, usePresence, useReducedMotion, type PanInfo } from 'motion/react'
 import type { Product, Side, Slot } from '../../data/products'
 import { useBagActions, useStore } from '../../state/store'
 import { Box, PlusMark } from './Box'
-import { EmptySlot } from './EmptySlot'
+import { SLIDE } from './motion'
 import { PriceChip } from './PriceChip'
 import { useSize } from './useSize'
 
 type Rect = { x: number; y: number; w: number; h: number }
 
-// Figma carousel · top / bottom: a step slides in 450ms on cubic-bezier(0.25, 0.5, 0.25, 1).
-const SLIDE = { duration: 0.45, ease: [0.25, 0.5, 0.25, 1] as [number, number, number, number] }
 // Bottoms share one waist width: the width a pair of trousers takes when it fills the height (× the piece's `fit`).
 const WAIST = 0.36
 
@@ -49,21 +47,60 @@ function place(p: Product, side: Side, box: Rect, peek: boolean): Rect {
 
 type Props = { slot: Slot; items: Product[]; currentId: string | null; side: Side; notch?: boolean; onAdd: () => void }
 
-// One row of the change room (Figma carousel · top 516:9378 / · bottom 516:9629): the current piece large,
-// the next one peeking at the right (or the "Add a top / bottom" card after the last), the "3 of 7" position,
-// and the price chip with ✕. Swipe or drag sideways to step; the peek is a button too.
-export function SlotRow({ slot, items, currentId, side, notch = false, onAdd }: Props) {
-  const { state, dispatch } = useStore()
-  const { remove } = useBagActions()
-  const navigate = useNavigate()
+// One row of the change room (Figma carousel · top 516:9378 / · bottom 516:9629). The row keeps its place in the
+// stage when it's empty (the empty boxes are drawn over the stage by EmptyBoxes); its pieces come and go with it.
+export function SlotRow(props: Props) {
   const rowRef = useRef<HTMLDivElement>(null)
   const { width: W, height: H } = useSize(rowRef)
-  const dragX = useMotionValue(0)
-  const panned = useRef(false)
+  const n = props.items.length
+  // Content that arrives after the screen opened (Undo, or adding back) plays the removal backwards.
   const mounted = useRef(false)
   useEffect(() => {
     mounted.current = true
   }, [])
+
+  return (
+    <div
+      ref={rowRef}
+      className={`cr-row cr-row--${props.slot}${n > 1 ? ' has-count' : ''}`}
+      role={n > 0 ? 'group' : undefined}
+      aria-label={n > 0 ? `${props.slot === 'top' ? 'Tops' : 'Bottoms'} in your change room` : undefined}
+    >
+      <AnimatePresence initial={false}>{n > 0 && <SlotContent key="content" {...props} W={W} H={H} enter={mounted.current} />}</AnimatePresence>
+    </div>
+  )
+}
+
+// The current piece large, the next one peeking at the right (or the "Add a top / bottom" card after the last), the
+// "3 of 7" position, and the price chip with ✕. Swipe or drag sideways to step; the peek is a button too.
+// When the slot's last piece goes (motion Aplus2), the piece slides out to the left like a swipe, the chip slides
+// out to the right, and the add card hands over to the empty box that stretches out of it; Undo plays it backwards.
+function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H, enter }: Props & { W: number; H: number; enter: boolean }) {
+  const { state, dispatch } = useStore()
+  const { remove } = useBagActions()
+  const navigate = useNavigate()
+  const reduced = useReducedMotion()
+  const dragX = useMotionValue(0)
+  const panned = useRef(false)
+  const [isPresent, safeToRemove] = usePresence()
+  const leaving = !isPresent
+  const [entered] = useState(enter)
+  const firstRender = useRef(true)
+  useEffect(() => {
+    firstRender.current = false
+  }, [])
+  // While the empty box shrinks into it, the add card stays hidden; then it takes over.
+  const [arriving, setArriving] = useState(entered)
+  useEffect(() => {
+    if (!arriving) return
+    const t = setTimeout(() => setArriving(false), reduced ? 0 : SLIDE.duration * 1000)
+    return () => clearTimeout(t)
+  }, [arriving, reduced])
+  useEffect(() => {
+    if (isPresent) return
+    const t = setTimeout(safeToRemove, reduced ? 0 : SLIDE.duration * 1000 + 20)
+    return () => clearTimeout(t)
+  }, [isPresent, safeToRemove, reduced])
 
   const n = items.length
   const index = Math.max(0, items.findIndex((p) => p.id === currentId))
@@ -109,84 +146,94 @@ export function SlotRow({ slot, items, currentId, side, notch = false, onAdd }: 
   const atEnd = index === n - 1
 
   return (
-    <div ref={rowRef} className={`cr-row cr-row--${slot}${n > 1 ? ' has-count' : ''}`} role="group" aria-label={`${group} in your change room`}>
-      {n === 0 || !current ? (
-        <EmptySlot kind={slot} notch={notch} appear={mounted.current} onClick={onAdd} />
-      ) : (
-        <>
-          <Box variant="plate" notch={notch} className="cr-plate" />
-          <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
-            {b && (
-              <AnimatePresence initial={false}>
-                {items.map((p, i) => {
-                  const rel = i - index
-                  const cur = place(p, side, b.current, false)
-                  const pk = place(p, side, b.peek, true)
-                  const s = pk.w / cur.w
-                  const target =
-                    rel === 0
-                      ? { x: 0, y: 0, scale: 1, opacity: 1 }
-                      : rel === 1
-                        ? { x: pk.x - cur.x, y: pk.y - cur.y, scale: s, opacity: 1 }
-                        : { x: (rel < 0 ? -pk.w - 24 : W + 24) - cur.x, y: pk.y - cur.y, scale: s, opacity: 0 }
-                  // Appearing (Undo) and leaving (✕): shrink to near zero round the centre while fading.
-                  const gone = { x: target.x + cur.w * target.scale * 0.4, y: target.y + cur.h * target.scale * 0.4, scale: target.scale * 0.2, opacity: 0 }
-                  const parked = rel < 0 || rel > 1
-                  return (
-                    <motion.button
-                      key={p.id}
-                      type="button"
-                      className="cr-piece"
-                      style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1 }}
-                      initial={gone}
-                      animate={target}
-                      exit={{ ...gone, transition: { duration: 0.3, ease: 'easeIn' } }}
-                      transition={SLIDE}
-                      inert={parked}
-                      aria-hidden={parked || undefined}
-                      aria-label={rel === 0 ? `${p.brand} ${p.name}` : `Next ${slot}`}
-                      onKeyDown={rel === 0 ? onKey : undefined}
-                      onClick={() => {
-                        if (panned.current) return
-                        if (rel === 0) navigate(`/product/${p.id}`)
-                        else if (rel === 1) step(1)
-                      }}
-                    >
-                      <img src={p.images[side].src} alt="" draggable={false} />
-                    </motion.button>
-                  )
-                })}
-              </AnimatePresence>
-            )}
-            <motion.button
-              type="button"
-              className="cr-add"
-              initial={false}
-              animate={atEnd ? { x: 0, opacity: 1 } : { x: 140, opacity: 0 }}
-              transition={SLIDE}
-              inert={!atEnd}
-              aria-hidden={!atEnd || undefined}
-              onClick={() => {
-                if (!panned.current) onAdd()
-              }}
-            >
-              <Box variant="dashed" />
-              <span className="cr-add__circle" aria-hidden="true">
-                <PlusMark size={16} weight={1.5} />
-              </span>
-              <span className="cr-add__label">{slot === 'top' ? 'Add a top' : 'Add a bottom'}</span>
-            </motion.button>
-          </motion.div>
-          {n > 1 && (
-            <p className="cr-count" aria-live="polite">
-              <span className="visually-hidden">{group}, </span>
-              {index + 1} of {n}
-              <span className="visually-hidden">: {current.name}</span>
-            </p>
-          )}
-          <PriceChip product={current} currency={state.currency} onRemove={() => remove(current.id)} />
-        </>
+    <div className="cr-slot" inert={leaving || undefined}>
+      {/* Leaving runs as exit animations: once a part of the tree is on its way out, motion ignores new targets. */}
+      <motion.div
+        className="cr-plate-wrap"
+        initial={entered ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <Box variant="plate" notch={notch} className="cr-plate" />
+      </motion.div>
+      <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
+        {/* custom = the whole slot is leaving. An exiting piece keeps its last props, so its exit reads this instead. */}
+        {b && (
+          <AnimatePresence initial={entered} propagate custom={leaving}>
+            {items.map((p, i) => {
+              const rel = i - index
+              const cur = place(p, side, b.current, false)
+              const pk = place(p, side, b.peek, true)
+              const s = pk.w / cur.w
+              // Out past the left edge, solid, like a swipe: where the last piece goes and where Undo brings it from.
+              const offLeft = { x: -(cur.x + cur.w) - 24, y: 0, scale: 1, opacity: 1 }
+              const target =
+                rel === 0
+                  ? { x: 0, y: 0, scale: 1, opacity: 1 }
+                  : rel === 1
+                    ? { x: pk.x - cur.x, y: pk.y - cur.y, scale: s, opacity: 1 }
+                    : { x: (rel < 0 ? -pk.w - 24 : W + 24) - cur.x, y: pk.y - cur.y, scale: s, opacity: 0 }
+              // Appearing (Undo) and leaving (✕) while other pieces stay: shrink to near zero round the centre while fading.
+              const gone = { x: target.x + cur.w * target.scale * 0.4, y: target.y + cur.h * target.scale * 0.4, scale: target.scale * 0.2, opacity: 0 }
+              const parked = rel < 0 || rel > 1
+              return (
+                <motion.button
+                  key={p.id}
+                  type="button"
+                  className="cr-piece"
+                  style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1 }}
+                  initial={entered && firstRender.current ? offLeft : gone}
+                  animate={target}
+                  variants={{
+                    out: (slotLeaving: boolean) =>
+                      slotLeaving && rel === 0 ? { ...offLeft, transition: SLIDE } : { ...gone, transition: { duration: 0.3, ease: 'easeIn' } },
+                  }}
+                  exit="out"
+                  transition={SLIDE}
+                  inert={parked}
+                  aria-hidden={parked || undefined}
+                  aria-label={rel === 0 ? `${p.brand} ${p.name}` : `Next ${slot}`}
+                  onKeyDown={rel === 0 ? onKey : undefined}
+                  onClick={() => {
+                    if (panned.current) return
+                    if (rel === 0) navigate(`/product/${p.id}`)
+                    else if (rel === 1) step(1)
+                  }}
+                >
+                  <img src={p.images[side].src} alt="" draggable={false} />
+                </motion.button>
+              )
+            })}
+          </AnimatePresence>
+        )}
+        <motion.button
+          type="button"
+          className={`cr-add${leaving || arriving ? ' is-morphing' : ''}`}
+          initial={false}
+          animate={atEnd ? { x: 0, opacity: 1 } : { x: 140, opacity: 0 }}
+          transition={SLIDE}
+          inert={!atEnd}
+          aria-hidden={!atEnd || undefined}
+          onClick={() => {
+            if (!panned.current) onAdd()
+          }}
+        >
+          <Box variant="dashed" />
+          <span className="cr-add__circle" aria-hidden="true">
+            <PlusMark size={16} weight={1.5} />
+          </span>
+          <span className="cr-add__label">{slot === 'top' ? 'Add a top' : 'Add a bottom'}</span>
+        </motion.button>
+      </motion.div>
+      {n > 1 && (
+        <p className="cr-count" aria-live="polite">
+          <span className="visually-hidden">{group}, </span>
+          {index + 1} of {n}
+          <span className="visually-hidden">: {current.name}</span>
+        </p>
       )}
+      <PriceChip product={current} currency={state.currency} onRemove={() => remove(current.id)} enter={entered} />
     </div>
   )
 }
