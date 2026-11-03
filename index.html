@@ -7,6 +7,13 @@
     <meta name="description" content="blend: a capsule wardrobe shop where every top goes with every bottom. Mix them in the change room before you buy." />
     <title>blend</title>
     <link rel="icon" href="/brand/logo.svg" />
+    <!-- Home-screen app: the manifest's scope is all of /blend/, so every screen stays inside the app (without it,
+         iOS took the range from the saved page, e.g. /blend/events/, and opened the change room in a browser view). -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="blend" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- UI font plus one display font per event banner, as in the Figma file -->
