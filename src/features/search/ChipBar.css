@@ -5,16 +5,18 @@
   gap: var(--space-8);
   width: 100%;
   height: var(--control-height);
-  padding-left: var(--space-8);
   border-radius: var(--radius-full);
   background: var(--color-background);
   box-shadow: var(--shadow-track);
 }
 
+/* The scroller starts at the track's left end and shares its rounding, so chips scrolled off to the left slip under
+   the track's own round end instead of a straight cut (the 8 of space before the first chip is inside the row). */
 .chip-bar__scroll {
   flex: 1;
   min-width: 0;
   height: 100%;
+  border-radius: var(--radius-full);
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
@@ -39,7 +41,7 @@
   width: max-content;
   height: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 var(--space-8);
   list-style: none;
 }
 

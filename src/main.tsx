@@ -7,7 +7,10 @@ import './styles/figma-tokens.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import App from './App'
+import { watchForUpdates } from './lib/update'
 import { StoreProvider } from './state/store'
+
+watchForUpdates()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

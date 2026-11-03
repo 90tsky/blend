@@ -172,6 +172,8 @@ export function Options() {
             Delete account
           </Cta>
         </div>
+        {/* Which deploy is running, to tell versions apart while testing on a phone. */}
+        <p className="options__version">Version {__BUILD__}</p>
       </div>
     </main>
   )
