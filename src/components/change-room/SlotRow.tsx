@@ -107,6 +107,17 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
   const current = items[index]
   const group = slot === 'top' ? 'Tops' : 'Bottoms'
 
+  // A removed piece leaves like a swipe: out to the left when the next piece takes its place from the right, out to
+  // the right when it was the end one and the previous piece comes back from the left (Undo brings it back the same way).
+  const last = useRef({ ids: items.map((p) => p.id), current: currentId })
+  let out: 1 | -1 = 1
+  if (last.current.current && !items.some((p) => p.id === last.current.current)) {
+    out = last.current.ids.indexOf(currentId ?? '') > last.current.ids.indexOf(last.current.current) ? 1 : -1
+  }
+  useEffect(() => {
+    last.current = { ids: items.map((p) => p.id), current: currentId }
+  })
+
   const go = (dir: 1 | -1) => {
     const next = items[index + dir]
     if (!next) return false
@@ -158,24 +169,28 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
         <Box variant="plate" notch={notch} className="cr-plate" />
       </motion.div>
       <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
-        {/* custom = the whole slot is leaving. An exiting piece keeps its last props, so its exit reads this instead. */}
+        {/* custom: is the whole slot leaving, and which way the removed piece goes. An exiting piece keeps its last
+            props, so its exit reads this instead. */}
         {b && (
-          <AnimatePresence initial={entered} propagate custom={leaving}>
+          <AnimatePresence initial={entered} propagate custom={{ leaving, out }}>
             {items.map((p, i) => {
               const rel = i - index
               const cur = place(p, side, b.current, false)
               const pk = place(p, side, b.peek, true)
               const s = pk.w / cur.w
-              // Out past the left edge, solid, like a swipe: where the last piece goes and where Undo brings it from.
+              // Past the screen edge, solid, like a swipe: where a removed piece goes and where Undo brings it from.
               const offLeft = { x: -(cur.x + cur.w) - 24, y: 0, scale: 1, opacity: 1 }
+              const offRight = { x: W + 24 - cur.x, y: 0, scale: 1, opacity: 1 }
               const target =
                 rel === 0
                   ? { x: 0, y: 0, scale: 1, opacity: 1 }
                   : rel === 1
                     ? { x: pk.x - cur.x, y: pk.y - cur.y, scale: s, opacity: 1 }
                     : { x: (rel < 0 ? -pk.w - 24 : W + 24) - cur.x, y: pk.y - cur.y, scale: s, opacity: 0 }
-              // Appearing (Undo) and leaving (✕) while other pieces stay: shrink to near zero round the centre while fading.
+              // A piece that isn't the current one comes and goes by shrinking round its centre while fading.
               const gone = { x: target.x + cur.w * target.scale * 0.4, y: target.y + cur.h * target.scale * 0.4, scale: target.scale * 0.2, opacity: 0 }
+              // Undo puts a removed piece back as the current one: from the left if it has a next piece, else the right.
+              const back = rel !== 0 ? gone : entered && firstRender.current ? offLeft : index < n - 1 ? offLeft : offRight
               const parked = rel < 0 || rel > 1
               return (
                 <motion.button
@@ -183,11 +198,15 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
                   type="button"
                   className="cr-piece"
                   style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1 }}
-                  initial={entered && firstRender.current ? offLeft : gone}
+                  initial={back}
                   animate={target}
                   variants={{
-                    out: (slotLeaving: boolean) =>
-                      slotLeaving && rel === 0 ? { ...offLeft, transition: SLIDE } : { ...gone, transition: { duration: 0.3, ease: 'easeIn' } },
+                    out: (c: { leaving: boolean; out: 1 | -1 }) =>
+                      c.leaving || (rel === 0 && c.out === 1)
+                        ? { ...offLeft, transition: SLIDE }
+                        : rel === 0
+                          ? { ...offRight, transition: SLIDE }
+                          : { ...gone, transition: { duration: 0.3, ease: 'easeIn' } },
                   }}
                   exit="out"
                   transition={SLIDE}
