@@ -1,0 +1,89 @@
+/* Toast: a 48 tall black pill, 406 wide at x 12 (322 beside Try it on: --toast-right), resting at --toast-bottom.
+   Two-line messages grow upwards. */
+.toast-region {
+  position: fixed;
+  bottom: calc(var(--toast-bottom) + env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 40;
+  width: 100%;
+  max-width: 430px;
+  height: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  position: absolute;
+  right: var(--toast-right, var(--layout-margin));
+  bottom: 0;
+  left: var(--layout-margin);
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height);
+  padding-left: var(--space-8);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-raised);
+  pointer-events: auto;
+}
+
+.toast__message {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--text-body-medium-size);
+  font-weight: var(--text-body-medium-weight);
+  line-height: normal;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Removed <piece>" may take two lines. */
+.toast--removed .toast__message {
+  display: -webkit-box;
+  padding: var(--space-8) 0;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.toast__action {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: var(--control-height);
+  padding-right: var(--space-8);
+}
+
+/* Undo beside View keeps 12 between the two chips. */
+.toast__action--first {
+  padding-right: var(--space-12);
+}
+
+.toast__chip {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-toast-action);
+  font-size: var(--text-chip-size);
+  font-weight: var(--text-chip-weight);
+  letter-spacing: var(--text-chip-tracking);
+  line-height: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.toast__action:focus-visible {
+  outline: none;
+}
+
+.toast__action:focus-visible .toast__chip {
+  outline: 2px solid var(--color-on-primary);
+  outline-offset: 2px;
+}

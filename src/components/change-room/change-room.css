@@ -1,0 +1,299 @@
+/* Change room (Figma 479:9125). The stage runs from the top bar (70) to the bottom bar; its two rows share the
+   height 290 : 444 like the Figma stage (734 on a 932 screen). Positions are the Figma ones, 12 from the edges. */
+
+.change-room {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 560px;
+  padding-top: 70px;
+  padding-bottom: var(--bottom-bar-h, 128px);
+}
+
+.cr-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cr-row {
+  position: relative;
+  min-height: 0;
+}
+
+.cr-row--top {
+  flex: 290 1 0;
+}
+
+.cr-row--bottom {
+  flex: 444 1 0;
+}
+
+/* Plate and dashed outlines (Box.tsx) */
+.cr-box {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cr-box svg {
+  display: block;
+}
+
+.cr-box--plate path {
+  fill: var(--color-garment-backdrop);
+}
+
+.cr-box--dashed path {
+  fill: none;
+  stroke: var(--color-outline);
+  stroke-width: 1;
+  stroke-dasharray: 6 6;
+}
+
+/* The garment backdrop: 406 wide; the bottom one starts 4 lower and carries the Try it on notch. */
+.cr-box.cr-plate {
+  inset: 0 var(--layout-margin);
+}
+
+.cr-row--bottom .cr-box.cr-plate {
+  inset: var(--space-4) var(--layout-margin) 0;
+}
+
+/* The moving part: pieces and the add card. It clips what slides past the screen edges. */
+.cr-track {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.cr-piece {
+  position: absolute;
+  display: block;
+  transform-origin: 0 0;
+  border-radius: var(--radius-sm);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.cr-piece img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* "Add a top / bottom" card, in the peek spot after the last piece: 112 wide, 12 from the top and the edge,
+   ending 12 above the chip (or above the "3 of 7" line). */
+.cr-add {
+  position: absolute;
+  top: var(--space-12);
+  right: var(--layout-margin);
+  width: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding-bottom: 26px; /* lifts the + and label 13 above the middle, as in Figma */
+  border-radius: var(--radius-2xl);
+  color: var(--color-on-surface);
+  font-size: var(--text-body-medium-size);
+  font-weight: var(--text-body-medium-weight);
+}
+
+.cr-row--top .cr-add {
+  bottom: 72px;
+}
+
+.cr-row--top.has-count .cr-add {
+  bottom: 100px;
+}
+
+.cr-row--bottom .cr-add {
+  bottom: 120px;
+}
+
+.cr-row--bottom.has-count .cr-add {
+  bottom: 148px;
+}
+
+.cr-add__circle {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.cr-row--bottom .cr-add__circle {
+  width: 38px;
+  height: 38px;
+}
+
+/* "3 of 7": 12 above the chip, centred over it. */
+.cr-count {
+  position: absolute;
+  right: var(--layout-margin);
+  width: 112px;
+  margin: 0;
+  text-align: center;
+  font-size: var(--text-small-size);
+  font-weight: var(--text-small-weight);
+  line-height: 16px;
+  color: var(--color-hint);
+  pointer-events: none;
+}
+
+.cr-row--top .cr-count {
+  bottom: 72px;
+}
+
+.cr-row--bottom .cr-count {
+  bottom: 120px;
+}
+
+/* Price chip: 112 × 48 raised pill, 12 from the edge; the bottom one sits 12 above Try it on. */
+.cr-chip {
+  position: absolute;
+  right: var(--layout-margin);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  width: 112px;
+  height: var(--control-height);
+  padding-left: var(--space-8);
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--color-on-surface);
+}
+
+.cr-row--top .cr-chip {
+  bottom: var(--space-12);
+}
+
+.cr-row--bottom .cr-chip {
+  bottom: 60px;
+}
+
+.cr-chip__price {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.cr-chip__amount {
+  font-size: var(--text-price-size);
+  font-weight: var(--text-price-weight);
+}
+
+.cr-chip__currency {
+  font-size: var(--text-small-medium-size);
+  font-weight: var(--text-small-medium-weight);
+}
+
+.cr-chip__remove {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+}
+
+/* Try it on: bottom right of the stage, inside the plate's notch. */
+.cr-stage .cr-try-on {
+  position: absolute;
+  right: var(--layout-margin);
+  bottom: 0;
+  z-index: 3;
+}
+
+/* Empty boxes: "No tops yet" (406 × 286), "No bottoms yet" (406 × 440, notched round Try it on),
+   "Your change room is empty" (the whole stage). The + circle sits 14 above the middle (34 in the notched box). */
+.cr-empty {
+  position: absolute;
+  display: block;
+  color: var(--color-on-surface);
+  text-align: center;
+  border-radius: var(--radius-2xl);
+}
+
+.cr-empty--top {
+  inset: 0 var(--layout-margin) var(--space-4);
+}
+
+.cr-empty--bottom {
+  inset: var(--space-4) var(--layout-margin) 0;
+}
+
+.cr-empty--all {
+  inset: 0 var(--layout-margin);
+}
+
+.cr-empty--appear {
+  animation: cr-appear 0.35s ease-out;
+}
+
+@keyframes cr-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+.cr-empty__stack {
+  position: absolute;
+  top: calc(50% - 52px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cr-empty--notch .cr-empty__stack {
+  top: calc(50% - 72px);
+}
+
+.cr-empty__circle {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.cr-empty__title {
+  margin-top: var(--space-16);
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 19px;
+}
+
+.cr-empty__hint {
+  max-width: 274px;
+  margin-top: var(--space-4);
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: 18px;
+  color: var(--color-hint);
+}
+
+.cr-empty__hint strong {
+  font-weight: var(--text-body-strong-weight);
+}

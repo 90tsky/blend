@@ -1,0 +1,13 @@
+.garment {
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  animation: garment-flip 0.45s var(--ease-out);
+}
+
+@keyframes garment-flip {
+  from {
+    transform: perspective(800px) rotateY(80deg);
+    opacity: 0.4;
+  }
+}

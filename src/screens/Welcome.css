@@ -1,0 +1,65 @@
+/* Welcome: the intro line in the middle, then "Continue as guest", SIGN IN and CREATE ACCOUNT, 12 apart and 12
+   above the bottom. */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 70px var(--layout-margin) calc(var(--space-12) + env(safe-area-inset-bottom));
+}
+
+.welcome__middle {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-20);
+  padding: var(--space-24) 0;
+}
+
+/* The big logo, centred above the intro line: Figma's Welcome logo, letters 3× the top bar's (139.37 × 46.8) with a
+   deeper shadow. It shrinks from its top-left corner into the top bar (scale ⅓). */
+.welcome__logo {
+  --logo-h: 46.8px;
+  transform-origin: 0 0;
+  user-select: none;
+}
+
+.welcome__logo .logo {
+  filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.25));
+}
+
+.welcome--intro .welcome__bar-logo {
+  visibility: hidden;
+}
+
+.welcome__intro {
+  margin: 0;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: normal;
+  color: var(--color-hint);
+  text-align: center;
+}
+
+.welcome__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* Nothing to tap until the buttons have faded in. */
+.welcome--intro .welcome__actions {
+  pointer-events: none;
+}
+
+.welcome__guest {
+  align-self: center;
+  min-height: var(--size-control);
+  padding: 0 var(--space-12);
+  font-size: var(--text-link-size);
+  font-weight: var(--text-link-weight);
+  color: var(--color-hint);
+  text-decoration: underline;
+  text-underline-position: from-font;
+}

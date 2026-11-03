@@ -1,0 +1,405 @@
+/* Try-On (Figma Try-On · photo 499:9246 … result 499:9383): a sheet over the app, with its own scroll. */
+.try-on {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  max-width: 430px;
+  margin-inline: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-background);
+}
+
+.try-on__step {
+  height: 100%;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Photo steps fill the screen, so the photo takes the space that's left (and scroll on very short screens). */
+.step--fit {
+  height: 100%;
+  min-height: 620px;
+}
+
+/* The top bar stays at the top of this sheet (it's fixed elsewhere in the app). */
+.try-on .top-bar {
+  position: sticky;
+  left: auto;
+  flex: none;
+  transform: none;
+}
+
+.step .header {
+  flex: none;
+}
+
+.step .header__title:focus {
+  outline: none;
+}
+
+.step .header__subtitle b,
+.step__note b {
+  font-weight: var(--text-hint-strong-weight);
+}
+
+.step__body {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  padding: 0 var(--layout-margin);
+}
+
+.step--fit .step__body {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.step__footer {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-24) var(--layout-margin) calc(var(--space-12) + env(safe-area-inset-bottom));
+}
+
+.step__note {
+  margin: 0;
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+  text-align: center;
+}
+
+/* Card: 32 corners, 12 padding; photos inside at 20 (32 − 12). */
+.try-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+}
+
+.try-card--photo {
+  flex: 1 1 0;
+  align-items: center;
+  min-height: 0;
+}
+
+.try-photo-box {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+}
+
+/* The whole photo, head to toe, at its own shape. */
+.try-photo {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 20px;
+  transition: opacity 0.25s ease-out;
+}
+
+.try-photo--waiting {
+  opacity: 0.5;
+}
+
+/* Like this / Not like this */
+.examples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+}
+
+.example {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--color-background);
+}
+
+.example img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 185 / 322;
+  object-fit: cover;
+}
+
+.example figcaption {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-12) 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 32px;
+  padding: 0 var(--space-12) 0 var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  font-size: var(--text-hint-medium-size);
+  font-weight: var(--text-hint-medium-weight);
+  white-space: nowrap;
+}
+
+.badge__no {
+  color: var(--color-error);
+}
+
+.tips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tips li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: 24px;
+}
+
+.model-link {
+  margin: var(--space-12) 0 0;
+  color: var(--color-hint);
+  text-align: center;
+}
+
+.model-link button {
+  min-height: var(--size-control);
+  color: var(--color-on-surface);
+  font-weight: var(--text-link-weight);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Looks good? reminders */
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checks .badge {
+  background: var(--color-background);
+}
+
+/* Camera */
+.camera {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.camera__feed {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background: var(--color-placeholder);
+}
+
+.camera__feed video,
+.camera__feed img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.is-mirrored {
+  transform: scaleX(-1);
+}
+
+.camera__guide {
+  position: absolute;
+  top: var(--space-24);
+  left: 50%;
+  margin: 0;
+  padding: 6px var(--space-12);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  font-size: var(--text-small-size);
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.camera__count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin: -48px 0 0 -48px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.camera__hint {
+  margin: var(--space-12) 0 0;
+  color: var(--color-hint);
+  font-size: var(--text-small-size);
+  line-height: 16px;
+  text-align: center;
+}
+
+.camera__hint--off {
+  visibility: hidden;
+}
+
+.camera__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-12) 0 calc(var(--space-12) + env(safe-area-inset-bottom));
+}
+
+.camera__shutter {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.camera__shutter span {
+  width: var(--size-control);
+  height: var(--size-control);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  transition: transform 0.1s ease-out, opacity 0.2s ease-out;
+}
+
+.camera__shutter:active span {
+  transform: scale(0.92);
+}
+
+.camera__shutter:disabled span {
+  opacity: 0.4;
+}
+
+.round-btn:disabled {
+  color: var(--color-hint);
+}
+
+/* A model like you: four build tiles */
+.builds {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-8);
+}
+
+.build {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.build--on {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.build__figure {
+  display: flex;
+  border-radius: var(--radius-sm);
+  background: var(--color-photo-plate);
+}
+
+/* The figures' white backgrounds take the plate colour (it's grey in dark mode). */
+.build__figure img {
+  mix-blend-mode: multiply;
+}
+
+.build__label {
+  font-size: var(--text-hint-medium-size);
+  font-weight: var(--text-hint-medium-weight);
+  text-align: center;
+}
+
+.build__check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Dressing you… progress (accent-strong on its track) */
+.progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-placeholder);
+}
+
+.progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent-strong);
+  transform-origin: left;
+}
+
+/* Result */
+.result__label {
+  margin: 0;
+  font-size: var(--text-hint-medium-size);
+  font-weight: var(--text-hint-medium-weight);
+  text-align: center;
+}
+
+.result__outfit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+  list-style: none;
+}
+
+.result__outfit li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+}

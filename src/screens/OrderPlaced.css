@@ -1,0 +1,48 @@
+/* Order placed: the check, title and message in the middle (a little above centre, as in Figma), the two
+   buttons 12 apart at the bottom, the last one 12 above the screen bottom. */
+.order-placed {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+}
+
+.order-placed__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-24) var(--layout-margin) 96px;
+  text-align: center;
+}
+
+.success-check {
+  color: var(--color-accent-strong);
+}
+
+.order-placed__title {
+  margin: var(--space-24) 0 0;
+  font-size: var(--text-title-size);
+  font-weight: var(--text-title-weight);
+  line-height: 1.2;
+}
+
+.order-placed__title:focus {
+  outline: none;
+}
+
+.order-placed__text {
+  max-width: 406px;
+  margin: var(--space-12) 0 0;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: 18px;
+  color: var(--color-hint);
+}
+
+.order-placed__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: 0 var(--layout-margin);
+}

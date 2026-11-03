@@ -1,0 +1,142 @@
+/* Product card: 12 padding, 24 corners; photo plate 156 tall (8 inside, 12 corners); name 28; price row 28. */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  min-width: 0;
+  padding: var(--card-padding);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.product-card:has(.product-card__link:focus-visible) {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.product-card__plate {
+  display: grid;
+  place-items: center;
+  height: 156px;
+  padding: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-photo-plate);
+}
+
+.product-card__garment {
+  width: 100%;
+  height: 140px;
+}
+
+.product-card__info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Brand + name in the "product name" style, clamped to 2 lines. */
+.product-card__name {
+  display: -webkit-box;
+  height: 28px;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--text-product-name-size);
+  font-weight: var(--text-product-name-weight);
+  line-height: 14px;
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.product-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-card__link:focus-visible {
+  outline: none;
+}
+
+/* The whole card opens the piece. */
+.product-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.product-card__price-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 var(--space-32);
+}
+
+.product-card__price {
+  margin: 0;
+  font-size: var(--text-price-size);
+  font-weight: var(--text-price-weight);
+  white-space: nowrap;
+}
+
+/* Add toggle: the 48 tap area reaches 10 past the content edge, so the 24 circle sits 14 from the card's edge. */
+.add-toggle {
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--size-control);
+  height: var(--size-control);
+  margin-top: calc(var(--size-control) / -2);
+  border-radius: var(--radius-full);
+}
+
+.add-toggle__icon {
+  transition: transform 0.15s ease-out;
+}
+
+.add-toggle:active .add-toggle__icon {
+  transform: scale(0.9);
+}
+
+.add-toggle__circle {
+  fill: var(--color-primary);
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  transition: fill 0.2s ease-out, stroke 0.2s ease-out;
+}
+
+.add-toggle.is-added .add-toggle__circle {
+  fill: var(--color-background);
+  stroke: var(--color-on-surface);
+}
+
+.add-toggle__line {
+  fill: none;
+  stroke: var(--color-on-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke 0.2s ease-out;
+}
+
+.add-toggle.is-added .add-toggle__line {
+  stroke: var(--color-on-surface);
+}
+
+/* Garment photo: fitted (never cropped) and centred in its box. */
+.garment-photo {
+  position: relative;
+  display: block;
+}
+
+.garment-photo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}

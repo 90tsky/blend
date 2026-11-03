@@ -1,0 +1,139 @@
+/* Shared building blocks from the Figma components: cta (primary / secondary), round button, top bar, header. */
+
+/* cta: 48 tall, full pill, raised. Label in the "button" text style (16 medium, upper case). */
+.cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 var(--space-24);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-raised);
+  font-size: var(--text-button-size);
+  font-weight: var(--text-button-weight);
+  text-transform: uppercase;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.cta--primary {
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / 0.14)), var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.cta--secondary,
+.cta--primary:disabled {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+}
+
+.cta--primary:disabled {
+  color: var(--color-hint);
+}
+
+.cta__amount {
+  font-weight: var(--text-total-weight);
+}
+
+/* Round button: 72 × 48 raised white pill with an icon (search, turn around, menu, camera controls). */
+.round-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: var(--control-height);
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--color-on-surface);
+  flex: none;
+}
+
+/* The filter dot: 10 × 10, 10 from the top and 11 from the right (Figma filter dot 1807:10300). */
+.round-btn__dot {
+  position: absolute;
+  top: 10px;
+  right: 11px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-active);
+}
+
+/* Top bar: logo left, menu right. 70 tall, fixed over the screen. */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 430px;
+  height: 70px;
+  padding: 0 var(--space-12);
+  transform: translateX(-50%);
+  background: var(--color-background);
+}
+
+.top-bar--overlay {
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0));
+}
+
+/* The wordmark (Logo.tsx): primary letters with a 1px on-primary outline and a soft shadow, so dark mode flips both
+   colours. A parent can set --logo-h to scale it (15.6 in the top bar). */
+.logo {
+  display: block;
+  flex: none;
+  width: calc(var(--logo-h, 15.6px) * 46.46 / 15.6);
+  height: var(--logo-h, 15.6px);
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.15));
+}
+
+.logo path {
+  fill: var(--logo-fill, var(--color-primary));
+  stroke: var(--color-on-primary);
+}
+
+/* In the top bar the letters start 8 in (Figma's logo frame padding), centred in the 70. */
+.top-bar__logo {
+  margin-left: var(--space-8);
+}
+
+/* Over a photo the letters are always white. */
+.top-bar--overlay .logo {
+  --logo-fill: var(--color-always-white);
+}
+
+/* Header: ← or ✕, then the title (title style, x 44) and an optional subtitle in the hint style. */
+.header {
+  position: relative;
+  padding: var(--space-12) var(--space-12) var(--space-24) 44px;
+}
+
+.header__lead {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.header__title {
+  margin: 0;
+  font-size: var(--text-title-size);
+  font-weight: var(--text-title-weight);
+  line-height: 1.2;
+}
+
+.header__subtitle {
+  margin: var(--space-8) 0 0;
+  font-size: var(--text-body-size);
+  color: var(--color-hint);
+}

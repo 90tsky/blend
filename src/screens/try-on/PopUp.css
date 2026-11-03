@@ -1,0 +1,40 @@
+/* In-screen pop-up: a dark pill, 12 above the button under it (or the bottom of the screen). */
+.popup {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-12));
+  left: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.popup--fixed {
+  position: fixed;
+  z-index: 30;
+  bottom: calc(var(--space-12) + env(safe-area-inset-bottom));
+  max-width: 430px;
+  margin-inline: auto;
+}
+
+.popup__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: var(--control-height);
+  padding: 0 var(--space-20);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-raised);
+  color: var(--color-on-primary);
+  font-size: var(--text-body-medium-size);
+  font-weight: var(--text-body-medium-weight);
+  pointer-events: auto;
+}
+
+.popup__action {
+  min-height: var(--control-height);
+  padding: 0 var(--space-4);
+  font-weight: var(--text-button-weight);
+  text-transform: uppercase;
+}

@@ -1,0 +1,81 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* Mobile: one screen at a time, bottom bar always visible. */
+.app__main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'screen'
+    'bar';
+}
+
+.app__events,
+.app__change-room {
+  grid-area: screen;
+  min-height: 0;
+}
+
+.app__bar {
+  grid-area: bar;
+}
+
+/* Hidden screens stay laid out (keeps scroll and carousel positions) but can't be seen or focused. */
+.app[data-tab='events'] .app__change-room,
+.app[data-tab='changeRoom'] .app__events {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Desktop: events on the left, the change room always open on the right. */
+@media (min-width: 960px) {
+  .app {
+    max-width: 1440px;
+  }
+
+  .app__main {
+    grid-template-columns: minmax(0, 1fr) 460px;
+    grid-template-areas:
+      'events room'
+      'events bar';
+  }
+
+  .app__events {
+    grid-area: events;
+  }
+
+  .app__change-room {
+    grid-area: room;
+    padding-top: 12px;
+    border-left: 1px solid var(--line-soft);
+  }
+
+  .app__bar {
+    border-left: 1px solid var(--line-soft);
+  }
+
+  .app[data-tab] .app__events,
+  .app[data-tab] .app__change-room {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* The tabs and the floating buttons aren't needed when both panels are visible. */
+  .bottom-bar__tabs,
+  .events__float {
+    display: none !important;
+  }
+
+  .events__intro {
+    padding: 8px 24px 20px;
+  }
+}

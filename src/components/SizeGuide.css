@@ -1,0 +1,120 @@
+/* Size guide sheet: 32 top corners, 24 / 12 / 40 padding, 24 between its parts, over a 40% dim. */
+.size-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.size-guide__dim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-scrim) 40%, transparent);
+}
+
+.size-guide__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-section);
+  width: 100%;
+  max-width: 430px;
+  max-height: calc(100dvh - var(--space-48));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-24) var(--layout-margin) calc(var(--space-40) + env(safe-area-inset-bottom));
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  background: var(--color-background);
+  color: var(--color-on-surface);
+}
+
+.size-guide__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding-right: var(--space-24);
+}
+
+.size-guide__title {
+  margin: 0;
+  font-size: var(--text-heading-size);
+  font-weight: var(--text-heading-weight);
+  line-height: normal;
+}
+
+.size-guide__close {
+  position: absolute;
+  top: 50%;
+  right: calc(-1 * var(--layout-margin));
+  display: grid;
+  place-items: center;
+  width: var(--size-control);
+  height: var(--size-control);
+  margin-top: calc(var(--size-control) / -2);
+}
+
+.size-guide__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.size-guide__label {
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+}
+
+.size-guide__card {
+  padding: var(--space-16) var(--space-20);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.size-guide__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.size-guide__table th {
+  padding: 0 0 var(--space-12);
+  font-size: var(--text-hint-size);
+  font-weight: var(--text-hint-weight);
+  color: var(--color-hint);
+  text-align: left;
+}
+
+.size-guide__table td {
+  padding: 0;
+  white-space: nowrap;
+}
+
+.size-guide__table tr + tr td {
+  padding-top: var(--space-12);
+}
+
+.size-guide__table th + th,
+.size-guide__table td + td {
+  padding-left: var(--space-16);
+}
+
+.size-guide__size {
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+}
+
+.size-guide__cm {
+  margin-left: var(--space-8);
+  font-size: var(--text-hint-size);
+  color: var(--color-hint);
+}
+
+.size-guide__tip {
+  margin: 0;
+  font-size: var(--text-body-size);
+  color: var(--color-hint);
+}

@@ -1,0 +1,184 @@
+/* Checkout (Figma 579:10097). Content starts under the header, sections 24 apart; the PAY bar is fixed at the
+   bottom (backdrop on the screen colour, the button 12 from the edges), so the content leaves 84 for it. */
+.checkout {
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+}
+
+.checkout--paying {
+  padding-bottom: calc(111px + env(safe-area-inset-bottom, 0px));
+}
+
+.checkout__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-section);
+  padding: 0 var(--layout-margin);
+}
+
+/* Item rows: big list cards (24 corners, card padding) with a 56 thumbnail on the photo plate. */
+.checkout__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkout-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--card-padding);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.checkout-item__plate {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  padding: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-thumbnail-plate);
+}
+
+.checkout-item__plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.checkout-item__name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 1.2;
+}
+
+.checkout-item__price {
+  flex: none;
+  margin: 0;
+  font-size: var(--text-price-size);
+  font-weight: var(--text-price-weight);
+  white-space: nowrap;
+}
+
+/* Deliver to / Pay with */
+.checkout-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.checkout-section__label {
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 1.2;
+}
+
+.checkout-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--card-padding);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.checkout-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+}
+
+.checkout-card__title {
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 1.2;
+}
+
+.checkout-card__line {
+  font-size: var(--text-hint-size);
+  font-weight: var(--text-hint-weight);
+  line-height: 15px;
+  color: var(--color-hint);
+}
+
+.checkout-card__line strong {
+  font-weight: var(--text-hint-strong-weight);
+}
+
+.checkout-card__change {
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
+  font-size: var(--text-link-size);
+  font-weight: var(--text-link-weight);
+  color: var(--color-hint);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.checkout-card__change:disabled {
+  color: var(--color-muted);
+}
+
+/* PAY bar */
+.checkout__pay {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-12) var(--layout-margin) calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--color-background);
+}
+
+.checkout__note {
+  margin: 0;
+  text-align: center;
+  font-size: var(--text-hint-size);
+  line-height: 15px;
+  color: var(--color-hint);
+}
+
+.cta.checkout__paying {
+  color: var(--color-hint);
+  cursor: default;
+}
+
+.checkout__spinner {
+  flex: none;
+  color: var(--color-outline);
+  animation: checkout-spin 0.9s linear infinite;
+}
+
+@keyframes checkout-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* While paying, ← and the menu are greyed and do nothing (the user, 2026-11-02). */
+.checkout--paying .top-bar .round-btn,
+.checkout--paying .header__lead {
+  color: var(--color-muted);
+}
+
+.checkout--paying .header__lead {
+  pointer-events: none;
+}

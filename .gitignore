@@ -1,0 +1,16 @@
+.figma-token
+*.figma-token
+figd_*
+node_modules/
+dist/
+.env
+.env.*
+
+# Design scratch files (AI photo drafts and review working files): kept locally, too big for the repo
+.claude/review-*/
+
+# Personal Claude Code and editor settings
+.claude/settings.local.json
+.vscode/
+.DS_Store
+Thumbs.db

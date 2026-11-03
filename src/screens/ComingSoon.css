@@ -1,0 +1,9 @@
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+}
+
+.coming-soon__actions {
+  margin-top: auto;
+  padding: 0 var(--layout-margin) calc(var(--space-12) + env(safe-area-inset-bottom));
+}

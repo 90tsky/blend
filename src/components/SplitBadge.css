@@ -1,0 +1,28 @@
+/* badge · split: 24 tall pill on "UNDO grey" (--color-active), padding 4, halves 4 apart, glyph to number 2,
+   numbers in the "small" text style on color/on-primary. */
+.split-badge {
+  display: inline-flex;
+  flex: none;
+}
+
+.split-badge__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--size-icon);
+  padding: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-active);
+  color: var(--color-on-primary);
+  font-size: var(--text-small-size);
+  font-weight: var(--text-small-weight);
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.split-badge__half {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}

@@ -1,0 +1,275 @@
+[
+  {
+    "id": "g01",
+    "front": {
+      "src": "/garments/g01-front.webp",
+      "width": 316,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g01-back.webp",
+      "width": 300,
+      "height": 900
+    }
+  },
+  {
+    "id": "g02",
+    "front": {
+      "src": "/garments/g02-front.webp",
+      "width": 334,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g02-back.webp",
+      "width": 315,
+      "height": 900
+    }
+  },
+  {
+    "id": "g03",
+    "front": {
+      "src": "/garments/g03-front.webp",
+      "width": 303,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g03-back.webp",
+      "width": 305,
+      "height": 900
+    }
+  },
+  {
+    "id": "g04",
+    "front": {
+      "src": "/garments/g04-front.webp",
+      "width": 717,
+      "height": 630
+    },
+    "back": {
+      "src": "/garments/g04-back.webp",
+      "width": 705,
+      "height": 505
+    }
+  },
+  {
+    "id": "g05",
+    "front": {
+      "src": "/garments/g05-front.webp",
+      "width": 558,
+      "height": 555
+    },
+    "back": {
+      "src": "/garments/g05-back.webp",
+      "width": 572,
+      "height": 612
+    }
+  },
+  {
+    "id": "g06",
+    "front": {
+      "src": "/garments/g06-front.webp",
+      "width": 892,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g06-back.webp",
+      "width": 892,
+      "height": 900
+    }
+  },
+  {
+    "id": "g07",
+    "front": {
+      "src": "/garments/g07-front.webp",
+      "width": 791,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g07-back.webp",
+      "width": 796,
+      "height": 900
+    }
+  },
+  {
+    "id": "g08",
+    "front": {
+      "src": "/garments/g08-front.webp",
+      "width": 899,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g08-back.webp",
+      "width": 898,
+      "height": 900
+    }
+  },
+  {
+    "id": "g09",
+    "front": {
+      "src": "/garments/g09-front.webp",
+      "width": 611,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g09-back.webp",
+      "width": 634,
+      "height": 900
+    }
+  },
+  {
+    "id": "g10",
+    "front": {
+      "src": "/garments/g10-front.webp",
+      "width": 704,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g10-back.webp",
+      "width": 697,
+      "height": 900
+    }
+  },
+  {
+    "id": "g11",
+    "front": {
+      "src": "/garments/g11-front.webp",
+      "width": 699,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g11-back.webp",
+      "width": 689,
+      "height": 900
+    }
+  },
+  {
+    "id": "g12",
+    "front": {
+      "src": "/garments/g12-front.webp",
+      "width": 703,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g12-back.webp",
+      "width": 703,
+      "height": 900
+    }
+  },
+  {
+    "id": "g13",
+    "front": {
+      "src": "/garments/g13-front.webp",
+      "width": 699,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g13-back.webp",
+      "width": 702,
+      "height": 900
+    }
+  },
+  {
+    "id": "g14",
+    "front": {
+      "src": "/garments/g14-front.webp",
+      "width": 945,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g14-back.webp",
+      "width": 951,
+      "height": 900
+    }
+  },
+  {
+    "id": "g15",
+    "front": {
+      "src": "/garments/g15-front.webp",
+      "width": 698,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g15-back.webp",
+      "width": 687,
+      "height": 900
+    }
+  },
+  {
+    "id": "g16",
+    "front": {
+      "src": "/garments/g16-front.webp",
+      "width": 627,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g16-back.webp",
+      "width": 664,
+      "height": 900
+    }
+  },
+  {
+    "id": "g17",
+    "front": {
+      "src": "/garments/g17-front.webp",
+      "width": 533,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g17-back.webp",
+      "width": 533,
+      "height": 900
+    }
+  },
+  {
+    "id": "g18",
+    "front": {
+      "src": "/garments/g18-front.webp",
+      "width": 950,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g18-back.webp",
+      "width": 948,
+      "height": 900
+    }
+  },
+  {
+    "id": "g19",
+    "front": {
+      "src": "/garments/g19-front.webp",
+      "width": 681,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g19-back.webp",
+      "width": 644,
+      "height": 900
+    }
+  },
+  {
+    "id": "g20",
+    "front": {
+      "src": "/garments/g20-front.webp",
+      "width": 698,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g20-back.webp",
+      "width": 699,
+      "height": 900
+    }
+  },
+  {
+    "id": "g21",
+    "front": {
+      "src": "/garments/g21-front.webp",
+      "width": 705,
+      "height": 900
+    },
+    "back": {
+      "src": "/garments/g21-back.webp",
+      "width": 677,
+      "height": 900
+    }
+  }
+]

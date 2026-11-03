@@ -1,0 +1,199 @@
+/* Search sheet over Events (Figma Events · search open 1807:14046, suggestions sheet 1806:11272, chip bar · typing 1806:11154). */
+.search {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+/* The dim over Events: tapping it closes search. */
+.search__dim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--color-scrim) 40%, transparent);
+  cursor: default;
+  touch-action: none;
+}
+
+/* The sheet sits on top of the keyboard (or the bottom of the screen) in the 430 column. */
+.search__sheet {
+  position: absolute;
+  right: 0;
+  bottom: var(--keyboard, 0px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 430px;
+  max-height: calc(var(--view-height, 100dvh) - 80px);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: var(--color-surface);
+}
+
+.search__suggestions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-12);
+  min-height: 0;
+  padding: var(--space-24) 0 var(--space-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.search__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.search__label {
+  margin: 0;
+  padding: 0 var(--layout-margin);
+  font-size: var(--text-label-small-size);
+  font-weight: var(--text-label-small-weight);
+  line-height: 16px;
+}
+
+.search__row {
+  display: flex;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0 var(--layout-margin);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.search__row::-webkit-scrollbar {
+  display: none;
+}
+
+.suggestion-item {
+  flex: none;
+}
+
+/* Suggestion pill: 40 tall on the background colour, in a 48 tap area. */
+.suggestion {
+  display: flex;
+  align-items: center;
+  height: var(--control-height);
+}
+
+.suggestion__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 40px;
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-size: var(--text-label-small-size);
+  font-weight: var(--text-label-small-weight);
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+/* Already on: UNDO grey with a ✓. */
+.suggestion--on .suggestion__pill {
+  padding-left: var(--space-12);
+  background: var(--color-active);
+  color: var(--color-on-primary);
+}
+
+/* "Search “tee”" with the live count on the right. */
+.search__go {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: calc(100% - 2 * var(--layout-margin));
+  height: var(--control-height);
+  margin: 0 var(--layout-margin) var(--space-4);
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  text-align: left;
+}
+
+.search__go-query {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--text-body-size);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search__go-count {
+  flex: none;
+  color: var(--color-hint);
+  font-size: var(--text-small-size);
+}
+
+/* The typing bar: a sunken track holding the white field. */
+.search__bar {
+  flex: none;
+  padding: var(--space-12) var(--space-12) calc(var(--space-12) + var(--safe-bottom, 0px));
+  background: var(--color-surface);
+}
+
+.search__track {
+  display: flex;
+  align-items: center;
+  height: var(--control-height);
+  padding: 0 var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  box-shadow: var(--shadow-track);
+}
+
+.search__field {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  height: 32px;
+  padding-left: var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+
+/* 16px so phones don't zoom into the field (Figma draws it at 14). */
+.search__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--space-16) 0 0;
+  border: 0;
+  outline: none;
+  background: none;
+  caret-color: var(--color-on-surface);
+  font-size: var(--text-field-size);
+  font-weight: var(--text-label-small-weight);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search__input::placeholder {
+  color: var(--color-hint);
+  opacity: 1;
+}
+
+.search__input::-webkit-search-cancel-button,
+.search__input::-webkit-search-decoration {
+  display: none;
+  -webkit-appearance: none;
+}
+
+.search__clear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--size-control);
+  height: var(--size-control);
+  margin: calc(-1 * var(--space-8)) 0;
+}

@@ -1,0 +1,86 @@
+.slot-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 0;
+  min-height: 150px;
+  max-height: 253px;
+  width: 56px;
+  padding: 14px 0 12px;
+  border-radius: 28px;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+}
+
+.slot-control__remove {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-top: -6px;
+  border-radius: 50%;
+}
+
+.slot-control__remove:active {
+  background: var(--bg);
+}
+
+.slot-control__remove:disabled {
+  opacity: 0.25;
+}
+
+.slot-control__price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.slot-control__price strong {
+  font-weight: 700;
+}
+
+.slot-control__price span {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.slot-control.is-empty .slot-control__price {
+  color: var(--ink-muted);
+}
+
+.dots {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 44px;
+  min-height: 60px;
+  border-radius: 22px;
+  touch-action: none;
+  cursor: ns-resize;
+}
+
+.dots__dot {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--dot);
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+.dots__dot.is-active {
+  background: var(--dot-active);
+}
+
+/* Bigger invisible hit area so a thumb can tap a single dot. */
+.dots__dot::after {
+  content: '';
+  position: absolute;
+  inset: -7px -16px;
+}

@@ -1,0 +1,98 @@
+/* Options (Figma Options 498:9264): a pinned header under the top bar, then three groups 48 apart. */
+.options {
+  padding-bottom: calc(var(--layout-group) + env(safe-area-inset-bottom));
+}
+
+.options__head {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  padding-top: 70px;
+  background: var(--color-background);
+}
+
+.options__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-group);
+  padding: 0 var(--layout-margin);
+}
+
+/* Name: a sunken field like the other inputs. */
+.options__field {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 var(--space-20);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  box-shadow: var(--shadow-track);
+  font-size: var(--text-field-size);
+  font-weight: var(--text-field-weight);
+}
+
+.options__field::placeholder {
+  color: var(--color-hint);
+  opacity: 1;
+}
+
+/* Gender: the two photos on one white card; the chosen one is in colour on a soft accent glow. */
+.gender {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 240px;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-photo-plate);
+  box-shadow: 0 8px 24px -6px var(--effect-glow), 0 1px 3px 0 var(--effect-contact);
+}
+
+.gender__option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--space-12);
+  transition: background-color 0.3s ease-out;
+}
+
+/* The floor shadow under the feet. */
+.gender__option::before {
+  position: absolute;
+  bottom: 21px;
+  left: 50%;
+  width: 70px;
+  height: 16px;
+  margin-left: -35px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--effect-contact), transparent);
+  content: '';
+}
+
+.gender__option img {
+  position: relative;
+  width: 117px;
+  height: 216px;
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+  transition: filter 0.3s ease-out;
+}
+
+.gender__option--on {
+  background: radial-gradient(55% 50% at 50% 50%, color-mix(in srgb, var(--color-accent) 45%, transparent), transparent);
+}
+
+.gender__option--on img {
+  filter: none;
+}
+
+/* Account buttons, 24 apart. */
+.options__account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-section);
+}
+
+.options__account .cta:disabled {
+  color: var(--color-hint);
+}

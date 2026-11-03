@@ -1,0 +1,155 @@
+/* Product: content 12 from the sides, 20 between its parts; the button stays 12 above the bottom, so the content
+   leaves room for it (12 + 48 + 24). */
+.product__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-20);
+  padding: 0 var(--layout-margin) calc(var(--space-12) + var(--control-height) + var(--layout-section) + env(safe-area-inset-bottom));
+}
+
+/* The photo plate: 300 tall, 24 corners; the garment 16 from the top, 236 tall; the hint under it. */
+.product__photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-photo-plate);
+}
+
+.product__garment {
+  position: absolute;
+  top: var(--space-16);
+  right: 0;
+  left: 0;
+  height: 236px;
+}
+
+.product__photo-hint {
+  position: absolute;
+  top: 266px;
+  right: 0;
+  left: 0;
+  font-size: var(--text-hint-size);
+  font-weight: var(--text-hint-weight);
+  color: var(--color-on-photo-plate);
+  text-align: center;
+}
+
+.product__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.product__price {
+  margin: 0;
+  font-size: var(--text-total-size);
+  font-weight: var(--text-total-weight);
+}
+
+/* Brand · material · events, in the small hint style (designer, 2 Nov 2026). */
+.product__details {
+  margin: 0;
+  font-size: var(--text-hint-size);
+  font-weight: var(--text-hint-weight);
+  color: var(--color-hint);
+}
+
+.product__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.product__label {
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: normal;
+}
+
+.product__size-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 19px;
+}
+
+/* "Size guide": a link-style button with a 48 tall tap area that doesn't push the row apart. */
+.product__guide {
+  height: var(--size-control);
+  margin: calc((19px - var(--size-control)) / 2) calc(-1 * var(--layout-margin)) calc((19px - var(--size-control)) / 2) 0;
+  padding: 0 var(--layout-margin);
+  font-size: var(--text-link-size);
+  font-weight: var(--text-link-weight);
+  color: var(--color-hint);
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+/* Wear it with: three small cards (16 corners, 8 padding), photo 90 tall at 8 corners. */
+.product__pairs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-12);
+}
+
+.pair-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  text-decoration: none;
+}
+
+.pair-card__photo {
+  display: block;
+  height: 90px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-photo-plate);
+}
+
+.pair-card__garment {
+  width: 100%;
+  height: 100%;
+}
+
+.pair-card__name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: var(--text-card-name-size);
+  font-weight: var(--text-card-name-weight);
+  line-height: var(--text-card-name-line);
+  letter-spacing: var(--text-card-name-tracking);
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.pair-card__price {
+  display: grid;
+  place-items: center;
+  min-height: 23px;
+  margin-top: auto;
+  font-size: var(--text-card-price-size);
+  font-weight: var(--text-card-price-weight);
+  letter-spacing: var(--text-card-price-tracking);
+}
+
+.product__cta {
+  position: fixed;
+  bottom: calc(var(--space-12) + env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 10;
+  width: 100%;
+  max-width: 430px;
+  padding: 0 var(--layout-margin);
+  transform: translateX(-50%);
+}

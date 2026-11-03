@@ -1,0 +1,63 @@
+.events {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.events__scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.events__intro {
+  padding: 4px var(--gutter) 16px;
+}
+
+.events__heading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.events__lede {
+  margin: 6px 0 0;
+  max-width: 46ch;
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.events__end {
+  height: 96px;
+}
+
+/* Closet + Rotate float on the thumb side */
+.events__float {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+  transition: transform 0.3s var(--ease-out), opacity 0.3s;
+}
+
+.events__float.is-hidden {
+  transform: translateX(calc(100% + 16px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hand-left .events__float {
+  right: auto;
+  left: 12px;
+}
+
+.hand-left .events__float.is-hidden {
+  transform: translateX(calc(-100% - 16px));
+}

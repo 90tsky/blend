@@ -1,0 +1,132 @@
+.slot {
+  position: relative;
+  min-height: 0;
+}
+
+.slot--top {
+  flex: 39 1 0;
+}
+
+.slot--bottom {
+  flex: 61 1 0;
+}
+
+.slot__track {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  outline-offset: -2px;
+}
+
+.slot__track::-webkit-scrollbar {
+  display: none;
+}
+
+.slot__slide {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+/*
+  Garments are sized so an outfit reads true to life:
+  bottoms share one waist width (46% of the stage, tweakable per product with --fit),
+  tops fill the space above and sit right on the waistband.
+*/
+.slot__slide .garment {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  object-fit: contain;
+}
+
+.slot--top .slot__slide .garment {
+  bottom: 0;
+  width: 92%;
+  height: calc(100% - 8px);
+  object-position: center bottom;
+}
+
+.slot--bottom .slot__slide .garment {
+  top: 0;
+  width: min(100%, calc(46% * var(--fit, 1)));
+  height: 100%;
+  object-position: center top;
+}
+
+/* Arrows only on devices with a mouse; touch users swipe. */
+.slot__arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.slot__arrow--prev {
+  left: 4px;
+}
+
+.slot__arrow--next {
+  right: 4px;
+}
+
+.slot__arrow:disabled {
+  visibility: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slot__arrow {
+    display: grid;
+  }
+
+  .slot:hover .slot__arrow,
+  .slot__arrow:focus-visible {
+    opacity: 1;
+  }
+}
+
+.slot__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: calc(100% - 16px);
+  margin: 8px 0;
+  border: 1.5px dashed var(--line);
+  border-radius: 20px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.slot__empty-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 4px;
+}
+
+.slot__empty-hint {
+  color: var(--ink-muted);
+  font-size: 12px;
+  font-weight: 400;
+}

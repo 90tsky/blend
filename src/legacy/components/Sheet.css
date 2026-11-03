@@ -1,0 +1,121 @@
+.sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: 560px;
+  max-height: min(88dvh, 860px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px 24px 0 0;
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.sheet:not([open]) {
+  display: none;
+}
+
+.sheet[open] {
+  animation: sheet-in 0.35s var(--ease-out);
+}
+
+.sheet::backdrop {
+  background: rgb(20 16 14 / 0.45);
+  animation: backdrop-in 0.3s ease;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.sheet__grab {
+  padding: 8px 20px 12px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.sheet__handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 10px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sheet__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.sheet__subtitle {
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.sheet__close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: -4px -8px 0 0;
+  border-radius: 50%;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 20px 20px;
+}
+
+.sheet__footer {
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-soft);
+  background: var(--bg);
+}
+
+@media (min-width: 960px) {
+  .sheet {
+    inset: 0;
+    margin: auto;
+    border-radius: 24px;
+  }
+
+  .sheet[open] {
+    animation-name: sheet-in-desktop;
+  }
+
+  @keyframes sheet-in-desktop {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+}

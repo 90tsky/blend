@@ -1,0 +1,30 @@
+.header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  padding: 0 var(--gutter);
+  padding-top: env(safe-area-inset-top);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.header__logo img {
+  height: 27px;
+  width: auto;
+}
+
+.header__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  border-radius: 50%;
+}
+
+.header__icon:active {
+  background: var(--line-soft);
+}

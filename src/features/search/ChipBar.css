@@ -1,0 +1,109 @@
+/* Filter chip bar (Figma chip bar 1806:11153, filter chip 1803:470 "applied"): a pressed-in track, 48 tall. */
+.chip-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  height: var(--control-height);
+  padding-left: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  box-shadow: var(--shadow-track);
+}
+
+.chip-bar__scroll {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.chip-bar__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 3 or more chips scroll sideways under a fade at the end (the mask only uses alpha). */
+.chip-bar__scroll--fade {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - var(--space-40)), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - var(--space-40)), transparent);
+}
+
+.chip-bar__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: max-content;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip-bar__scroll--fade .chip-bar__row {
+  padding-right: var(--space-40);
+}
+
+.chip-bar__row > li {
+  flex: none;
+}
+
+/* The whole chip is one 48-tall button ("Bottoms, remove filter"); its pill is 32 tall in UNDO grey. */
+.chip-bar__chip {
+  display: flex;
+  align-items: center;
+  height: var(--control-height);
+}
+
+.chip-bar__pill {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding-left: var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-active);
+  color: var(--color-on-primary);
+  font-size: var(--text-label-small-size);
+  font-weight: var(--text-label-small-weight);
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.chip-bar__x {
+  display: grid;
+  place-items: center;
+  width: var(--size-control);
+  height: 32px;
+}
+
+.chip-bar__clear {
+  height: var(--control-height);
+  padding: 0 var(--space-8);
+  font-size: var(--text-label-small-size);
+  font-weight: var(--text-label-small-weight);
+  white-space: nowrap;
+}
+
+/* "+": a raised white 32 circle in a 48 tap area, fixed at the end of the track. */
+.chip-bar__add {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--size-control);
+  height: var(--size-control);
+  border-radius: var(--radius-full);
+}
+
+.chip-bar__add-face {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--color-on-surface);
+}

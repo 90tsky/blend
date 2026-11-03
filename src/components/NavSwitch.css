@@ -1,0 +1,76 @@
+/* nav switch: 406 × 48 (fills the tabs row), no track. The knob is the shared raised white button look. */
+.nav-switch {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  height: var(--control-height);
+  border-radius: var(--radius-full);
+}
+
+.nav-switch__knob {
+  position: absolute;
+  inset: 0 50% 0 0;
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  pointer-events: none;
+}
+
+.nav-switch__tab {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-12);
+  border-radius: var(--radius-full);
+  color: var(--color-on-surface);
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 1.2;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.nav-switch__tab:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Figma's 16px label fits from about 420 wide. On narrower phones the padding drops to 8 and the type shrinks with the
+   screen (13 at the least), so "CHANGE ROOM" still fits beside the badge (it needs 115 at 16px; the label gets half
+   the screen minus 82). */
+@media (max-width: 419px) {
+  .nav-switch__tab {
+    padding: 0 var(--space-8);
+    font-size: clamp(13px, calc(6.95vw - 12.5px), var(--text-label-size));
+  }
+}
+
+.nav-switch__area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-switch__label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Below 360 even 13px doesn't fit (CHANGE ROOM needs ~93, the label gets ~78 at 320), so the label wraps:
+   CHANGE over ROOM, two 13px lines inside the 48 tall tab. */
+@media (max-width: 359px) {
+  .nav-switch__label {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.05;
+  }
+}

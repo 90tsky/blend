@@ -1,0 +1,45 @@
+/* Screens under the bar leave this much room (the bar is 128 tall, 184 with the chip bar). */
+:root {
+  --bottom-bar-h: calc(128px + env(safe-area-inset-bottom, 0px));
+  --bottom-bar-h-filter: calc(184px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Rows of 48, 8 apart; 12 above the first row, and the actions row ends 12 above the screen bottom. */
+.bottom-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-12) 0 calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--color-background);
+}
+
+.bottom-bar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: 0 var(--layout-margin);
+}
+
+/* Under 360 the search and Turn around pills narrow to 56 (still over the 48 tap minimum), so Checkout keeps room
+   for its total. */
+@media (max-width: 359px) {
+  .bottom-bar .round-btn {
+    width: 56px;
+  }
+}
+
+.bottom-bar__filters {
+  min-height: var(--control-height);
+}
+
+.bottom-bar__filters > * {
+  flex: 1;
+  min-width: 0;
+}

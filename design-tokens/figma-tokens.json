@@ -1,0 +1,83 @@
+{
+  "source": "Figma file Blend-remake (bYTCLufBocYOUavvlHgAdy), variable collections 'theme' (light/dark) and 'tokens', text styles and the raised/track shadow recipes. Exported 2026-11-02.",
+  "colors": {
+    "background": { "light": "#f4efee", "dark": "#141211" },
+    "surface": { "light": "#ffffff", "dark": "#26221f" },
+    "on-surface": { "light": "#000000", "dark": "#f4efee" },
+    "primary": { "light": "#000000", "dark": "#f4efee" },
+    "on-primary": { "light": "#ffffff", "dark": "#141211" },
+    "muted": { "light": "#b8aea4", "dark": "#6b625b" },
+    "accent": { "light": "#cdb6af", "dark": "#cdb6af" },
+    "accent-strong": { "light": "#7d5a4f", "dark": "#cdb6af" },
+    "placeholder": { "light": "#d9d9d9", "dark": "#3a3532" },
+    "outline": { "light": "#757070", "dark": "#8a8380" },
+    "scrim": { "light": "#000000", "dark": "#000000" },
+    "hint": { "light": "#6e6969", "dark": "#918a87" },
+    "error": { "light": "#a4372e", "dark": "#ef8a80" },
+    "toast-action": { "light": "#ffffff29", "dark": "#1412111f" },
+    "photo-plate": { "light": "#ffffff", "dark": "#cfc8c2" },
+    "on-photo-plate": { "light": "#665b34", "dark": "#5a5030" },
+    "thumbnail-plate": { "light": "#f4efee", "dark": "#cfc8c2" },
+    "garment-backdrop": { "light": "#f4efee", "dark": "#3b3531" },
+    "always-white": { "light": "#ffffff", "dark": "#ffffff" }
+  },
+  "effectColors": {
+    "glow": { "light": "#b8aea426", "dark": "#0000008c" },
+    "contact": { "light": "#00000026", "dark": "#00000073" },
+    "bottom-shade": { "light": "#00000026", "dark": "#00000059" },
+    "top-light": { "light": "#ffffff59", "dark": "#ffffff0f" },
+    "pressed": { "light": "#00000045", "dark": "#0000008c" },
+    "track-shadow": { "light": "#00000024", "dark": "#00000080" },
+    "track-lip": { "light": "#ffffff99", "dark": "#ffffff0d" }
+  },
+  "composites": {
+    "active": { "top": "toast-action", "bottom": "primary", "note": "'UNDO grey' = color/primary with color/toast action on top. Means 'this is on': applied filter chips, picked suggestion, split badge pill, search filter dot, the toast's Undo/View chips." }
+  },
+  "numbers": {
+    "space-0": 0, "space-2": 2, "space-4": 4, "space-8": 8, "space-12": 12, "space-16": 16, "space-20": 20, "space-24": 24, "space-32": 32, "space-40": 40, "space-48": 48,
+    "radius-xs": 4, "radius-sm": 8, "radius-md": 12, "radius-lg": 16, "radius-xl": 24, "radius-2xl": 32, "radius-full": 999,
+    "size-icon": 24, "size-control": 48,
+    "layout-margin": 12, "layout-section": 24, "layout-group": 48,
+    "card-padding": 12, "control-height": 48
+  },
+  "shadows": {
+    "raised": [
+      { "inset": false, "x": 0, "y": 8, "blur": 24, "spread": -6, "color": "glow" },
+      { "inset": false, "x": 0, "y": 1, "blur": 3, "spread": 0, "color": "contact" },
+      { "inset": true, "x": 0, "y": -2, "blur": 2, "spread": 0, "color": "bottom-shade" },
+      { "inset": true, "x": 0, "y": 1, "blur": 0, "spread": 0, "color": "top-light" }
+    ],
+    "track": [
+      { "inset": true, "x": 0, "y": 2, "blur": 4, "spread": 0, "color": "track-shadow" },
+      { "inset": true, "x": 0, "y": -1, "blur": 0, "spread": 0, "color": "track-lip" }
+    ]
+  },
+  "fonts": { "ui": "'Roboto Flex', system-ui, sans-serif" },
+  "text": {
+    "title": { "size": 28, "weight": 700 },
+    "heading": { "size": 24, "weight": 700 },
+    "body": { "size": 15, "weight": 400 },
+    "body-medium": { "size": 15, "weight": 500 },
+    "body-strong": { "size": 15, "weight": 600 },
+    "link": { "size": 15, "weight": 500 },
+    "label": { "size": 16, "weight": 500 },
+    "label-small": { "size": 14, "weight": 500 },
+    "button": { "size": 16, "weight": 500, "case": "uppercase" },
+    "field": { "size": 16, "weight": 400 },
+    "total": { "size": 16, "weight": 700 },
+    "price": { "size": 14, "weight": 700 },
+    "hint": { "size": 13, "weight": 400 },
+    "hint-medium": { "size": 13, "weight": 500 },
+    "hint-strong": { "size": 13, "weight": 600 },
+    "chip": { "size": 13, "weight": 600, "tracking": "0.04em", "case": "uppercase" },
+    "small": { "size": 12, "weight": 400 },
+    "small-medium": { "size": 12, "weight": 500 },
+    "product-name": { "size": 12, "weight": 700 },
+    "card-name": { "size": 12, "weight": 400, "lineHeight": 15, "tracking": "0.0025em" },
+    "card-price": { "size": 12, "weight": 700, "tracking": "0.0025em" }
+  },
+  "bannerFonts": {
+    "casual": "Notable", "outdoors": "Alfa Slab One", "office-hours": "DM Serif Display", "day-off": "Kranky",
+    "maternity": "Italiana", "working-out": "Racing Sans One", "night-out": "Monoton", "beach-day": "Pacifico"
+  }
+}
