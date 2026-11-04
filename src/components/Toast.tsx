@@ -53,6 +53,8 @@ export function ToastHost() {
         {
           '--toast-bottom': `${bottom}px`,
           '--toast-left': onChangeRoom ? `${inset}px` : undefined,
+          // In the empty box (20 corners) the toast's corners are 8, 12 in like everything else.
+          '--toast-radius': inBox ? '8px' : undefined,
           // Beside Try it on: 12 short of the notch (the frame's at 96 from the right, the box's at 108).
           '--toast-right': onChangeRoom ? (besideTryOn ? `${inset + 84}px` : `${inset}px`) : undefined,
         } as CSSProperties

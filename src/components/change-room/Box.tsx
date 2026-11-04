@@ -7,15 +7,22 @@ export const INNER_R = 20
 
 // A rounded box path, optionally with the notch round the Try it on button at the bottom-right corner
 // (house rules › Corners). For the frame (inset 0) the button is 72 × 48 flush with the corner with 12 round it, so
-// the inside curve shares the button's centre (24 + 12 = 36) and the outer turns are 24. A box `inset` inside the
-// frame gets the same notch offset by that much: the inside curve grows (36 + inset), the outer turns shrink.
+// the inside curve shares the button's centre (24 + 12 = 36); a box `inset` inside the frame gets the same notch
+// offset by that much (inside curve 36 + inset). The notch's two outer turns take the box's own corner radius `r`,
+// like its other corners (the user, 4 Nov: they mirror the bottom-left corner), so the frame's turns and the inset
+// box's turns share centres, 12 apart, like the corners. The lower turn meets the inside curve where the two circles
+// touch, a few px short of the inside curve's quarter.
 export function boxPath(w: number, h: number, notch: boolean, r = FRAME_R, inset = 0) {
   const top = `M0 ${r} A${r} ${r} 0 0 1 ${r} 0 H${w - r} A${r} ${r} 0 0 1 ${w} ${r}`
   const left = `H${r} A${r} ${r} 0 0 1 0 ${h - r} Z`
   if (!notch) return `${top} V${h - r} A${r} ${r} 0 0 1 ${w - r} ${h} ${left}`
-  const t = 24 - inset // outer turns
-  const c = 36 + inset // inside curve
-  return `${top} V${h - 84 + inset} A${t} ${t} 0 0 1 ${w - 24 + inset} ${h - 60} H${w - 48 + inset} A${c} ${c} 0 0 0 ${w - 84} ${h - 24 + inset} A${t} ${t} 0 0 1 ${w - 108 + inset} ${h} ${left}`
+  const c = 36 + inset // inside curve, round the button's corner centre:
+  const cx = w - 48 + inset
+  const cy = h - 24 + inset
+  const dy = cy - (h - r) // the lower turn's centre is r above the bottom, touching the inside curve
+  const dx = Math.sqrt((c + r) ** 2 - dy ** 2)
+  const k = c / (c + r)
+  return `${top} V${h - 60 - r} A${r} ${r} 0 0 1 ${w - r} ${h - 60} H${cx} A${c} ${c} 0 0 0 ${cx - dx * k} ${cy - dy * k} A${r} ${r} 0 0 1 ${cx - dx} ${h} ${left}`
 }
 
 type Props = { variant: 'dashed'; className?: string }
