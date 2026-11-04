@@ -13,23 +13,18 @@ export function boxPath(w: number, h: number, notch: boolean) {
   return `${top} V${h - 84} A24 24 0 0 1 ${w - 24} ${h - 60} H${w - 48} A36 36 0 0 0 ${w - 84} ${h - 24} A24 24 0 0 1 ${w - 108} ${h} ${left}`
 }
 
-type Props = { variant: 'plate' | 'dashed'; notch?: boolean; className?: string }
+type Props = { variant: 'dashed'; className?: string }
 
-// Fills its positioned parent. "plate" is the garment backdrop (color/garment backdrop, only visible in dark mode),
-// "dashed" the outline of the empty boxes and the "Add a top / bottom" card.
-export function Box({ variant, notch = false, className = '' }: Props) {
+// Fills its positioned parent: the dashed outline of the "Add a top / bottom" card. (The garment backdrop "plate" is
+// gone: no frames behind the pieces, 4 Nov.)
+export function Box({ variant, className = '' }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const { width, height } = useSize(ref)
-  const ok = width > 140 && height > 120
   return (
     <div ref={ref} className={`cr-box cr-box--${variant} ${className}`} aria-hidden="true">
       {width > 0 && height > 0 && (
         <svg width={width} height={height}>
-          {variant === 'plate' ? (
-            <path d={boxPath(width, height, notch && ok)} />
-          ) : (
-            <path d={boxPath(width - 1, height - 1, notch && ok)} transform="translate(0.5 0.5)" />
-          )}
+          <path d={boxPath(width - 1, height - 1, false)} transform="translate(0.5 0.5)" />
         </svg>
       )}
     </div>

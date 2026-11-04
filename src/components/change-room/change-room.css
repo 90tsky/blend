@@ -31,7 +31,7 @@
   flex: 444 1 0;
 }
 
-/* Plate and dashed outlines (Box.tsx) */
+/* Dashed outlines (Box.tsx) */
 .cr-box {
   position: absolute;
   inset: 0;
@@ -42,10 +42,6 @@
   display: block;
 }
 
-.cr-box--plate path {
-  fill: var(--color-garment-backdrop);
-}
-
 .cr-box--dashed path {
   fill: none;
   stroke: var(--color-outline);
@@ -54,23 +50,9 @@
 }
 
 /* A row's content (SlotRow), over the whole row, so it can come and go while the row keeps its place. */
-.cr-slot,
-.cr-plate-wrap {
+.cr-slot {
   position: absolute;
   inset: 0;
-}
-
-.cr-plate-wrap {
-  pointer-events: none;
-}
-
-/* The garment backdrop: 406 wide; the bottom one starts 4 lower and carries the Try it on notch. */
-.cr-box.cr-plate {
-  inset: 0 var(--layout-margin);
-}
-
-.cr-row--bottom .cr-box.cr-plate {
-  inset: var(--space-4) var(--layout-margin) 0;
 }
 
 /* The moving part: pieces and the add card. It clips what slides past the screen edges. */

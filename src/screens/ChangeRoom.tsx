@@ -33,7 +33,7 @@ export function ChangeRoom() {
       <h1 className="visually-hidden">Change room</h1>
       <div className="cr-stage">
         <SlotRow slot="top" items={tops} currentId={state.current.top} side={state.side} onAdd={() => openEvents('top')} />
-        <SlotRow slot="bottom" items={bottoms} currentId={state.current.bottom} side={state.side} notch onAdd={() => openEvents('bottom')} />
+        <SlotRow slot="bottom" items={bottoms} currentId={state.current.bottom} side={state.side} onAdd={() => openEvents('bottom')} />
         <EmptyBoxes tops={tops.length} bottoms={bottoms.length} onOpen={openEvents} />
         {/* Nothing to try on in an empty room: Try it on slides out to the side, and back with the first piece. */}
         <AnimatePresence initial={false}>

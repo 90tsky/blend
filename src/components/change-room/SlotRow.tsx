@@ -45,7 +45,7 @@ function place(p: Product, side: Side, box: Rect, peek: boolean): Rect {
   return { x: box.x + (box.w - w) / 2, y, w, h }
 }
 
-type Props = { slot: Slot; items: Product[]; currentId: string | null; side: Side; notch?: boolean; onAdd: () => void }
+type Props = { slot: Slot; items: Product[]; currentId: string | null; side: Side; onAdd: () => void }
 
 // One row of the change room (Figma carousel · top 516:9378 / · bottom 516:9629). The row keeps its place in the
 // stage when it's empty (the empty boxes are drawn over the stage by EmptyBoxes); its pieces come and go with it.
@@ -75,7 +75,7 @@ export function SlotRow(props: Props) {
 // "3 of 7" position, and the price chip with ✕. Swipe or drag sideways to step; the peek is a button too.
 // When the slot's last piece goes (motion Aplus2), the piece slides out to the left like a swipe, the chip slides
 // out to the right, and the add card hands over to the empty box that stretches out of it; Undo plays it backwards.
-function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H, enter }: Props & { W: number; H: number; enter: boolean }) {
+function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props & { W: number; H: number; enter: boolean }) {
   const { state, dispatch } = useStore()
   const { remove } = useBagActions()
   const navigate = useNavigate()
@@ -166,17 +166,8 @@ function SlotContent({ slot, items, currentId, side, notch = false, onAdd, W, H,
   const atEnd = index === n - 1
 
   return (
+    // No backdrop frame behind the pieces, in either mode (the user, 4 Nov: option A).
     <div className="cr-slot" inert={leaving || undefined}>
-      {/* Leaving runs as exit animations: once a part of the tree is on its way out, motion ignores new targets. */}
-      <motion.div
-        className="cr-plate-wrap"
-        initial={entered ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
-      >
-        <Box variant="plate" notch={notch} className="cr-plate" />
-      </motion.div>
       <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
         {/* custom: which way a removed piece goes (an exiting piece keeps its last props, so its exit reads this).
             When the whole slot leaves, its last piece slides out through `animate`, not an exit: these pieces stay
