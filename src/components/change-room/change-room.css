@@ -233,12 +233,13 @@
   border-radius: var(--radius-full);
 }
 
-/* Try it on: bottom right of the stage, inside the plate's notch. */
+/* Try it on: bottom right of the stage, inside the plate's notch. It sits just above the bottom bar (20), so its
+   shadow falls over the bar as in Figma instead of being cut off by it; toasts and sheets stay above (30+). */
 .cr-stage .cr-try-on {
   position: absolute;
   right: var(--layout-margin);
   bottom: 0;
-  z-index: 3;
+  z-index: 21;
   display: flex;
 }
 

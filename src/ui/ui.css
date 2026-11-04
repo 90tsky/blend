@@ -51,11 +51,12 @@
   flex: none;
 }
 
-/* The filter dot: 10 × 10, 10 from the top and 11 from the right (Figma filter dot 1807:10300). */
+/* The filter dot: 10 × 10 on the icon's top-right corner, 10 from the top and 3 right of the centre (Figma filter dot
+   1807:10300: x 39 on the 72 button). From the centre, so it stays on the icon when the button narrows. */
 .round-btn__dot {
   position: absolute;
   top: 10px;
-  right: 11px;
+  left: calc(50% + 3px);
   width: 10px;
   height: 10px;
   border-radius: 50%;
