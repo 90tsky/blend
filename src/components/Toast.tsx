@@ -27,10 +27,11 @@ export function ToastHost() {
     return () => window.clearTimeout(timer)
   }, [toast, paused, dispatch])
 
-  // Where the pill rests: 12 inside whatever holds it. On Events 12 above the bottom bar (128, or 184 with filter
-  // chips) and 12 from the screen edges; in the change room inside the frame or the empty box (the user, 4 Nov): 12 in
-  // from its left edge and bottom, and 12 short of the notch round Try it on (x 24 to 322), or of the box's right edge
-  // when the room is empty; 12 above a bottom button elsewhere (12 + 48), or the screen edge on Options. Try-On covers it.
+  // Where the toast rests: 12 inside whatever holds it (the user, 4 Nov). Across the screen 12 inside the content
+  // column, which is 12 from the sides, so 24 from them (Toast.css); on Events 12 above the bottom bar (128, or 184
+  // with filter chips); in the change room inside the frame or the empty box: 12 in from its left edge and bottom, and
+  // 12 short of the notch round Try it on, or of the box's right edge when the room is empty; 12 above a bottom button
+  // elsewhere (12 + 48), and 24 from the bottom on Options, like the sides. Try-On covers it.
   const at = (path: string) => pathname === path || pathname.startsWith(`${path}/`)
   const onEvents = at('/events')
   const onChangeRoom = at('/change-room')
@@ -38,7 +39,7 @@ export function ToastHost() {
   // With no bottoms, the dashed empty box fills the bottom of the frame (12 inside it): the toast goes 12 inside that.
   const inBox = onChangeRoom && !state.bag.some((id) => productsById[id]?.slot === 'bottom')
   const inset = inBox ? 36 : 24
-  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (inBox ? 152 : 140) : at('/options') ? 12 : 72
+  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (inBox ? 152 : 140) : at('/options') ? 24 : 72
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })

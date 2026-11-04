@@ -124,7 +124,7 @@
   gap: var(--space-8);
   /* The + and label are centred in the card at any size (Figma lifted them 13 above the middle, which pushed them to
      the top of the short cards on short screens). */
-  border-radius: 20px; /* concentric with the frame: 32 - 12 */
+  border-radius: var(--radius-inset);
   color: var(--color-on-surface);
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
@@ -186,7 +186,7 @@
   bottom: 132px;
 }
 
-/* Price chip: 112 × 48 raised pill, 12 inside the frame's edge; 6 above the row line in the top row, 12 inside the
+/* Price chip: 112 × 48 raised box with 20 corners (concentric with the frame), 12 inside the frame's edge; 6 above the row line in the top row, 12 inside the
    notch round Try it on (72 from the bottom) in the bottom row. */
 .cr-chip {
   position: absolute;
@@ -198,7 +198,7 @@
   width: 112px;
   height: var(--control-height);
   padding-left: var(--space-8);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-inset);
   background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
   box-shadow: var(--shadow-raised);
   color: var(--color-on-surface);
@@ -266,7 +266,7 @@
   display: block;
   color: var(--color-on-surface);
   text-align: center;
-  border-radius: 20px; /* inside the frame: 32 - 12 */
+  border-radius: var(--radius-inset);
   pointer-events: auto;
 }
 

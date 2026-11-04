@@ -28,6 +28,9 @@
   /* Shape */
   --radius-card: var(--radius-lg);
   --radius-pill: var(--radius-full);
+  /* Corners 12 inside the change room frame (32 - 12), so they run concentric with it: add cards, empty boxes, the
+     price chip and the toast (the user, 4 Nov). */
+  --radius-inset: 20px;
 
   /* Elevation */
   --shadow-card: 0 8px 12px #eae9e9;
