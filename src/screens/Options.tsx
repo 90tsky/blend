@@ -59,7 +59,7 @@ export function Options() {
       {/* The menu button opens Options, so it's hidden here. */}
       <TopBar menu={false} />
       <div className="options__head">
-        <Header title="Options" subtitle="Name, gender, sizes, currency, appearance and account." onLead={back} />
+        <Header title="Options" subtitle="Name, gender, sizes, currency, appearance, motion and account." onLead={back} />
       </div>
 
       <div className="options__body">
@@ -150,6 +150,28 @@ export function Options() {
             <Segmented labelledBy="options-appearance" options={THEMES} value={state.theme} onChange={(theme) => dispatch({ type: 'setTheme', theme })} />
             <p className="setting__hint">
               <b>Light</b> or <b>dark</b>, whichever is easier on your eyes.
+            </p>
+          </div>
+          <div className="setting">
+            {/* The label is the switch's name; clicking it flips the switch too. */}
+            <div className="setting__row">
+              <label className="setting__label" htmlFor="options-motion">
+                Reduce motion
+              </label>
+              <button
+                id="options-motion"
+                type="button"
+                role="switch"
+                className="switch"
+                aria-checked={state.reduceMotion}
+                aria-describedby="options-motion-hint"
+                onClick={() => dispatch({ type: 'setReduceMotion', on: !state.reduceMotion })}
+              >
+                <span className="switch__knob" aria-hidden="true" />
+              </button>
+            </div>
+            <p className="setting__hint" id="options-motion-hint">
+              Turns off sliding and fading.
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotionConfig } from 'motion/react'
 import { Link } from 'react-router'
 import type { Product, Side } from '../data/products'
 import { formatPrice } from '../lib/format'
@@ -41,7 +41,7 @@ type AddToggleProps = { added: boolean; name: string; onToggle: () => void }
 // Figma add-toggle (325:7407): a black + circle that morphs into a light ✓ with an outline (0.2s ease-out), and back.
 // It follows the change room, so Undo and removals elsewhere animate it too. A 48 tap area round the 24 circle.
 export function AddToggle({ added, name, onToggle }: AddToggleProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionConfig()
   const lines = added ? CHECK : PLUS
   return (
     <button

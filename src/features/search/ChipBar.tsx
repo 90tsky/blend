@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotionConfig } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useStore, type Filter } from '../../state/store'
@@ -36,12 +36,13 @@ export function ChipBar() {
     return () => window.clearTimeout(t)
   }, [result, filters.length])
 
-  // A new chip goes on the end: scroll it into view.
+  // A new chip goes on the end: scroll it into view (at once with Reduce motion).
+  const reduced = useReducedMotionConfig()
   useEffect(() => {
     const el = scrollRef.current
-    if (el && filters.length > shown.current) el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' })
+    if (el && filters.length > shown.current) el.scrollTo({ left: el.scrollWidth, behavior: reduced ? 'auto' : 'smooth' })
     shown.current = filters.length
-  }, [filters.length])
+  }, [filters.length, reduced])
 
   if (filters.length === 0) return null
 

@@ -28,13 +28,14 @@ export function ToastHost() {
   }, [toast, paused, dispatch])
 
   // Where the pill rests (Figma toast instances): 12 above the bottom bar on Events (128, or 184 with filter chips);
-  // in the change room level with Try it on (on the bar's top edge) and 322 wide beside it, full width when the room is
-  // empty; 12 above a bottom button elsewhere (12 + 48), or the screen edge on Options. Try-On covers it.
+  // in the change room inside the frame (the user's painted layout, 4 Nov): 12 in from its left edge and bottom and 12
+  // short of the notch round Try it on (x 24 to 322), full width on the bar's edge when the room is empty; 12 above a
+  // bottom button elsewhere (12 + 48), or the screen edge on Options. Try-On covers it.
   const at = (path: string) => pathname === path || pathname.startsWith(`${path}/`)
   const onEvents = at('/events')
   const onChangeRoom = at('/change-room')
-  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? 128 : at('/options') ? 12 : 72
   const besideTryOn = onChangeRoom && state.bag.length > 0
+  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (besideTryOn ? 140 : 128) : at('/options') ? 12 : 72
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })
@@ -44,7 +45,7 @@ export function ToastHost() {
       className="toast-region"
       role="status"
       aria-live="polite"
-      style={{ '--toast-bottom': `${bottom}px`, '--toast-right': besideTryOn ? '96px' : undefined } as CSSProperties}
+      style={{ '--toast-bottom': `${bottom}px`, '--toast-left': besideTryOn ? '24px' : undefined, '--toast-right': besideTryOn ? '108px' : undefined } as CSSProperties}
     >
       <AnimatePresence>
         {toast && !covered && (

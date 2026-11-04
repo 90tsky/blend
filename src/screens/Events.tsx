@@ -1,49 +1,41 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
-import { Link, Outlet, useNavigationType } from 'react-router'
+import { useLayoutEffect } from 'react'
+import { Link, Outlet, useLocation } from 'react-router'
 import { EventBanner } from '../components/EventBanner'
 import { ProductCard } from '../components/ProductCard'
+import { usePane } from '../components/TabScreens'
 import { events as allEvents } from '../data/events'
 import { productsById } from '../data/products'
 import { useFilteredEvents, type FilteredEvent } from '../features/search/filtering'
 import { useStore, type Filter } from '../state/store'
-import { TopBar } from '../ui/primitives'
 import './Events.css'
 
-// Where the shopper was in the list, so Back from a piece returns to the same spot.
-let savedScrollY = 0
+// The filters the list was last shown with. Module scope, so a change made away from Events (EVENTS clears them,
+// "+ Add a top" sets Tops) still counts when it comes back.
+let shownFilters = ''
 
 // Figma Events (320:7350): one list, grouped by event. Each banner sticks while its section scrolls; the first one
-// runs under the fixed top bar. Filters from search narrow it in place; the search sheet opens over it (<Outlet />).
+// runs under the fixed top bar (MainLayout's). Filters from search narrow it in place; the search sheet opens over it
+// (<Outlet />). Its place in the list is kept by TabScreens, across tab switches and Back from a piece.
 export function Events() {
   const { state } = useStore()
   const { events, isFiltered } = useFilteredEvents()
-  const navigationType = useNavigationType()
+  const pane = usePane()
+  // Sliding out after Back from search, it leaves the sheet behind.
+  const active = useLocation().pathname.startsWith('/events')
   const noResults = isFiltered && events.length === 0
   const sections: FilteredEvent[] = noResults ? allEvents.map((event) => ({ event, productIds: event.productIds })) : events
 
+  // New filters show their pieces from the top (before the first frame, also while Events is still sliding in).
+  const filters = state.filters.map((f) => `${f.kind}:${f.value}`).join('|')
   useLayoutEffect(() => {
-    if (navigationType === 'POP') window.scrollTo(0, savedScrollY)
-    const onScroll = () => {
-      savedScrollY = window.scrollY
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-    // Only when Events opens: later filter changes are handled below.
-  }, [])
-
-  // New filters show their pieces from the top.
-  const shownFilters = useRef(state.filters)
-  useEffect(() => {
-    if (shownFilters.current === state.filters) return
-    shownFilters.current = state.filters
-    window.scrollTo(0, 0)
-  }, [state.filters])
+    if (!active || filters === shownFilters) return
+    shownFilters = filters
+    pane.toTop()
+  }, [active, filters, pane])
 
   return (
     <main className={`screen events${state.filters.length > 0 ? ' events--filtered' : ''}`}>
       <h1 className="visually-hidden">Events</h1>
-      {/* Over a photo the logo turns white on a soft shade; a message at the top keeps the plain bar. */}
-      <TopBar variant={noResults ? 'plain' : 'overlay'} />
 
       {noResults && <NoResults filters={state.filters} />}
 
@@ -58,7 +50,7 @@ export function Events() {
         </section>
       ))}
 
-      <Outlet />
+      {active && <Outlet />}
     </main>
   )
 }

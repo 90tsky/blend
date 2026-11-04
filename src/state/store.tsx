@@ -29,6 +29,7 @@ export type State = {
   gender: Gender
   currency: Currency
   theme: Theme
+  reduceMotion: boolean // Options › Reduce motion: no animations at all (main.tsx)
   notify: string[] // `${productId}:${size}` the shopper wants to hear about
   welcomed: boolean // seen the Welcome screen once
 }
@@ -51,12 +52,14 @@ export type Action =
   | { type: 'setGender'; gender: Gender }
   | { type: 'setCurrency'; currency: Currency }
   | { type: 'setTheme'; theme: Theme }
+  | { type: 'setReduceMotion'; on: boolean }
   | { type: 'toggleNotify'; key: string }
   | { type: 'setWelcomed' }
 
 const STORAGE_KEY = 'blend:v2'
 
-// First visit: the recent searches the Figma search sheet shows, sizes on M, EU sizes, light.
+// First visit: the recent searches the Figma search sheet shows, sizes on M, EU sizes, light, motion on (the device's
+// own reduce-motion setting still applies).
 const initialState: State = {
   bag: [],
   current: { top: null, bottom: null },
@@ -69,12 +72,13 @@ const initialState: State = {
   gender: null,
   currency: 'EUR',
   theme: 'light',
+  reduceMotion: false,
   notify: [],
   welcomed: false,
 }
 
 // Saved between visits (the rest resets on reload).
-type Saved = Pick<State, 'bag' | 'current' | 'recentSearches' | 'sizeSystem' | 'sizes' | 'gender' | 'currency' | 'theme' | 'notify' | 'welcomed'>
+type Saved = Pick<State, 'bag' | 'current' | 'recentSearches' | 'sizeSystem' | 'sizes' | 'gender' | 'currency' | 'theme' | 'reduceMotion' | 'notify' | 'welcomed'>
 
 function load(): State {
   try {
@@ -154,6 +158,8 @@ export function reducer(state: State, action: Action): State {
       return { ...state, currency: action.currency }
     case 'setTheme':
       return { ...state, theme: action.theme }
+    case 'setReduceMotion':
+      return { ...state, reduceMotion: action.on }
     case 'toggleNotify':
       return { ...state, notify: state.notify.includes(action.key) ? state.notify.filter((k) => k !== action.key) : [...state.notify, action.key] }
     case 'setWelcomed':
@@ -176,6 +182,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       gender: state.gender,
       currency: state.currency,
       theme: state.theme,
+      reduceMotion: state.reduceMotion,
       notify: state.notify,
       welcomed: state.welcomed,
     }
@@ -184,7 +191,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } catch {
       // Storage can be unavailable (private mode); the app still works for this visit.
     }
-  }, [state.bag, state.current, state.recentSearches, state.sizeSystem, state.sizes, state.gender, state.currency, state.theme, state.notify, state.welcomed])
+  }, [state.bag, state.current, state.recentSearches, state.sizeSystem, state.sizes, state.gender, state.currency, state.theme, state.reduceMotion, state.notify, state.welcomed])
 
   // Light or dark comes from Options › Appearance; the Figma tokens switch on data-theme.
   useEffect(() => {

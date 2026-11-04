@@ -1,5 +1,5 @@
-/* Toast: a 48 tall black pill, 406 wide at x 12 (322 beside Try it on: --toast-right), resting at --toast-bottom.
-   Two-line messages grow upwards. */
+/* Toast: a 48 tall black pill, 406 wide at x 12 (inside the change room's frame: --toast-left / --toast-right),
+   resting at --toast-bottom. */
 .toast-region {
   position: fixed;
   bottom: calc(var(--toast-bottom) + env(safe-area-inset-bottom));
@@ -16,7 +16,7 @@
   position: absolute;
   right: var(--toast-right, var(--layout-margin));
   bottom: 0;
-  left: var(--layout-margin);
+  left: var(--toast-left, var(--layout-margin));
   display: flex;
   align-items: center;
   min-height: var(--control-height);
@@ -29,24 +29,19 @@
   pointer-events: auto;
 }
 
+/* A long message ("Removed Indigo Denim Cargo Trousers") takes two lines inside the same 48 pill: 18 lines and 6 above
+   and below, so the pill never grows into the margin above it. */
 .toast__message {
+  display: -webkit-box;
   flex: 1;
   min-width: 0;
   margin: 0;
+  padding: 6px 0;
   overflow: hidden;
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
-  line-height: normal;
+  line-height: 18px;
   text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* "Removed <piece>" may take two lines. */
-.toast--removed .toast__message {
-  display: -webkit-box;
-  padding: var(--space-8) 0;
-  white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }

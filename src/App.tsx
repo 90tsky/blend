@@ -1,6 +1,9 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router'
+import { Navigate, Outlet, Route, Routes, useLocation, useOutlet } from 'react-router'
 import { BottomBar } from './components/BottomBar'
+import type { Tab } from './components/NavSwitch'
+import { TabScreens } from './components/TabScreens'
 import { ToastHost } from './components/Toast'
+import { useFilteredEvents } from './features/search/filtering'
 import { ChangeRoom } from './screens/ChangeRoom'
 import { Checkout } from './screens/Checkout'
 import { ComingSoon } from './screens/ComingSoon'
@@ -11,6 +14,7 @@ import { Product } from './screens/Product'
 import { SearchSheet } from './screens/SearchSheet'
 import { TryOn } from './screens/TryOn'
 import { Welcome } from './screens/Welcome'
+import { TopBar } from './ui/primitives'
 
 // The phone-width column, with one toast host for every screen.
 function AppShell() {
@@ -22,14 +26,26 @@ function AppShell() {
   )
 }
 
-// Events and Change room share the bottom bar, so it stays put (and its knob slides) when you switch tabs.
+// Events and Change room share the top and bottom bars, so they stay put (and the knob slides) while the screens push
+// past under them.
 function MainLayout() {
+  const outlet = useOutlet()
+  const tab: Tab = useLocation().pathname.startsWith('/change-room') ? 'change-room' : 'events'
   return (
     <>
-      <Outlet />
+      <MainTopBar tab={tab} />
+      <TabScreens tab={tab} screen={outlet} />
       <BottomBar />
     </>
   )
+}
+
+// Over the Events photos the bar is a soft shade; the change room, and a no-results message at the top of Events, keep
+// the plain bar. It cross-fades as the screens push.
+function MainTopBar({ tab }: { tab: Tab }) {
+  const { events, isFiltered } = useFilteredEvents()
+  const plain = tab === 'change-room' || (isFiltered && events.length === 0)
+  return <TopBar variant={plain ? 'plain' : 'overlay'} />
 }
 
 export default function App() {

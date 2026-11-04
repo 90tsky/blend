@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
+import { animate, motion, useMotionValue, useReducedMotionConfig, useTransform } from 'motion/react'
 import type { Slot } from '../../data/products'
 import { boxPath, PlusMark } from './Box'
 import { SLIDE } from './motion'
@@ -165,7 +165,7 @@ type MorphProps = {
 // One outline + circle (+ words) that moves between shapes. Everything is drawn from motion values every frame, so the
 // dashes, corners and circle keep their size while it stretches.
 function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: MorphProps) {
-  const reduced = useReducedMotion()
+  const reduced = useReducedMotionConfig()
   const start = from ?? shape
   const x = useMotionValue(start.box.x)
   const y = useMotionValue(start.box.y)

@@ -95,12 +95,23 @@ input {
   padding-top: 70px;
 }
 
+/* No CSS motion when the device asks for less, or with Options › Reduce motion on (data-reduce-motion, main.tsx).
+   None rather than a 0.01ms duration: that turned every style change into a transition whose first frame still showed
+   the old value (a blank frame when the tab screens switch at once). Nothing listens for transitionend. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
+    transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+:root[data-reduce-motion] *,
+:root[data-reduce-motion] *::before,
+:root[data-reduce-motion] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }

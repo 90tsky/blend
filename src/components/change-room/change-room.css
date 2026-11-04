@@ -1,5 +1,7 @@
-/* Change room (Figma 479:9125). The stage runs from the top bar (70) to the bottom bar; its two rows share the
-   height 290 : 444 like the Figma stage (734 on a 932 screen). Positions are the Figma ones, 12 from the edges. */
+/* Change room (Figma 479:9125, rearranged to the user's painted layout, 4 Nov). The stage runs from the top bar (70)
+   to the bottom bar; its two rows share the height 290 : 444 like the Figma stage. ONE frame (Frame.tsx) sits behind
+   both rows, 12 from the screen edges and notched round Try it on at the bottom right; what's inside it sits 12 in from
+   the frame (and from the notch). The toast rests inside the frame too, beside the notch. */
 
 .change-room {
   display: flex;
@@ -16,6 +18,32 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.cr-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The frame (Frame.tsx): drawn from script over the whole area. */
+.cr-frame-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cr-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+}
+
+.cr-frame path {
+  fill: var(--color-garment-backdrop);
 }
 
 .cr-row {
@@ -80,39 +108,38 @@
   -webkit-user-drag: none;
 }
 
-/* "Add a top / bottom" card, in the peek spot after the last piece: 112 wide, 12 from the top and the edge,
-   ending 12 above the chip (or above the "3 of 7" line). */
+/* "Add a top / bottom" card, in the peek spot after the last piece: 112 wide, 12 inside the frame's top and edge,
+   ending 12 above the chip (or above the "3 of 7" line). The same in both rows. */
 .cr-add {
   position: absolute;
   top: var(--space-12);
-  right: var(--layout-margin);
+  right: calc(2 * var(--layout-margin));
+  bottom: 72px;
   width: 112px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-8);
-  padding-bottom: 26px; /* lifts the + and label 13 above the middle, as in Figma */
+  /* The + and label are centred in the card at any size (Figma lifted them 13 above the middle, which pushed them to
+     the top of the short cards on short screens). */
   border-radius: var(--radius-2xl);
   color: var(--color-on-surface);
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
 }
 
-.cr-row--top .cr-add {
-  bottom: 72px;
-}
-
-.cr-row--top.has-count .cr-add {
+.cr-row.has-count .cr-add {
   bottom: 100px;
 }
 
+/* The bottom row's side column stands on the notch: chip 12 above it (72), so the card ends at 132 (160 with "3 of 7"). */
 .cr-row--bottom .cr-add {
-  bottom: 120px;
+  bottom: 132px;
 }
 
 .cr-row--bottom.has-count .cr-add {
-  bottom: 148px;
+  bottom: 160px;
 }
 
 .cr-add__circle {
@@ -141,7 +168,8 @@
 /* "3 of 7": 12 above the chip, centred over it. */
 .cr-count {
   position: absolute;
-  right: var(--layout-margin);
+  right: calc(2 * var(--layout-margin));
+  bottom: 72px;
   width: 112px;
   margin: 0;
   text-align: center;
@@ -152,18 +180,16 @@
   pointer-events: none;
 }
 
-.cr-row--top .cr-count {
-  bottom: 72px;
-}
-
 .cr-row--bottom .cr-count {
-  bottom: 120px;
+  bottom: 132px;
 }
 
-/* Price chip: 112 × 48 raised pill, 12 from the edge; the bottom one sits 12 above Try it on. */
+/* Price chip: 112 × 48 raised pill, 12 inside the frame's edge; 12 above the row's bottom in the top row, 12 above
+   the notch round Try it on (72) in the bottom row. */
 .cr-chip {
   position: absolute;
-  right: var(--layout-margin);
+  right: calc(2 * var(--layout-margin));
+  bottom: var(--space-12);
   z-index: 3;
   display: flex;
   align-items: center;
@@ -176,12 +202,8 @@
   color: var(--color-on-surface);
 }
 
-.cr-row--top .cr-chip {
-  bottom: var(--space-12);
-}
-
 .cr-row--bottom .cr-chip {
-  bottom: 60px;
+  bottom: 72px;
 }
 
 .cr-chip__price {
@@ -215,7 +237,7 @@
   border-radius: var(--radius-full);
 }
 
-/* Try it on: bottom right of the stage, inside the plate's notch. It sits just above the bottom bar (20), so its
+/* Try it on: its own row under the frame, at the right. It sits just above the bottom bar (20), so its
    shadow falls over the bar as in Figma instead of being cut off by it; toasts and sheets stay above (30+). */
 .cr-stage .cr-try-on {
   position: absolute;

@@ -77,11 +77,35 @@
   height: 70px;
   padding: 0 var(--space-12);
   transform: translateX(-50%);
+}
+
+/* The plain fill (::before) and the shade over a photo (::after) are layers behind the logo and menu, so switching tabs
+   cross-fades them in step with the push (0.35s ease-in-out) while a theme change still repaints at once. */
+.top-bar::before,
+.top-bar::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transition: opacity 0.35s ease-in-out;
+  pointer-events: none;
+  content: '';
+}
+
+.top-bar::before {
   background: var(--color-background);
 }
 
-.top-bar--overlay {
+.top-bar::after {
   background: linear-gradient(to bottom, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0));
+  opacity: 0;
+}
+
+.top-bar--overlay::before {
+  opacity: 0;
+}
+
+.top-bar--overlay::after {
+  opacity: 1;
 }
 
 /* The wordmark (Logo.tsx): primary letters with a 1px on-primary outline and a soft shadow, so dark mode flips both

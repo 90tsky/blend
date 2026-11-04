@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { AnimatePresence, animate, motion, useMotionValue, usePresence, useReducedMotion, type PanInfo } from 'motion/react'
+import { AnimatePresence, animate, motion, useMotionValue, usePresence, useReducedMotionConfig, type PanInfo } from 'motion/react'
 import type { Product, Side, Slot } from '../../data/products'
 import { useBagActions, useStore } from '../../state/store'
 import { Box, PlusMark } from './Box'
@@ -13,17 +13,19 @@ type Rect = { x: number; y: number; w: number; h: number }
 // Bottoms share one waist width: the width a pair of trousers takes when it fills the height (× the piece's `fit`).
 const WAIST = 0.36
 
-// Where the current piece and the next-piece peek sit: the Figma rows (430 × 290 and 430 × 444), scaled to the row's height.
-// On short screens the peek stops 12 above the "3 of 7" line (which sits 12 above the chip).
+// Where the current piece and the next-piece peek sit: the Figma rows (430 × 290 and 430 × 444), scaled to the row's
+// height, inside the frame (12 in from the screen, everything else 12 in from the frame). Tops and bottoms share one
+// centre line (x 153 on a 430 screen). On short screens the peek stops 12 above the "3 of 7" line (12 above the chip).
 function boxes(slot: Slot, W: number, H: number): { current: Rect; peek: Rect } {
   if (slot === 'top') {
     const k = H / 290
     const y = 57 * k
-    return { current: { x: 12, y: 23 * k, w: W - 148, h: H - 23 * k }, peek: { x: W - 129.5, y, w: 123, h: Math.min(116 * k, H - 100 - y) } }
+    return { current: { x: 24, y: 23 * k, w: W - 172, h: H - 23 * k }, peek: { x: W - 141.5, y, w: 123, h: Math.min(116 * k, H - 100 - y) } }
   }
   const k = H / 444
   const y = 61 * k
-  return { current: { x: 0, y: 8 * k, w: W - 124, h: H - 15 * k }, peek: { x: W - 144.5, y, w: 153, h: Math.min(215 * k, H - 148 - y) } }
+  // The bottom row's side column stands on the notch round Try it on: the peek stops 160 above the row's bottom.
+  return { current: { x: 12, y: 8 * k, w: W - 148, h: H - 8 * k - 12 }, peek: { x: W - 156.5, y, w: 153, h: Math.min(215 * k, H - 160 - y) } }
 }
 
 // The picture's rect inside a box: tops hang down to the bottom edge (so they meet the bottoms), bottoms hang from the waist.
@@ -79,7 +81,7 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
   const { state, dispatch } = useStore()
   const { remove } = useBagActions()
   const navigate = useNavigate()
-  const reduced = useReducedMotion()
+  const reduced = useReducedMotionConfig()
   const dragX = useMotionValue(0)
   const panned = useRef(false)
   const [isPresent, safeToRemove] = usePresence()

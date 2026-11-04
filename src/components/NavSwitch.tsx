@@ -7,6 +7,9 @@ import './NavSwitch.css'
 
 export type Tab = 'events' | 'change-room'
 
+// The knob's slide, shared with the screens' push (TabScreens.tsx) so they move as one.
+export const TAB_SWITCH = { duration: 0.35, ease: 'easeInOut' } as const
+
 // EVENTS / CHANGE ROOM switch (Figma nav-switch 731:3705, rebuilt 2 Nov): no track, a raised white knob
 // filling the current half (203 × 48 on the 406 switch) slides between the tabs in 0.35s ease-in-out.
 // The split badge sits 12 from the knob's edge on the CHANGE ROOM side.
@@ -32,7 +35,7 @@ export function NavSwitch({ tab }: { tab: Tab }) {
         aria-hidden="true"
         initial={false}
         animate={{ x: tab === 'change-room' ? '100%' : '0%' }}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
+        transition={TAB_SWITCH}
       />
       <Link to="/events" className="nav-switch__tab" aria-current={tab === 'events' ? 'page' : undefined} onClick={toEvents}>
         <span className="nav-switch__area">

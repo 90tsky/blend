@@ -1,0 +1,26 @@
+/* The push between Events and the change room (TabScreens.tsx). At rest the screen in view sits in the page. While they
+   slide, a fixed stage the size of the column and the screen holds both, under the fixed top and bottom bars (20). */
+.tabs--pushing {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100dvh;
+  max-width: 430px;
+  margin-inline: auto;
+  /* Clip, not hidden: on a wide window the screen sliding in stays inside the column, and nothing can scroll the stage
+     sideways to it. */
+  overflow: clip;
+}
+
+/* A screen lifted out of the page: as tall as the screen and scrolled to where its page was. Hidden, not clip, so the
+   pane is the scroller its sticky banners stick to. */
+.tabs__pane--frozen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  will-change: transform;
+}

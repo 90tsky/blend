@@ -107,6 +107,47 @@
   filter: none;
 }
 
+/* A setting with its control beside the label (Reduce motion). */
+.setting__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+/* On/off switch, iOS-style in the house look: the sunken track of the chip bar (80 × 48) with the tab switch's raised
+   white knob (40, inset 4), which slides over in 0.35s ease-in-out as the track fills. */
+.switch {
+  position: relative;
+  flex: none;
+  width: 80px;
+  height: var(--control-height);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  box-shadow: var(--shadow-track);
+  transition: background-color 0.35s ease-in-out;
+}
+
+.switch[aria-checked='true'] {
+  background: var(--color-active);
+}
+
+.switch__knob {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  transition: transform 0.35s ease-in-out;
+}
+
+.switch[aria-checked='true'] .switch__knob {
+  transform: translateX(32px);
+}
+
 /* Account buttons, 24 apart. */
 .options__account {
   display: flex;

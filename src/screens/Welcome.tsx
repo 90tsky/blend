@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router'
-import { animate, motion, useReducedMotion } from 'motion/react'
+import { animate, motion, useReducedMotionConfig } from 'motion/react'
 import { useStore } from '../state/store'
 import { Logo } from '../ui/Logo'
 import { Cta } from '../ui/primitives'
@@ -14,7 +14,7 @@ const GLIDE = { duration: 0.7, ease: [0.65, 0, 0.35, 1] as [number, number, numb
 export function Welcome() {
   const { state, dispatch } = useStore()
   const navigate = useNavigate()
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionConfig()
   // Read on arrival only, so leaving (which sets `welcomed`) doesn't redirect half-way.
   const [arrivedWelcomed] = useState(state.welcomed)
   // With reduced motion the logo simply starts in the top bar.
