@@ -34,7 +34,7 @@ export function ChangeRoom() {
       <div className="cr-stage">
         {/* The framed area: both carousels (or their empty boxes); Try it on sits in the frame's notch. */}
         <div className="cr-area">
-          <Frame top={tops.length > 0} bottom={bottoms.length > 0} />
+          <Frame notch={items.length > 0} />
           <SlotRow slot="top" items={tops} currentId={state.current.top} side={state.side} onAdd={() => openEvents('top')} />
           <SlotRow slot="bottom" items={bottoms} currentId={state.current.bottom} side={state.side} onAdd={() => openEvents('bottom')} />
           <EmptyBoxes tops={tops.length} bottoms={bottoms.length} onOpen={openEvents} />

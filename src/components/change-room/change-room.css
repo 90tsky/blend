@@ -109,12 +109,13 @@
 }
 
 /* "Add a top / bottom" card, in the peek spot after the last piece: 112 wide, 12 inside the frame's top and edge,
-   ending 12 above the chip (or above the "3 of 7" line). The same in both rows. */
+   ending 12 above the chip (or above the "3 of 7" line). Between the rows everything keeps 12 apart: the top row's
+   chip ends 6 above the row line and the bottom row's card starts 6 below it, like the empty boxes. */
 .cr-add {
   position: absolute;
   top: var(--space-12);
   right: calc(2 * var(--layout-margin));
-  bottom: 72px;
+  bottom: 66px;
   width: 112px;
   display: flex;
   flex-direction: column;
@@ -123,18 +124,19 @@
   gap: var(--space-8);
   /* The + and label are centred in the card at any size (Figma lifted them 13 above the middle, which pushed them to
      the top of the short cards on short screens). */
-  border-radius: var(--radius-2xl);
+  border-radius: 20px; /* concentric with the frame: 32 - 12 */
   color: var(--color-on-surface);
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
 }
 
 .cr-row.has-count .cr-add {
-  bottom: 100px;
+  bottom: 94px;
 }
 
 /* The bottom row's side column stands on the notch: chip 12 above it (72), so the card ends at 132 (160 with "3 of 7"). */
 .cr-row--bottom .cr-add {
+  top: 6px;
   bottom: 132px;
 }
 
@@ -169,7 +171,7 @@
 .cr-count {
   position: absolute;
   right: calc(2 * var(--layout-margin));
-  bottom: 72px;
+  bottom: 66px;
   width: 112px;
   margin: 0;
   text-align: center;
@@ -184,12 +186,12 @@
   bottom: 132px;
 }
 
-/* Price chip: 112 × 48 raised pill, 12 inside the frame's edge; 12 above the row's bottom in the top row, 12 above
-   the notch round Try it on (72) in the bottom row. */
+/* Price chip: 112 × 48 raised pill, 12 inside the frame's edge; 6 above the row line in the top row, 12 inside the
+   notch round Try it on (72 from the bottom) in the bottom row. */
 .cr-chip {
   position: absolute;
   right: calc(2 * var(--layout-margin));
-  bottom: var(--space-12);
+  bottom: 6px;
   z-index: 3;
   display: flex;
   align-items: center;
@@ -264,7 +266,7 @@
   display: block;
   color: var(--color-on-surface);
   text-align: center;
-  border-radius: var(--radius-2xl);
+  border-radius: 20px; /* inside the frame: 32 - 12 */
   pointer-events: auto;
 }
 

@@ -35,7 +35,10 @@ export function ToastHost() {
   const onEvents = at('/events')
   const onChangeRoom = at('/change-room')
   const besideTryOn = onChangeRoom && state.bag.length > 0
-  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? 140 : at('/options') ? 12 : 72
+  // With no bottoms, the dashed empty box fills the bottom of the frame (12 inside it): the toast goes 12 inside that.
+  const inBox = onChangeRoom && !state.bag.some((id) => productsById[id]?.slot === 'bottom')
+  const inset = inBox ? 36 : 24
+  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (inBox ? 152 : 140) : at('/options') ? 12 : 72
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })
@@ -48,8 +51,9 @@ export function ToastHost() {
       style={
         {
           '--toast-bottom': `${bottom}px`,
-          '--toast-left': onChangeRoom ? '24px' : undefined,
-          '--toast-right': onChangeRoom ? (besideTryOn ? '108px' : '24px') : undefined,
+          '--toast-left': onChangeRoom ? `${inset}px` : undefined,
+          // Beside Try it on: 12 short of the notch (the frame's at 96 from the right, the box's at 108).
+          '--toast-right': onChangeRoom ? (besideTryOn ? `${inset + 84}px` : `${inset}px`) : undefined,
         } as CSSProperties
       }
     >

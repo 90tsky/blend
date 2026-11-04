@@ -20,7 +20,7 @@ function boxes(slot: Slot, W: number, H: number): { current: Rect; peek: Rect } 
   if (slot === 'top') {
     const k = H / 290
     const y = 57 * k
-    return { current: { x: 24, y: 23 * k, w: W - 172, h: H - 23 * k }, peek: { x: W - 141.5, y, w: 123, h: Math.min(116 * k, H - 100 - y) } }
+    return { current: { x: 24, y: 23 * k, w: W - 172, h: H - 23 * k }, peek: { x: W - 141.5, y, w: 123, h: Math.min(116 * k, H - 94 - y) } }
   }
   const k = H / 444
   const y = 61 * k

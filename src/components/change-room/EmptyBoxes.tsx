@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { animate, motion, useMotionValue, useReducedMotionConfig, useTransform } from 'motion/react'
 import type { Slot } from '../../data/products'
-import { boxPath, PlusMark } from './Box'
+import { boxPath, INNER_R, PlusMark } from './Box'
 import { SLIDE } from './motion'
 import { useSize } from './useSize'
 
@@ -30,16 +30,19 @@ const later = (fn: () => void) => window.setTimeout(fn, 80)
 
 const modeOf = (tops: number, bottoms: number): Kind | null => (tops === 0 && bottoms === 0 ? 'all' : tops === 0 ? 'top' : bottoms === 0 ? 'bottom' : null)
 
-// "No tops yet" fills the top row (4 short of the bottoms), "No bottoms yet" the bottom row (4 below the tops, notched
-// round Try it on), "Your change room is empty" the whole stage. The rows split the stage 290 : 444, as in Figma.
+// The boxes sit inside the frame, 12 in from it (x 24 on a 430 screen) and 12 apart: "No tops yet" fills the top row,
+// "No bottoms yet" the bottom row (notched round Try it on, the frame's notch offset 12 in), "Your change room is
+// empty" the whole frame. The rows split the stage 290 : 444, as in Figma.
 function homeShape(kind: Kind, W: number, H: number): Shape {
   const topH = (H * 290) / 734
+  const x = 2 * MARGIN
+  const w = W - 4 * MARGIN
   const box =
     kind === 'top'
-      ? { x: MARGIN, y: 0, w: W - 2 * MARGIN, h: topH - 4 }
+      ? { x, y: MARGIN, w, h: topH - 1.5 * MARGIN }
       : kind === 'bottom'
-        ? { x: MARGIN, y: topH + 4, w: W - 2 * MARGIN, h: H - topH - 4 }
-        : { x: MARGIN, y: 0, w: W - 2 * MARGIN, h: H }
+        ? { x, y: topH + MARGIN / 2, w, h: H - topH - 1.5 * MARGIN }
+        : { x, y: MARGIN, w, h: H - 2 * MARGIN }
   return { box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 - lift(kind) + CIRCLE / 2, d: CIRCLE, notch: kind === 'bottom' ? 1 : 0 }
 }
 
@@ -132,7 +135,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
           shape={main.to ?? homeShape(main.kind, W, H)}
           from={main.from}
           version={main.version}
-          wordsW={W - 2 * MARGIN}
+          wordsW={W - 4 * MARGIN}
           onOpen={() => onOpen(main.kind === 'all' ? undefined : main.kind)}
           onArrive={main.to ? () => later(() => setMain((m) => (m?.key === main.key && m.version === main.version ? null : m))) : undefined}
         />
@@ -144,7 +147,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
             shape={g.to}
             from={g.from}
             version={g.version}
-            wordsW={W - 2 * MARGIN}
+            wordsW={W - 4 * MARGIN}
             onArrive={() => later(() => setGhosts((list) => list.filter((x) => !(x.key === g.key && x.version === g.version))))}
           />
         ))}
@@ -183,8 +186,8 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
   const big = useTransform(d, (v) => (cardD >= CIRCLE ? 1 : Math.min(1, Math.max(0, (v - cardD) / (CIRCLE - cardD)))))
   const small = useTransform(big, (b) => 1 - b)
 
-  const plain = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), false))
-  const notched = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), true))
+  const plain = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), false, INNER_R))
+  const notched = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), true, INNER_R, MARGIN))
   const plainOp = useTransform(notchK, (k) => 1 - k)
   // Children are placed inside the moving box, so their positions are relative to it.
   const circleX = useTransform(() => cx.get() - x.get() - CIRCLE / 2)
