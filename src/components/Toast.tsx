@@ -27,15 +27,15 @@ export function ToastHost() {
     return () => window.clearTimeout(timer)
   }, [toast, paused, dispatch])
 
-  // Where the pill rests (Figma toast instances): 12 above the bottom bar on Events (128, or 184 with filter chips);
-  // in the change room inside the frame (the user's painted layout, 4 Nov): 12 in from its left edge and bottom and 12
-  // short of the notch round Try it on (x 24 to 322), full width on the bar's edge when the room is empty; 12 above a
-  // bottom button elsewhere (12 + 48), or the screen edge on Options. Try-On covers it.
+  // Where the pill rests: 12 inside whatever holds it. On Events 12 above the bottom bar (128, or 184 with filter
+  // chips) and 12 from the screen edges; in the change room inside the frame or the empty box (the user, 4 Nov): 12 in
+  // from its left edge and bottom, and 12 short of the notch round Try it on (x 24 to 322), or of the box's right edge
+  // when the room is empty; 12 above a bottom button elsewhere (12 + 48), or the screen edge on Options. Try-On covers it.
   const at = (path: string) => pathname === path || pathname.startsWith(`${path}/`)
   const onEvents = at('/events')
   const onChangeRoom = at('/change-room')
   const besideTryOn = onChangeRoom && state.bag.length > 0
-  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (besideTryOn ? 140 : 128) : at('/options') ? 12 : 72
+  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? 140 : at('/options') ? 12 : 72
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })
@@ -45,7 +45,13 @@ export function ToastHost() {
       className="toast-region"
       role="status"
       aria-live="polite"
-      style={{ '--toast-bottom': `${bottom}px`, '--toast-left': besideTryOn ? '24px' : undefined, '--toast-right': besideTryOn ? '108px' : undefined } as CSSProperties}
+      style={
+        {
+          '--toast-bottom': `${bottom}px`,
+          '--toast-left': onChangeRoom ? '24px' : undefined,
+          '--toast-right': onChangeRoom ? (besideTryOn ? '108px' : '24px') : undefined,
+        } as CSSProperties
+      }
     >
       <AnimatePresence>
         {toast && !covered && (
