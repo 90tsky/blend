@@ -108,8 +108,13 @@ export function reducer(state: State, action: Action): State {
     case 'add': {
       if (state.bag.includes(action.id)) return state
       const bag = [...state.bag, action.id]
-      // Show what was just added, so the change room reflects the latest pick.
-      return { ...state, bag, current: { ...state.current, [productsById[action.id].slot]: action.id } }
+      // The newest piece waits in the small spot on the right, with the one added before it large (the user, 4 Nov:
+      // people swipe left to the small piece first, see the large one leave to the left, then swipe back, and so learn
+      // the carousel). A slot's first piece is shown large. Try it on still dresses the large pieces.
+      const slot = productsById[action.id].slot
+      const inSlot = bag.filter((id) => productsById[id].slot === slot)
+      const show = inSlot.length > 1 ? inSlot[inSlot.length - 2] : action.id
+      return { ...state, bag, current: { ...state.current, [slot]: show } }
     }
     case 'remove': {
       const slot = productsById[action.id].slot

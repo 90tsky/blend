@@ -15,17 +15,33 @@ const WAIST = 0.36
 
 // Where the current piece and the next-piece peek sit: the Figma rows (430 × 290 and 430 × 444), scaled to the row's
 // height, inside the frame (12 in from the screen, everything else 12 in from the frame). Tops and bottoms share one
-// centre line (x 153 on a 430 screen). On short screens the peek stops 12 above the "3 of 7" line (12 above the chip).
+// centre line (x 153 on a 430 screen). The peeks are centred over the chip column (80 from the right edge).
 function boxes(slot: Slot, W: number, H: number): { current: Rect; peek: Rect } {
+  const peek = (w: number, y: number, h: number) => ({ x: W - 80 - w / 2, y, w, h })
   if (slot === 'top') {
     const k = H / 290
-    const y = 57 * k
-    return { current: { x: 24, y: 23 * k, w: W - 172, h: H - 23 * k }, peek: { x: W - 141.5, y, w: 123, h: Math.min(116 * k, H - 94 - y) } }
+    const s = peekScale((H * 444) / 290) // the rows share the stage 290 : 444
+    // Figma's peek, grown by the bottoms' scale round its middle, kept 12 inside the frame and 12 above "3 of 7".
+    const y0 = 57 * k
+    const h0 = Math.min(116 * k, H - 94 - y0)
+    const h = Math.min(h0 * s, H - 94 - 12)
+    const y = Math.min(Math.max(y0 + (h0 - h) / 2, 12), H - 94 - h)
+    return { current: { x: 24, y: 23 * k, w: W - 172, h: H - 23 * k }, peek: peek(123 * s, y, h) }
   }
   const k = H / 444
-  const y = 61 * k
-  // The bottom row's side column stands on the notch round Try it on: the peek stops 160 above the row's bottom.
-  return { current: { x: 12, y: 8 * k, w: W - 148, h: H - 8 * k - 12 }, peek: { x: W - 156.5, y, w: 153, h: Math.min(215 * k, H - 160 - y) } }
+  const s = peekScale(H)
+  return { current: { x: 12, y: 8 * k, w: W - 148, h: H - 8 * k - 12 }, peek: peek(153 * s, PEEK_TOP, bottomPeek(H) * s) }
+}
+
+// The bottom row's side column stands on the notch round Try it on, so its peek ends 160 above the row's bottom (12
+// above "3 of 7"). Figma's peek starts 61 down a 444 row; it now starts 24 under the top row's price chip (which ends
+// 6 above the row line), not 12, so the chip doesn't read as the price of the trousers under it.
+const PEEK_TOP = 18
+const bottomPeek = (H: number) => Math.min(215 * (H / 444), H - 160 - 61 * (H / 444))
+// The next pieces are larger than in Figma (the user, 4 Nov): the bottoms' peek grows to fill its column, about 1.2× on
+// a phone, and the tops' peek takes the same scale. Kept between 1 and 1.3 on very short or tall windows.
+function peekScale(Hb: number) {
+  return Math.min(Math.max((Hb - 160 - PEEK_TOP) / bottomPeek(Hb), 1), 1.3)
 }
 
 // The picture's rect inside a box: tops hang down to the bottom edge (so they meet the bottoms), bottoms hang from the waist.
