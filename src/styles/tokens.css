@@ -28,8 +28,8 @@
   /* Shape */
   --radius-card: var(--radius-lg);
   --radius-pill: var(--radius-full);
-  /* Corners 12 inside the change room frame (32 - 12), so they run concentric with it: add cards, empty boxes, the
-     price chip and the toast (the user, 4 Nov). */
+  /* Corners 12 inside the change room frame (32 - 12), so they run concentric with it: add cards, empty boxes
+     and the price chip (the user, 4 Nov). The toast sits 24 in, so its corners are 8 (Toast.css). */
   --radius-inset: 20px;
 
   /* Elevation */

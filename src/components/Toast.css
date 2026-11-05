@@ -1,6 +1,6 @@
-/* Toast: a 48 tall black box, 12 inside the content column (24 from the screen sides, the user, 4 Nov) or inside
-   the change room's frame (--toast-left / --toast-right), resting at --toast-bottom. Its corners are what it sits in
-   minus 12: 20 in the frame (32) and elsewhere, 8 in the change room's empty box (20; --toast-radius). */
+/* Toast: a 48 tall black box in one place on every screen (the user, 5 Nov): 24 inside the frame or content edge,
+   so 36 from the screen sides (--toast-right moves it clear of Try it on), resting at --toast-bottom. Its corners are
+   8, the frame's 32 minus those 24, so it runs concentric with the frame and with the dashed empty boxes (20 - 12). */
 .toast-region {
   position: fixed;
   bottom: calc(var(--toast-bottom) + env(safe-area-inset-bottom));
@@ -15,15 +15,15 @@
 
 .toast {
   position: absolute;
-  right: var(--toast-right, calc(2 * var(--layout-margin)));
+  right: var(--toast-right, calc(var(--layout-margin) + 24px));
   bottom: 0;
-  left: var(--toast-left, calc(2 * var(--layout-margin)));
+  left: calc(var(--layout-margin) + 24px);
   display: flex;
   align-items: center;
   min-height: var(--control-height);
   padding-left: var(--space-8);
   overflow: hidden;
-  border-radius: var(--toast-radius, var(--radius-inset));
+  border-radius: var(--radius-sm);
   background: var(--color-primary);
   color: var(--color-on-primary);
   box-shadow: var(--shadow-raised);

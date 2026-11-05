@@ -27,19 +27,15 @@ export function ToastHost() {
     return () => window.clearTimeout(timer)
   }, [toast, paused, dispatch])
 
-  // Where the toast rests: 12 inside whatever holds it (the user, 4 Nov). Across the screen 12 inside the content
-  // column, which is 12 from the sides, so 24 from them (Toast.css); on Events 12 above the bottom bar (128, or 184
-  // with filter chips); in the change room inside the frame or the empty box: 12 in from its left edge and bottom, and
-  // 12 short of the notch round Try it on, or of the box's right edge when the room is empty; 12 above a bottom button
-  // elsewhere (12 + 48), and 24 from the bottom on Options, like the sides. Try-On covers it.
+  // Where the toast rests: one place on every screen (the user, 5 Nov), 24 inside the frame or content edge, whether
+  // or not a dashed empty box is behind it: 36 from the screen sides (Toast.css), 24 above the bottom bar (128, or 184
+  // with filter chips) on Events and in the change room, 24 short of the notch round Try it on, 24 above a bottom
+  // button elsewhere (12 + 48), and 36 from the bottom on Options, like the sides. Try-On covers it.
   const at = (path: string) => pathname === path || pathname.startsWith(`${path}/`)
   const onEvents = at('/events')
   const onChangeRoom = at('/change-room')
   const besideTryOn = onChangeRoom && state.bag.length > 0
-  // With no bottoms, the dashed empty box fills the bottom of the frame (12 inside it): the toast goes 12 inside that.
-  const inBox = onChangeRoom && !state.bag.some((id) => productsById[id]?.slot === 'bottom')
-  const inset = inBox ? 36 : 24
-  const bottom = onEvents ? (state.filters.length > 0 ? 196 : 140) : onChangeRoom ? (inBox ? 152 : 140) : at('/options') ? 24 : 72
+  const bottom = onEvents ? (state.filters.length > 0 ? 208 : 152) : onChangeRoom ? 152 : at('/options') ? 36 : 84
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })
@@ -52,11 +48,8 @@ export function ToastHost() {
       style={
         {
           '--toast-bottom': `${bottom}px`,
-          '--toast-left': onChangeRoom ? `${inset}px` : undefined,
-          // In the empty box (20 corners) the toast's corners are 8, 12 in like everything else.
-          '--toast-radius': inBox ? '8px' : undefined,
-          // Beside Try it on: 12 short of the notch (the frame's at 96 from the right, the box's at 108).
-          '--toast-right': onChangeRoom ? (besideTryOn ? `${inset + 84}px` : `${inset}px`) : undefined,
+          // Beside Try it on: 24 short of the frame's notch (at 96 from the right).
+          '--toast-right': besideTryOn ? '120px' : undefined,
         } as CSSProperties
       }
     >
