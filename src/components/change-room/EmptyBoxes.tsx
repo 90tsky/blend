@@ -1,8 +1,9 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { animate, motion, useMotionValue, useReducedMotionConfig, useTransform } from 'motion/react'
+import { animate, cancelFrame, frame, motion, useMotionValue, useReducedMotionConfig, useTransform, type MotionValue } from 'motion/react'
 import type { Slot } from '../../data/products'
 import { INNER_R, padPath, PlusMark } from './Box'
 import { SLIDE, TRY_ON_OUT } from './motion'
+import { unionPath, type OutlineBox } from './union'
 import { useSize } from './useSize'
 
 type Kind = Slot | 'all'
@@ -80,6 +81,8 @@ function measureCard(layer: HTMLElement, slot: Slot): Shape | null {
 
 type Main = { key: number; kind: Kind; from: Shape | null; to: Shape | null; version: number }
 type Ghost = { key: number; from: Shape; to: Shape; version: number }
+// A box's moving outline, for the shared outline drawn while boxes merge or split (UnionOutline).
+type Live = { x: MotionValue<number>; y: MotionValue<number>; w: MotionValue<number>; h: MotionValue<number>; shift: MotionValue<number> }
 
 // The empty state as ONE dashed box that changes shape (motion Aplus2, as the user put it: the "Add a bottom" card
 // becomes "No bottoms yet", and that box and the other slot's add card both become "Your change room is empty"):
@@ -96,6 +99,9 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
   const [main, setMain] = useState<Main | null>(() => (mode ? { key: 0, kind: mode, from: null, to: null, version: 0 } : null))
   const [ghosts, setGhosts] = useState<Ghost[]>([])
   const was = useRef({ tops, bottoms })
+  const live = useRef(new Map<number, Live>()).current
+  // A copy merging in or splitting off: one outline round all the boxes (UnionOutline) instead of one each.
+  const merging = ghosts.length > 0
 
   useLayoutEffect(() => {
     const prev = was.current
@@ -146,6 +152,9 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
       {W > 0 && main && (
         <MorphBox
           key={main.key}
+          id={main.key}
+          live={live}
+          bare={merging}
           kind={main.to ? undefined : main.kind}
           shape={main.to ?? homeShape(main.kind, W, H)}
           from={main.from}
@@ -160,6 +169,9 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
         ghosts.map((g) => (
           <MorphBox
             key={g.key}
+            id={g.key}
+            live={live}
+            bare
             shape={g.to}
             from={g.from}
             version={g.version}
@@ -168,11 +180,49 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
             onArrive={() => later(() => setGhosts((list) => list.filter((x) => !(x.key === g.key && x.version === g.version))))}
           />
         ))}
+      {/* After the boxes, so they have registered their outlines by the time it first draws. */}
+      {W > 0 && merging && <UnionOutline live={live} ids={[...(main ? [main.key] : []), ...ghosts.map((g) => g.key)]} pad={pad} />}
     </div>
   )
 }
 
+// One dashed line round every box while they merge or split (union.ts): where they overlap there's a single line and
+// the inside corner is rounded, so they melt together, no longer two outlines sliding over each other (the user, 10 Nov).
+// Redrawn every frame from the boxes' motion values; it starts and ends exactly on the boxes' own outlines, which hand
+// over to it and take back.
+function UnionOutline({ live, ids, pad }: { live: Map<number, Live>; ids: number[]; pad: Point }) {
+  const path = useRef<SVGPathElement>(null)
+  const padNow = useRef(pad)
+  padNow.current = pad
+  const key = ids.join(' ')
+  useLayoutEffect(() => {
+    const draw = () => {
+      const boxes: OutlineBox[] = []
+      for (const id of ids) {
+        const v = live.get(id)
+        if (!v) continue
+        const x = v.x.get()
+        const y = v.y.get()
+        boxes.push({ x, y, w: Math.max(v.w.get() - 1, 0), h: Math.max(v.h.get() - 1, 0), pad: { x: padNow.current.x + v.shift.get(), y: padNow.current.y } })
+      }
+      path.current?.setAttribute('d', unionPath(boxes, INNER_R, 36 + MARGIN))
+    }
+    draw()
+    frame.preRender(draw, true)
+    return () => cancelFrame(draw)
+    // The boxes are read from `live` on every frame; only a new set of boxes starts over.
+  }, [key])
+  return (
+    <svg className="cr-empty__outline" aria-hidden="true">
+      <path ref={path} transform="translate(0.5 0.5)" />
+    </svg>
+  )
+}
+
 type MorphProps = {
+  id: number
+  live: Map<number, Live> // where it registers its moving outline for UnionOutline
+  bare?: boolean // UnionOutline draws the outline
   kind?: Kind // the words to show; none on a copy that is merging in or splitting off, or a box shrinking into its card
   shape: Shape
   from?: Shape | null
@@ -185,7 +235,7 @@ type MorphProps = {
 
 // One outline + circle (+ words) that moves between shapes. Everything is drawn from motion values every frame, so the
 // dashes, corners and circle keep their size while it stretches.
-function MorphBox({ kind, shape, from, version, wordsW, pad, onOpen, onArrive }: MorphProps) {
+function MorphBox({ id, live, bare, kind, shape, from, version, wordsW, pad, onOpen, onArrive }: MorphProps) {
   const reduced = useReducedMotionConfig()
   const start = from ?? shape
   const x = useMotionValue(start.box.x)
@@ -222,6 +272,12 @@ function MorphBox({ kind, shape, from, version, wordsW, pad, onOpen, onArrive }:
       36 + MARGIN,
     ),
   )
+  useLayoutEffect(() => {
+    live.set(id, { x, y, w, h, shift })
+    return () => {
+      live.delete(id)
+    }
+  }, [live, id, x, y, w, h, shift])
   // Children are placed inside the moving box, so their positions are relative to it.
   const circleX = useTransform(() => cx.get() - x.get() - CIRCLE / 2)
   const circleY = useTransform(() => cy.get() - y.get() - CIRCLE / 2)
@@ -291,9 +347,11 @@ function MorphBox({ kind, shape, from, version, wordsW, pad, onOpen, onArrive }:
 
   const content = (
     <>
-      <svg className="cr-empty__outline" aria-hidden="true">
-        <motion.path d={outline} transform="translate(0.5 0.5)" />
-      </svg>
+      {!bare && (
+        <svg className="cr-empty__outline" aria-hidden="true">
+          <motion.path d={outline} transform="translate(0.5 0.5)" />
+        </svg>
+      )}
       <motion.span className="cr-empty__circle" aria-hidden="true" style={{ x: circleX, y: circleY, scale: circleS }}>
         <motion.span className="cr-empty__plus" style={{ opacity: big }}>
           <PlusMark size={32} weight={2} />

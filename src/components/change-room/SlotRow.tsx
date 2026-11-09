@@ -63,6 +63,23 @@ function place(p: Product, side: Side, box: Rect, peek: boolean): Rect {
   return { x: box.x + (box.w - w) / 2, y, w, h }
 }
 
+// A removed current piece turns away (turnAway below) in 0.7s; the rest of the ring starts moving 0.2s in. Pieces past
+// the edges are turned 30° away, round their middle, seen from 800px.
+const TURN_TIME = 0.7
+const TURN_DELAY = 0.2
+const TILT = 30
+
+// A piece's transform to show it in `box` instead of `from` (its own box). Pieces scale and turn round their centre.
+function to(from: Rect, box: Rect, rotateY = 0) {
+  return {
+    x: box.x + box.w / 2 - (from.x + from.w / 2),
+    y: box.y + box.h / 2 - (from.y + from.h / 2),
+    scale: box.w / from.w,
+    rotateY,
+    opacity: 1,
+  }
+}
+
 type Props = { slot: Slot; items: Product[]; currentId: string | null; side: Side; onAdd: () => void }
 
 // One row of the change room (Figma carousel · top 516:9378 / · bottom 516:9629). The row keeps its place in the
@@ -91,8 +108,9 @@ export function SlotRow(props: Props) {
 
 // The current piece large, the next one peeking at the right (or the "Add a top / bottom" card after the last), the
 // "3 of 7" position, and the price chip with ✕. Swipe or drag sideways to step; the peek is a button too.
-// When the slot's last piece goes (motion Aplus2), the piece slides out to the left like a swipe, the chip slides
-// out to the right, and the add card hands over to the empty box that stretches out of it; Undo plays it backwards.
+// When the slot's last piece goes (motion Aplus2), the piece turns away to the left like any removed piece (the user,
+// 10 Nov: "do the same for the last piece"), the chip slides out to the right, and the add card hands over to the empty
+// box that stretches out of it; Undo plays it backwards.
 function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props & { W: number; H: number; enter: boolean }) {
   const { state, dispatch } = useStore()
   const { remove } = useBagActions()
@@ -103,10 +121,6 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
   const [isPresent, safeToRemove] = usePresence()
   const leaving = !isPresent
   const [entered] = useState(enter)
-  const firstRender = useRef(true)
-  useEffect(() => {
-    firstRender.current = false
-  }, [])
   // While the empty box shrinks into it, the add card stays hidden; then it takes over. That's also the case when
   // Undo comes so fast that this content was still on its way out and simply stays.
   const [arriving, setArriving] = useState(entered)
@@ -120,12 +134,13 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
     const t = setTimeout(() => setArriving(false), reduced ? 0 : SLIDE.duration * 1000)
     return () => clearTimeout(t)
   }, [arriving, reduced])
-  // safeToRemove changes with every store update; the timer shouldn't restart for that.
+  // safeToRemove changes with every store update; the timer shouldn't restart for that. It waits for the last piece
+  // to finish turning away (the rest of the slot is out by SLIDE's end).
   const remove_ = useRef(safeToRemove)
   remove_.current = safeToRemove
   useEffect(() => {
     if (isPresent) return
-    const t = setTimeout(() => remove_.current?.(), reduced ? 0 : SLIDE.duration * 1000 + 20)
+    const t = setTimeout(() => remove_.current?.(), reduced ? 0 : TURN_TIME * 1000 + 20)
     return () => clearTimeout(t)
   }, [isPresent, reduced])
 
@@ -134,16 +149,14 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
   const current = items[index]
   const group = slot === 'top' ? 'Tops' : 'Bottoms'
 
-  // A removed piece leaves like a swipe: out to the left when the next piece takes its place from the right, out to
-  // the right when it was the end one and the previous piece comes back from the left (Undo brings it back the same way).
-  const last = useRef({ ids: items.map((p) => p.id), current: currentId })
-  let out: 1 | -1 = 1
-  if (last.current.current && !items.some((p) => p.id === last.current.current)) {
-    out = last.current.ids.indexOf(currentId ?? '') > last.current.ids.indexOf(last.current.current) ? 1 : -1
-  }
+  // The current piece was just removed: it turns away first (its exit below), and the rest of the ring moves a moment
+  // later, so the piece taking its place comes in as the removed one leaves.
+  const last = useRef(currentId)
+  const removed = !!last.current && !items.some((p) => p.id === last.current)
   useEffect(() => {
-    last.current = { ids: items.map((p) => p.id), current: currentId }
+    last.current = currentId
   })
+  const move = removed ? { ...SLIDE, delay: TURN_DELAY } : SLIDE
 
   const go = (dir: 1 | -1) => {
     const next = items[index + dir]
@@ -187,46 +200,61 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
     // No backdrop frame behind the pieces, in either mode (the user, 4 Nov: option A).
     <div className="cr-slot" inert={leaving || undefined}>
       <motion.div className="cr-track" style={{ x: dragX }} onPan={onPan} onPanEnd={onPanEnd} onPointerDownCapture={() => (panned.current = false)}>
-        {/* custom: which way a removed piece goes (an exiting piece keeps its last props, so its exit reads this).
-            When the whole slot leaves, its last piece slides out through `animate`, not an exit: these pieces stay
+        {/* An exiting piece keeps its last props, so a removed current piece still has rel 0 in its exit.
+            When the whole slot leaves, its last piece turns away through `animate`, not an exit: these pieces stay
             mounted with the slot until it is removed. */}
         {b && (
-          <AnimatePresence initial={entered} custom={out}>
+          <AnimatePresence initial={entered}>
             {items.map((p, i) => {
               const rel = i - index
               const cur = place(p, side, b.current, false)
               const pk = place(p, side, b.peek, true)
-              const s = pk.w / cur.w
-              // Past the screen edge, solid, like a swipe: where a removed piece goes and where Undo brings it from.
-              const offLeft = { x: -(cur.x + cur.w) - 24, y: 0, scale: 1, opacity: 1 }
-              const offRight = { x: W + 24 - cur.x, y: 0, scale: 1, opacity: 1 }
+              // The row turns like a ring (the user, 10 Nov: "i want the items to feel like they are in a rotating
+              // sequence"). The piece before the current one waits just past the left edge, the one after the peek just
+              // past the right edge, peek-sized, solid and turned away, so a drag or a step brings them in from outside
+              // the frame and turns them to face you, no longer fading in. Pieces further round wait there hidden.
+              // On the left they sit low, on the current piece's bottom line, so a piece leaves (and comes back) by the
+              // row's bottom left corner (the user, 10 Nov), no longer by its top corner at the peek's height. Lifted by
+              // 8% of their height: turned, their near corner grows about that much, and the row would clip it flat.
+              const behindLeft = to(cur, { ...pk, x: -pk.w - 24, y: b.current.y + b.current.h - pk.h * 1.08 }, -TILT)
+              const behindRight = to(cur, { ...pk, x: W + 24 }, TILT)
               const target =
                 rel === 0
-                  ? { x: 0, y: 0, scale: 1, opacity: 1 }
+                  ? to(cur, cur)
                   : rel === 1
-                    ? { x: pk.x - cur.x, y: pk.y - cur.y, scale: s, opacity: 1 }
-                    : { x: (rel < 0 ? -pk.w - 24 : W + 24) - cur.x, y: pk.y - cur.y, scale: s, opacity: 0 }
+                    ? to(cur, pk)
+                    : rel < 0
+                      ? { ...behindLeft, opacity: rel === -1 ? 1 : 0 }
+                      : { ...behindRight, opacity: rel === 2 ? 1 : 0 }
               // A piece that isn't the current one comes and goes by shrinking round its centre while fading.
-              const gone = { x: target.x + cur.w * target.scale * 0.4, y: target.y + cur.h * target.scale * 0.4, scale: target.scale * 0.2, opacity: 0 }
-              // Undo puts a removed piece back as the current one: from the left if it has a next piece, else the right.
-              const back = rel !== 0 ? gone : entered && firstRender.current ? offLeft : index < n - 1 ? offLeft : offRight
+              const gone = { ...target, scale: target.scale * 0.2, opacity: 0 }
+              // A removed current piece turns away behind the piece taking its place: out past the left edge, getting
+              // smaller and turning as it goes, all in one move (the user, 10 Nov: "smoothing the motion out to go
+              // smaller while going out"; the first try shrank, then moved, and felt mechanical). It shrinks a little
+              // ahead of the move. It used to slide out flat like a swipe, to the right when it was the end one.
+              const turnAway = {
+                ...behindLeft,
+                zIndex: 0,
+                transition: {
+                  duration: TURN_TIME,
+                  ease: [0.45, 0, 0.25, 1] as const,
+                  scale: { duration: TURN_TIME, ease: [0.2, 0.6, 0.3, 1] as const },
+                  zIndex: { duration: 0 },
+                },
+              }
+              // Undo turns it back from where it went.
+              const back = rel !== 0 ? gone : behindLeft
               const parked = rel < 0 || rel > 1
               return (
                 <motion.button
                   key={p.id}
                   type="button"
                   className="cr-piece"
-                  style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1 }}
+                  style={{ left: cur.x, top: cur.y, width: cur.w, height: cur.h, zIndex: rel === 0 ? 2 : 1, transformPerspective: 800 }}
                   initial={back}
-                  animate={leaving && rel === 0 ? offLeft : target}
-                  variants={{
-                    out: (dir: 1 | -1) =>
-                      rel !== 0
-                        ? { ...gone, transition: { duration: 0.3, ease: 'easeIn' } }
-                        : { ...(dir === 1 ? offLeft : offRight), transition: SLIDE },
-                  }}
-                  exit="out"
-                  transition={SLIDE}
+                  animate={leaving && rel === 0 ? turnAway : target}
+                  exit={rel !== 0 ? { ...gone, transition: { duration: 0.3, ease: 'easeIn' } } : turnAway}
+                  transition={move}
                   inert={parked}
                   aria-hidden={parked || undefined}
                   aria-label={rel === 0 ? `${p.brand} ${p.name}` : `Next ${slot}`}
@@ -247,8 +275,9 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
           type="button"
           className={`cr-add${leaving || arriving ? ' is-morphing' : ''}`}
           initial={false}
-          animate={atEnd ? { x: 0, opacity: 1 } : { x: 140, opacity: 0 }}
-          transition={SLIDE}
+          // In the ring too: just past the right edge, solid, when the last piece is the peek; hidden further round.
+          animate={atEnd ? { x: 0, opacity: 1 } : { x: 160, opacity: n - index === 2 ? 1 : 0 }}
+          transition={move}
           inert={!atEnd}
           aria-hidden={!atEnd || undefined}
           onClick={() => {

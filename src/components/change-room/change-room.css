@@ -95,10 +95,10 @@
   touch-action: pinch-zoom;
 }
 
+/* Pieces scale and turn round their centre (SlotRow's to()). */
 .cr-piece {
   position: absolute;
   display: block;
-  transform-origin: 0 0;
   border-radius: var(--radius-sm);
   -webkit-user-select: none;
   user-select: none;
