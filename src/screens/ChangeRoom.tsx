@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import { EmptyBoxes } from '../components/change-room/EmptyBoxes'
 import { Frame } from '../components/change-room/Frame'
-import { SLIDE } from '../components/change-room/motion'
+import { SLIDE, TRY_ON_OUT } from '../components/change-room/motion'
 import { SlotRow } from '../components/change-room/SlotRow'
 import type { Slot } from '../data/products'
 import { useBag, useStore } from '../state/store'
@@ -42,7 +42,7 @@ export function ChangeRoom() {
         {/* Nothing to try on in an empty room: Try it on slides out to the side, and back with the first piece. */}
         <AnimatePresence initial={false}>
           {items.length > 0 && (
-            <motion.div key="try-on" className="cr-try-on" initial={{ x: 96 }} animate={{ x: 0 }} exit={{ x: 96 }} transition={SLIDE}>
+            <motion.div key="try-on" className="cr-try-on" initial={{ x: TRY_ON_OUT }} animate={{ x: 0 }} exit={{ x: TRY_ON_OUT }} transition={SLIDE}>
               <RoundButton
                 icon="ai-sparkle"
                 label="Try it on"

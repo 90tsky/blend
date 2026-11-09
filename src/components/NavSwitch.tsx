@@ -28,8 +28,12 @@ export function NavSwitch({ tab }: { tab: Tab }) {
   const counts = [tops > 0 && plural(tops, 'top'), bottoms > 0 && plural(bottoms, 'bottom')].filter(Boolean)
   const layout = { layout: { duration: 0.18, ease: 'easeOut' as const } }
 
+  // layoutRoot: the switch sits in the fixed bottom bar, but layout animations measure against the page. When the
+  // screens push (View on the toast, or a tab tap) the page scroll resets, and the label looked as if it had moved by
+  // that much, so it slid back up from below (the user's video, 9 Nov). Measured against the switch instead, only real
+  // moves (the badge changing width) animate.
   return (
-    <div className="nav-switch">
+    <motion.div className="nav-switch" layoutRoot>
       <motion.span
         className="nav-switch__knob"
         aria-hidden="true"
@@ -51,6 +55,6 @@ export function NavSwitch({ tab }: { tab: Tab }) {
         <SplitBadge tops={tops} bottoms={bottoms} />
         {counts.length > 0 && <span className="visually-hidden">, {counts.join(', ')}</span>}
       </Link>
-    </div>
+    </motion.div>
   )
 }

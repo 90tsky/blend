@@ -1,15 +1,18 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { animate, motion, useMotionValue, useReducedMotionConfig, useTransform } from 'motion/react'
 import type { Slot } from '../../data/products'
-import { boxPath, INNER_R, PlusMark } from './Box'
-import { SLIDE } from './motion'
+import { INNER_R, padPath, PlusMark } from './Box'
+import { SLIDE, TRY_ON_OUT } from './motion'
 import { useSize } from './useSize'
 
 type Kind = Slot | 'all'
 type Rect = { x: number; y: number; w: number; h: number }
 // A dashed outline with its + circle (centre and diameter), in stage coordinates. It's either an empty box (big
-// circle, words below) or a slot's "Add a top / bottom" card (small circle, `label` below).
+// circle, words below) or a slot's "Add a top / bottom" card (small circle, `label` below). `notch` is 1 while Try it
+// on is there: any box that reaches its pad wraps round it (padPath); 0 for the whole-room box, which Try it on leaves,
+// taking its pad with it (TRY_ON_OUT).
 type Shape = { box: Rect; cx: number; cy: number; d: number; notch: 0 | 1; label?: string }
+type Point = { x: number; y: number }
 
 const COPY: Record<Kind, { title: string; noun: string; tail: string }> = {
   top: { title: 'No tops yet', noun: 'tops', tail: ' from an event.' },
@@ -28,6 +31,10 @@ const lift = (kind: Kind) => (kind === 'bottom' ? 72 : 52)
 // seen), never before it: two separate clocks could otherwise leave a frame with neither.
 const later = (fn: () => void) => window.setTimeout(fn, 80)
 
+// Words leaving a box: the empty box's words and, when an add card merges into the whole-room box, the card's label
+// ("Add a top"), together and softly (the user, 9 Nov: both texts should go at the same time, a bit more smoothly).
+const WORDS_OUT = { duration: 0.22, ease: 'easeInOut' as const }
+
 const modeOf = (tops: number, bottoms: number): Kind | null => (tops === 0 && bottoms === 0 ? 'all' : tops === 0 ? 'top' : bottoms === 0 ? 'bottom' : null)
 
 // The boxes sit inside the frame, 12 in from it (x 24 on a 430 screen) and 12 apart: "No tops yet" fills the top row,
@@ -43,7 +50,14 @@ function homeShape(kind: Kind, W: number, H: number): Shape {
       : kind === 'bottom'
         ? { x, y: topH + MARGIN / 2, w, h: H - topH - 1.5 * MARGIN }
         : { x, y: MARGIN, w, h: H - 2 * MARGIN }
-  return { box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 - lift(kind) + CIRCLE / 2, d: CIRCLE, notch: kind === 'bottom' ? 1 : 0 }
+  return { box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 - lift(kind) + CIRCLE / 2, d: CIRCLE, notch: kind === 'all' ? 0 : 1 }
+}
+
+// Try it on's pad, in the outline's stage coordinates: the centre of the "No bottoms yet" notch's inside curve (the
+// button's corner centre, offset 12 in, as boxPath draws it). It stays put while boxes grow into it.
+function padCentre(W: number, H: number): Point {
+  const { box } = homeShape('bottom', W, H)
+  return { x: box.x + box.w - 1 - (48 - MARGIN), y: box.y + box.h - 1 - (24 - MARGIN) }
 }
 
 // The slot's add card as it is on screen (leaving or just arriving, it's hidden but laid out).
@@ -59,7 +73,7 @@ function measureCard(layer: HTMLElement, slot: Slot): Shape | null {
     cx: c.left - o.left + c.width / 2,
     cy: c.top - o.top + c.height / 2,
     d: c.width,
-    notch: 0,
+    notch: 1,
     label: slot === 'top' ? 'Add a top' : 'Add a bottom',
   }
 }
@@ -126,6 +140,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
     }
   }, [tops, bottoms, mode, W, H])
 
+  const pad = padCentre(W, H)
   return (
     <div ref={ref} className="cr-empties">
       {W > 0 && main && (
@@ -136,6 +151,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
           from={main.from}
           version={main.version}
           wordsW={W - 4 * MARGIN}
+          pad={pad}
           onOpen={() => onOpen(main.kind === 'all' ? undefined : main.kind)}
           onArrive={main.to ? () => later(() => setMain((m) => (m?.key === main.key && m.version === main.version ? null : m))) : undefined}
         />
@@ -148,6 +164,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
             from={g.from}
             version={g.version}
             wordsW={W - 4 * MARGIN}
+            pad={pad}
             onArrive={() => later(() => setGhosts((list) => list.filter((x) => !(x.key === g.key && x.version === g.version))))}
           />
         ))}
@@ -161,13 +178,14 @@ type MorphProps = {
   from?: Shape | null
   version: number // a new transition: animate to `shape`; otherwise (a resize) snap to it
   wordsW: number // the empty boxes' width: the words keep it, so they never re-wrap while the box changes size
+  pad: Point // Try it on's pad (padCentre), which the outline wraps round wherever the box reaches it
   onOpen?: () => void
   onArrive?: () => void
 }
 
 // One outline + circle (+ words) that moves between shapes. Everything is drawn from motion values every frame, so the
 // dashes, corners and circle keep their size while it stretches.
-function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: MorphProps) {
+function MorphBox({ kind, shape, from, version, wordsW, pad, onOpen, onArrive }: MorphProps) {
   const reduced = useReducedMotionConfig()
   const start = from ?? shape
   const x = useMotionValue(start.box.x)
@@ -177,7 +195,8 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
   const cx = useMotionValue(start.cx)
   const cy = useMotionValue(start.cy)
   const d = useMotionValue(start.d)
-  const notchK = useMotionValue<number>(start.notch)
+  // How far Try it on's pad has slid out with the button (0 while it's there).
+  const shift = useMotionValue(start.notch ? 0 : TRY_ON_OUT)
   const op = useMotionValue(1)
   const wordsOp = { top: useMotionValue(0), bottom: useMotionValue(0), all: useMotionValue(0) }
   // The add card end: its smaller + and its label cross-fade with the box's + as the circle grows or shrinks.
@@ -185,10 +204,24 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
   const cardD = card?.d ?? CIRCLE
   const big = useTransform(d, (v) => (cardD >= CIRCLE ? 1 : Math.min(1, Math.max(0, (v - cardD) / (CIRCLE - cardD)))))
   const small = useTransform(big, (b) => 1 - b)
+  // A card merging into the whole-room box drops its label on the words' clock, not as its circle grows.
+  const labelOp = useMotionValue(1)
+  const labelShown = useTransform(() => small.get() * labelOp.get())
 
-  const plain = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), false, INNER_R))
-  const notched = useTransform(() => boxPath(Math.max(w.get() - 1, 0), Math.max(h.get() - 1, 0), true, INNER_R, MARGIN))
-  const plainOp = useTransform(notchK, (k) => 1 - k)
+  // One line round the box and Try it on's pad: as the box grows down into the pad, or the pad slides in and out with
+  // the button, the notch opens and closes as part of the same line.
+  const padNow = useRef(pad)
+  padNow.current = pad
+  const outline = useTransform(() =>
+    padPath(
+      Math.max(w.get() - 1, 0),
+      Math.max(h.get() - 1, 0),
+      INNER_R,
+      padNow.current.x + shift.get() - x.get(),
+      padNow.current.y - y.get(),
+      36 + MARGIN,
+    ),
+  )
   // Children are placed inside the moving box, so their positions are relative to it.
   const circleX = useTransform(() => cx.get() - x.get() - CIRCLE / 2)
   const circleY = useTransform(() => cy.get() - y.get() - CIRCLE / 2)
@@ -217,7 +250,7 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
     // A resize, not a transition: follow the stage (unless a transition is still running).
     if (!isNew || (first && !from)) {
       if (!x.isAnimating()) snap(shape)
-      if (!notchK.isAnimating()) notchK.set(shape.notch)
+      if (!shift.isAnimating()) shift.set(shape.notch ? 0 : TRY_ON_OUT)
       if (first) {
         for (const k of KINDS) wordsOp[k].set(k === kind ? 1 : 0)
         shown.current = kind
@@ -230,13 +263,18 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
       return
     }
     const runs = values.map(([v, end]) => animate(v, end, t))
-    animate(notchK, shape.notch, shape.notch ? { duration: reduced ? 0 : 0.18, delay: reduced ? 0 : 0.27 } : { duration: reduced ? 0 : 0.15 })
+    // The pad moves with Try it on, on the same slide.
+    animate(shift, shape.notch ? 0 : TRY_ON_OUT, t)
     // Words: the old ones go early, the new ones arrive late.
     if (shown.current !== kind) {
-      if (shown.current) animate(wordsOp[shown.current], 0, { duration: reduced ? 0 : 0.12 })
+      if (shown.current) animate(wordsOp[shown.current], 0, reduced ? { duration: 0 } : WORDS_OUT)
       if (kind) animate(wordsOp[kind], 1, reduced ? { duration: 0 } : { duration: 0.17, delay: 0.28 })
       shown.current = kind
     }
+    // A copy of an add card merging into the whole-room box: its label goes with the other box's words.
+    // Undo turning it back into the card brings the label back, late, like the words.
+    if (!kind && !onOpen && from?.label && !shape.label) animate(labelOp, 0, reduced ? { duration: 0 } : WORDS_OUT)
+    else if (shape.label && labelOp.get() < 1) animate(labelOp, 1, reduced ? { duration: 0 } : { duration: 0.17, delay: 0.28 })
     // On arrival, not on a timer: effects can be re-run, animations aren't. (An animation stopped by a newer
     // transition never resolves, so only the latest transition arrives.)
     Promise.all(runs).then(() => {
@@ -254,8 +292,7 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
   const content = (
     <>
       <svg className="cr-empty__outline" aria-hidden="true">
-        <motion.path d={plain} style={{ opacity: plainOp }} transform="translate(0.5 0.5)" />
-        <motion.path d={notched} style={{ opacity: notchK }} transform="translate(0.5 0.5)" />
+        <motion.path d={outline} transform="translate(0.5 0.5)" />
       </svg>
       <motion.span className="cr-empty__circle" aria-hidden="true" style={{ x: circleX, y: circleY, scale: circleS }}>
         <motion.span className="cr-empty__plus" style={{ opacity: big }}>
@@ -268,7 +305,7 @@ function MorphBox({ kind, shape, from, version, wordsW, onOpen, onArrive }: Morp
         )}
       </motion.span>
       {card && (
-        <motion.span className="cr-empty__label" aria-hidden="true" style={{ x: labelX, y: labelY, opacity: small, width: LABEL_W }}>
+        <motion.span className="cr-empty__label" aria-hidden="true" style={{ x: labelX, y: labelY, opacity: labelShown, width: LABEL_W }}>
           {card.label}
         </motion.span>
       )}
