@@ -12,12 +12,15 @@
   padding-bottom: var(--bottom-bar-h, 128px);
 }
 
+/* The change room only moves sideways (the user, 10 Nov): a finger drag here never scrolls, bounces or pulls the page
+   down; only pinch zoom is left to the browser. */
 .cr-stage {
   position: relative;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  touch-action: pinch-zoom;
 }
 
 .cr-area {
@@ -83,12 +86,13 @@
   inset: 0;
 }
 
-/* The moving part: pieces and the add card. It clips what slides past the screen edges. */
+/* The moving part: pieces and the add card. It clips what slides past the screen edges. It takes every one-finger
+   swipe, so one that starts at an angle still steps the row (with pan-y the browser took it for a page scroll). */
 .cr-track {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  touch-action: pan-y;
+  touch-action: pinch-zoom;
 }
 
 .cr-piece {

@@ -18,6 +18,8 @@ html {
   /* Events scrolls and the change room doesn't. Where scrollbars take space (desktop), keeping the gutter stops
      the column jumping sideways when you switch tabs. */
   scrollbar-gutter: stable;
+  /* The page never bounces or pulls to refresh. On html: the page takes it from the root element, not from body. */
+  overscroll-behavior: none;
 }
 
 :root[data-theme='dark'] {
