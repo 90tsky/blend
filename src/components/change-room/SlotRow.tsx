@@ -213,10 +213,11 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
               // sequence"). The piece before the current one waits just past the left edge, the one after the peek just
               // past the right edge, peek-sized, solid and turned away, so a drag or a step brings them in from outside
               // the frame and turns them to face you, no longer fading in. Pieces further round wait there hidden.
-              // On the left they sit low, on the current piece's bottom line, so a piece leaves (and comes back) by the
-              // row's bottom left corner (the user, 10 Nov), no longer by its top corner at the peek's height. Lifted by
-              // 8% of their height: turned, their near corner grows about that much, and the row would clip it flat.
-              const behindLeft = to(cur, { ...pk, x: -pk.w - 24, y: b.current.y + b.current.h - pk.h * 1.08 }, -TILT)
+              // On the left, tops sit low and bottoms high, so pieces leave (and come back) towards the line between the
+              // rows (the user, 10 Nov): a top by its row's bottom left corner, a bottom by its row's top left corner, at
+              // the peek's height. A top is lifted by 8% of its height: turned, its near corner grows about that much,
+              // and the row would clip it flat.
+              const behindLeft = to(cur, { ...pk, x: -pk.w - 24, y: slot === 'top' ? b.current.y + b.current.h - pk.h * 1.08 : pk.y }, -TILT)
               const behindRight = to(cur, { ...pk, x: W + 24 }, TILT)
               const target =
                 rel === 0
