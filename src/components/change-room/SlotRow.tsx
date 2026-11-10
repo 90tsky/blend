@@ -211,14 +211,16 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, enter }: Props
               const pk = place(p, side, b.peek, true)
               // The row turns like a ring (the user, 10 Nov: "i want the items to feel like they are in a rotating
               // sequence"). The piece before the current one waits just past the left edge, the one after the peek just
-              // past the right edge, peek-sized, solid and turned away, so a drag or a step brings them in from outside
-              // the frame and turns them to face you, no longer fading in. Pieces further round wait there hidden.
+              // past the right edge, peek-sized and solid, so a drag or a step brings them in from outside the frame, no
+              // longer fading in. Pieces further round wait there hidden. Only the left ones are turned away (and turn to
+              // face you as they come in): the small pieces coming into the peek from the right turned too, and looked
+              // odd (the user, 10 Nov: "remove that part").
               // On the left, tops sit low and bottoms high, so pieces leave (and come back) towards the line between the
               // rows (the user, 10 Nov): a top by its row's bottom left corner, a bottom by its row's top left corner, at
               // the peek's height. A top is lifted by 8% of its height: turned, its near corner grows about that much,
               // and the row would clip it flat.
               const behindLeft = to(cur, { ...pk, x: -pk.w - 24, y: slot === 'top' ? b.current.y + b.current.h - pk.h * 1.08 : pk.y }, -TILT)
-              const behindRight = to(cur, { ...pk, x: W + 24 }, TILT)
+              const behindRight = to(cur, { ...pk, x: W + 24 })
               const target =
                 rel === 0
                   ? to(cur, cur)
