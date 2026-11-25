@@ -54,7 +54,7 @@
   padding: 0 var(--layout-margin);
   font-size: var(--text-label-small-size);
   font-weight: var(--text-label-small-weight);
-  line-height: 16px;
+  line-height: 1.1429;
 }
 
 .search__row {
@@ -83,6 +83,16 @@
   height: var(--control-height);
 }
 
+/* The sideways-scrolling row clips the ring round the 48 button, so it goes round the 40 pill instead. */
+.suggestion:focus-visible {
+  outline: none;
+}
+
+.suggestion:focus-visible .suggestion__pill {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
 .suggestion__pill {
   display: inline-flex;
   align-items: center;
@@ -94,7 +104,7 @@
   color: var(--color-on-surface);
   font-size: var(--text-label-small-size);
   font-weight: var(--text-label-small-weight);
-  line-height: 16px;
+  line-height: 1.1429;
   white-space: nowrap;
 }
 
@@ -132,6 +142,7 @@
   flex: none;
   color: var(--color-hint);
   font-size: var(--text-small-size);
+  font-variant-numeric: tabular-nums;
 }
 
 /* The typing bar: a sunken track holding the white field. */
@@ -149,6 +160,16 @@
   border-radius: var(--radius-full);
   background: var(--color-background);
   box-shadow: var(--shadow-track);
+}
+
+/* Focus ring: round the whole track (rounded like it), drawn like the app's other rings, not on the bare input (the
+   stray ring removed on 3 Nov). The field is focused the whole time the sheet is open, so on touch phones, where the
+   caret and keyboard already show it, the ring stays off; with a mouse and keyboard it shows. */
+@media (hover: hover) and (pointer: fine) {
+  .search__track:has(.search__input:focus-visible) {
+    outline: 2px solid var(--color-accent-strong);
+    outline-offset: 2px;
+  }
 }
 
 .search__field {

@@ -46,10 +46,14 @@ const shared = []
 for (const [name, value] of Object.entries(tokens.numbers)) shared.push(`  --${name}: ${value}px;`)
 for (const [name, layers] of Object.entries(tokens.shadows)) shared.push(`  --shadow-${name}: ${shadow(layers)};`)
 shared.push(`  --font-ui: ${tokens.fonts.ui};`)
+// Font sizes in rem (Figma px / 16), so text follows the reader's browser text size; at the default 16px they render
+// exactly as in Figma. Line heights are unitless (Figma px / font size), so they scale with the text. Spacing, radii and
+// sizes above stay in px.
+const unitless = (n) => +n.toFixed(4)
 for (const [name, t] of Object.entries(tokens.text)) {
-  shared.push(`  --text-${name}-size: ${t.size}px;`)
+  shared.push(`  --text-${name}-size: ${unitless(t.size / 16)}rem;`)
   shared.push(`  --text-${name}-weight: ${t.weight};`)
-  if (t.lineHeight) shared.push(`  --text-${name}-line: ${t.lineHeight}px;`)
+  if (t.lineHeight) shared.push(`  --text-${name}-line: ${unitless(t.lineHeight / t.size)};`)
   if (t.tracking) shared.push(`  --text-${name}-tracking: ${t.tracking};`)
   if (t.case) shared.push(`  --text-${name}-case: ${t.case};`)
 }

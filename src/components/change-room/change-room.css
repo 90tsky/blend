@@ -86,18 +86,33 @@
   inset: 0;
 }
 
-/* The moving part: pieces and the add card. It clips what slides past the screen edges. It takes every one-finger
-   swipe, so one that starts at an angle still steps the row (with pan-y the browser took it for a page scroll). */
-.cr-track {
+/* What slides past the row's edges is clipped here, by a box that doesn't move (25 Nov). The track used to clip itself,
+   and it moves with a drag, so its edge moved into the frame and a piece coming in from the left seemed to grow out of
+   a line in the middle of the frame. Now pieces come in from outside (and, with the frame's clip, from behind its edge). */
+.cr-clip {
   position: absolute;
   inset: 0;
   overflow: hidden;
+}
+
+/* The moving part: pieces and the add card. It takes every one-finger swipe, so one that starts at an angle still steps
+   the row (with pan-y the browser took it for a page scroll). */
+.cr-track {
+  position: absolute;
+  inset: 0;
   touch-action: pinch-zoom;
 }
 
 /* Pieces scale and turn round their centre (SlotRow's to()). */
+/* A piece's place in the ring (SlotRow RingPiece): a box the size of the current piece, moved and scaled along the
+   ring; the piece fills it. */
+.cr-ring {
+  position: absolute;
+}
+
 .cr-piece {
   position: absolute;
+  inset: 0;
   display: block;
   border-radius: var(--radius-sm);
   -webkit-user-select: none;
@@ -119,48 +134,81 @@
   position: absolute;
   top: var(--space-12);
   right: calc(2 * var(--layout-margin));
-  bottom: 66px;
-  width: 112px;
+  /* The side column (SlotRow column()): 112 wide on the design screen, narrower on tall, narrow ones; it stands on the
+     chip, 12 above it (--chip-h: 48, or 88 when the chip stacks). */
+  bottom: calc(var(--chip-h, 48px) + 18px);
+  width: var(--col-w, 112px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-8);
   /* The + and label are centred in the card at any size (Figma lifted them 13 above the middle, which pushed them to
-     the top of the short cards on short screens). */
+     the top of the short cards on short screens). They shrink with the card in a narrow column or a short row (the
+     user, 25 Nov: "3. can become smaller as well"), measured on the card itself. */
+  container-type: size;
   border-radius: var(--radius-inset);
   color: var(--color-on-surface);
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
 }
 
+/* When "2 of 2" goes (or comes back), the card grows into its place (or makes room) smoothly, and the + and label,
+   centred in it, glide with it; the dashed outline follows its size (Box). It used to jump (the user, 25 Nov). Only
+   then (is-count-moving, SlotRow): the card mustn't glide when the column is first measured or the window resized. */
+.cr-row.is-count-moving .cr-add {
+  transition: bottom 0.34s cubic-bezier(0.4, 0, 0.2, 1); /* a gentle start, so it fills the words' place as they go */
+}
+
 .cr-row.has-count .cr-add {
-  bottom: 94px;
+  bottom: calc(var(--chip-h, 48px) + 46px);
 }
 
 /* The bottom row's side column stands on the notch: chip 12 above it (72), so the card ends at 132 (160 with "3 of 7"). */
 .cr-row--bottom .cr-add {
   top: 6px;
-  bottom: 132px;
+  bottom: calc(var(--chip-h, 48px) + 84px);
 }
 
 .cr-row--bottom.has-count .cr-add {
-  bottom: 160px;
+  bottom: calc(var(--chip-h, 48px) + 112px);
 }
 
 .cr-add__circle {
   display: grid;
+  flex: none;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  /* 30 in the 112-wide card, down to 22. */
+  width: clamp(22px, 27cqmin, 30px);
+  height: clamp(22px, 27cqmin, 30px);
   border-radius: var(--radius-full);
   background: var(--color-primary);
   color: var(--color-on-primary);
 }
 
+/* In a narrow column "Add a bottom" wraps to two lines, centred. */
+.cr-add__label {
+  /* 8 under the circle, 4 in a small card; the type 15 in the 112-wide card, smaller in a narrow one. */
+  margin-top: clamp(var(--space-4), 7.2cqmin, var(--space-8));
+  padding: 0 var(--space-4);
+  font-size: clamp(0.6875rem, 14cqw, var(--text-body-medium-size));
+  text-align: center;
+}
+
+/* The + keeps its share of the circle (16 in 30, 16 in 38 in the bottom row). */
+.cr-add__circle svg {
+  width: 53%;
+  height: 53%;
+}
+
+.cr-row--bottom .cr-add__circle svg {
+  width: 42%;
+  height: 42%;
+}
+
 .cr-row--bottom .cr-add__circle {
-  width: 38px;
-  height: 38px;
+  /* 38 in the 112-wide card, down to 26. */
+  width: clamp(26px, 34cqmin, 38px);
+  height: clamp(26px, 34cqmin, 38px);
 }
 
 /* While the empty box stretches out of the card (or shrinks back into it), the box draws the card's outline, + and
@@ -175,19 +223,20 @@
 .cr-count {
   position: absolute;
   right: calc(2 * var(--layout-margin));
-  bottom: 66px;
-  width: 112px;
+  bottom: calc(var(--chip-h, 48px) + 18px);
+  width: var(--col-w, 112px);
   margin: 0;
   text-align: center;
   font-size: var(--text-small-size);
   font-weight: var(--text-small-weight);
-  line-height: 16px;
+  line-height: 1.3334;
+  font-variant-numeric: tabular-nums;
   color: var(--color-hint);
   pointer-events: none;
 }
 
 .cr-row--bottom .cr-count {
-  bottom: 132px;
+  bottom: calc(var(--chip-h, 48px) + 84px);
 }
 
 /* Price chip: 112 × 48 raised box with 20 corners (concentric with the frame), 12 inside the frame's edge; 6 above the row line in the top row, 12 inside the
@@ -199,8 +248,8 @@
   z-index: 3;
   display: flex;
   align-items: center;
-  width: 112px;
-  height: var(--control-height);
+  width: var(--col-w, 112px);
+  height: var(--chip-h, var(--control-height));
   padding-left: var(--space-8);
   border-radius: var(--radius-inset);
   background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
@@ -227,6 +276,7 @@
 .cr-chip__amount {
   font-size: var(--text-price-size);
   font-weight: var(--text-price-weight);
+  font-variant-numeric: tabular-nums;
 }
 
 .cr-chip__currency {
@@ -241,6 +291,23 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius-full);
+}
+
+/* A narrow column (under 104): the chip stacks, the price over a full-width ✕ (40 tall), 88 tall in all. */
+.cr-row.is-stacked .cr-chip {
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8) 0 var(--space-4);
+}
+
+.cr-row.is-stacked .cr-chip__price {
+  flex: none;
+}
+
+.cr-row.is-stacked .cr-chip__remove {
+  width: 100%;
+  height: 40px;
 }
 
 /* Try it on: its own row under the frame, at the right. It sits just above the bottom bar (20), so its
@@ -334,6 +401,8 @@
   left: 0;
   text-align: center;
   white-space: nowrap;
+  /* The add card is a button, 1.3 like the others (the body is 1.5); a card's measured line height wins (EmptyBoxes). */
+  line-height: 1.3;
   font-size: var(--text-body-medium-size);
   font-weight: var(--text-body-medium-weight);
 }
@@ -342,15 +411,17 @@
   margin-top: var(--space-16);
   font-size: var(--text-label-size);
   font-weight: var(--text-label-weight);
-  line-height: 19px;
+  line-height: 1.1875;
 }
 
+/* Two lines at most (274 wide). It stays at 1.2, not body copy's 1.5: the words are placed from script under the +
+   circle, and the extra height would push them past the bottom of the short "No tops yet" box. */
 .cr-empty__hint {
   max-width: 274px;
   margin-top: var(--space-4);
   font-size: var(--text-body-size);
   font-weight: var(--text-body-weight);
-  line-height: 18px;
+  line-height: 1.2;
   color: var(--color-hint);
 }
 

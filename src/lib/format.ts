@@ -8,9 +8,9 @@ export function formatAmount(eur: number, currency: Currency = 'EUR') {
   return (eur * RATES[currency]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-// "42.00 EUR"
+// "42.00 EUR", with a non-breaking space so the code never wraps away from the amount
 export function formatPrice(eur: number, currency: Currency = 'EUR') {
-  return `${formatAmount(eur, currency)} ${currency}`
+  return `${formatAmount(eur, currency)} ${currency}`
 }
 
 // "1 piece", "4 pieces"

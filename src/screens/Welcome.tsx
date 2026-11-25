@@ -55,6 +55,9 @@ export function Welcome() {
 
   return (
     <main className={`welcome${settled ? '' : ' welcome--intro'}`}>
+      {/* The screen's name for screen readers, like Events and Change room: the logo is the visible title, so it's the
+          name, "blend" (the user's choice, 20 Nov). */}
+      <h1 className="visually-hidden">blend</h1>
       {/* The top bar of the account screens: logo only. The big logo lands exactly on this one. */}
       <header className="top-bar top-bar--plain">
         <Logo ref={barLogo} className="top-bar__logo welcome__bar-logo" />

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { animate, motion, useMotionValue, useReducedMotionConfig, useTransform } from 'motion/react'
 import { FRAME_R, padPath } from './Box'
+import { shiftPath } from './paths'
 import { SLIDE, TRY_ON_OUT } from './motion'
 import { useSize } from './useSize'
 
@@ -28,7 +29,26 @@ export function Frame({ notch }: { notch: boolean }) {
 
   const w = W - 2 * MARGIN
   // The pad is boxPath's notch: round the centre of Try it on's left end, 48 in from the frame's right and 24 up, 36 round.
-  const d = useTransform(() => padPath(w, H, FRAME_R, w - 48 + shift.get(), H - 24, 36))
+  const outline = (s: number) => padPath(w, H, FRAME_R, w - 48 + s, H - 24, 36)
+  const d = useTransform(() => outline(shift.get()))
+
+  // The frame clips what's in it (the user, 20 Nov: "the frame of the change room should be set on clip"), like Figma's
+  // Clip content: pieces sliding past its edge, the ones waiting round the ring just outside it, the add card. The clip
+  // is on the area that holds the rows (this layer's parent), following the notch as Try it on slides out and back.
+  useLayoutEffect(() => {
+    const area = ref.current?.parentElement
+    if (!area || w <= 0 || H <= 0) return
+    const clip = (s: number) => {
+      area.style.clipPath = `path('${shiftPath(outline(s), MARGIN)}')`
+    }
+    clip(shift.get())
+    const off = shift.on('change', clip)
+    return () => {
+      off()
+      area.style.clipPath = ''
+    }
+    // outline() only changes with the size.
+  }, [w, H, shift])
   return (
     <div ref={ref} className="cr-frame-layer" aria-hidden="true">
       {w > 0 && H > 0 && (

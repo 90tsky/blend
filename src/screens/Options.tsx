@@ -56,10 +56,11 @@ export function Options() {
 
   return (
     <main className="screen options">
-      {/* The menu button opens Options, so it's hidden here. */}
+      {/* The menu button opens this screen, so it's hidden here. On screen it's "Menu" (the user, 20 Nov: like Events
+          and Change room); the code keeps the Options name. */}
       <TopBar menu={false} />
       <div className="options__head">
-        <Header title="Options" subtitle="Name, gender, sizes, currency, appearance, motion and account." onLead={back} />
+        <Header title="Menu" subtitle="Name, gender, sizes, currency, appearance, motion and account." onLead={back} />
       </div>
 
       <div className="options__body">
@@ -68,7 +69,16 @@ export function Options() {
             <label className="setting__label" htmlFor="options-name">
               Name
             </label>
-            <input id="options-name" className="options__field" value={name} placeholder="Your name" autoComplete="name" onChange={(e) => changeName(e.target.value)} />
+            <input
+              id="options-name"
+              className="options__field"
+              name="name"
+              value={name}
+              placeholder="Your name…"
+              autoComplete="name"
+              spellCheck={false}
+              onChange={(e) => changeName(e.target.value)}
+            />
           </div>
           <div className="setting">
             <h2 className="setting__label" id="options-gender">

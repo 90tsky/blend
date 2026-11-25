@@ -396,7 +396,7 @@ Saved before: **"Before clean-up batch"**. Two designers finished:
   - the menu button is spoken "Menu" in Figma but "Options" in the code (Claude would pick "Options");
   - two section names are out of date ("Shop · product, search, orders" has no search; "Shop · offline, sold out, first visit" has no first visit);
   - a loose "top bar" instance 1872:50987 sits in the Account section (probably the user's own source copy).
-- **Second-hand + bidding idea (3 Nov):** moved to its own folder. The user: "move that last idea to its own folder we can think about it seperately". The folder is D:\Kris Work\Portfolio\Blend second-hand idea\ (IDEA.md: the user's words, what carries over, what breaks, 3 directions, 4 questions). It no longer blocks blend, so the build plan is back on.
+- **Second-hand + bidding idea (3 Nov):** moved to its own folder. The user: "move that last idea to its own folder we can think about it seperately". The folder is D:\Kris Work\Portfolio\Projects\Second-hand idea\ (IDEA.md: the user's words, what carries over, what breaks, 3 directions, 4 questions). It no longer blocks blend, so the build plan is back on.
 - **Waiting on the user:** the git name for the first commit.
 
 ### ▶ (2 Nov, late night): chip bar A + knob switch built; design nearly done

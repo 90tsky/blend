@@ -37,9 +37,9 @@
   margin: 0;
   font-size: var(--text-body-size);
   font-weight: var(--text-body-weight);
-  line-height: normal;
   color: var(--color-hint);
   text-align: center;
+  text-wrap: pretty;
 }
 
 .welcome__actions {

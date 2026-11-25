@@ -17,6 +17,7 @@
   color: var(--color-hint);
   font-size: var(--text-button-size);
   font-weight: var(--text-button-weight);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   transition: color 0.2s ease-in-out;
   container-type: inline-size;
@@ -71,6 +72,7 @@
 
 .checkout-btn__amount {
   font-weight: var(--text-total-weight);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Narrow phones. The longest total is 4 figures ("CHECKOUT 2,534.00 EUR": 193 wide at 16px), and the button is
@@ -89,6 +91,6 @@
 
 @container (max-width: 170px) {
   .checkout-btn__row {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 }

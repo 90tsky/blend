@@ -12,7 +12,21 @@ type Rect = { x: number; y: number; w: number; h: number }
 // circle, words below) or a slot's "Add a top / bottom" card (small circle, `label` below). `notch` is 1 while Try it
 // on is there: any box that reaches its pad wraps round it (padPath); 0 for the whole-room box, which Try it on leaves,
 // taking its pad with it (TRY_ON_OUT).
-type Shape = { box: Rect; cx: number; cy: number; d: number; notch: 0 | 1; label?: string }
+// An add card's shape also carries its + and label as measured (they scale with the card since 25 Nov), so the morph
+// draws them exactly as the card did and the hand-over can't be seen.
+type Shape = {
+  box: Rect
+  cx: number
+  cy: number
+  d: number
+  notch: 0 | 1
+  label?: string
+  plus?: number
+  labelFont?: string
+  labelLine?: string
+  labelW?: number
+  labelGap?: number
+}
 type Point = { x: number; y: number }
 
 const COPY: Record<Kind, { title: string; noun: string; tail: string }> = {
@@ -69,6 +83,10 @@ function measureCard(layer: HTMLElement, slot: Slot): Shape | null {
   const o = layer.getBoundingClientRect()
   const r = card.getBoundingClientRect()
   const c = circle.getBoundingClientRect()
+  const plus = circle.querySelector('svg')?.getBoundingClientRect()
+  const label = card.querySelector<HTMLElement>('.cr-add__label')
+  const l = label?.getBoundingClientRect()
+  const ls = label ? getComputedStyle(label) : null
   return {
     box: { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height },
     cx: c.left - o.left + c.width / 2,
@@ -76,6 +94,11 @@ function measureCard(layer: HTMLElement, slot: Slot): Shape | null {
     d: c.width,
     notch: 1,
     label: slot === 'top' ? 'Add a top' : 'Add a bottom',
+    plus: plus?.width,
+    labelFont: ls?.fontSize,
+    labelLine: ls?.lineHeight,
+    labelW: l?.width,
+    labelGap: l ? l.top - c.bottom : undefined,
   }
 }
 
@@ -284,8 +307,13 @@ function MorphBox({ id, live, bare, kind, shape, from, version, wordsW, pad, onO
   const circleS = useTransform(d, (v) => v / CIRCLE)
   const wordsX = useTransform(() => cx.get() - x.get() - wordsW / 2)
   const wordsY = useTransform(() => cy.get() - y.get() + d.get() / 2)
-  const labelX = useTransform(() => cx.get() - x.get() - LABEL_W / 2)
-  const labelY = useTransform(() => cy.get() - y.get() + d.get() / 2 + 8)
+  // The card's label as measured (its size, width and gap under the circle), or the 112-wide design card's.
+  const labelW = card?.labelW ?? LABEL_W
+  const labelGap = card?.labelGap ?? 8
+  const labelX = useTransform(() => cx.get() - x.get() - labelW / 2)
+  const labelY = useTransform(() => cy.get() - y.get() + d.get() / 2 + labelGap)
+  // The card's + on screen (16 in the design), drawn inside the circle that's scaled by d / CIRCLE.
+  const plusPx = card?.plus ?? 16
 
   const btn = useRef<HTMLButtonElement>(null)
   const shown = useRef<Kind | undefined>(undefined)
@@ -358,12 +386,27 @@ function MorphBox({ id, live, bare, kind, shape, from, version, wordsW, pad, onO
         </motion.span>
         {card && (
           <motion.span className="cr-empty__plus" style={{ opacity: small }}>
-            <PlusMark size={(16 * CIRCLE) / cardD} weight={(1.5 * CIRCLE) / cardD} />
+            <PlusMark size={(plusPx * CIRCLE) / cardD} weight={(1.5 * (plusPx / 16) * CIRCLE) / cardD} />
           </motion.span>
         )}
       </motion.span>
       {card && (
-        <motion.span className="cr-empty__label" aria-hidden="true" style={{ x: labelX, y: labelY, opacity: labelShown, width: LABEL_W }}>
+        <motion.span
+          className="cr-empty__label"
+          aria-hidden="true"
+          style={{
+            x: labelX,
+            y: labelY,
+            opacity: labelShown,
+            width: labelW,
+            fontSize: card.labelFont,
+            lineHeight: card.labelLine,
+            // Measured: it wraps as the card's did (a narrow card puts "Add a bottom" on two lines), inside the same 4
+            // padding (the measured width includes it).
+            whiteSpace: card.labelW ? 'normal' : undefined,
+            padding: card.labelW ? '0 var(--space-4)' : undefined,
+          }}
+        >
           {card.label}
         </motion.span>
       )}

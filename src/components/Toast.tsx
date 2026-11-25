@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useLocation, useNavigate } from 'react-router'
 import { productsById } from '../data/products'
+import { useWide } from '../lib/useWide'
 import { useBagActions, useStore, type Toast, type ToastKind } from '../state/store'
 import './Toast.css'
 
@@ -31,11 +32,15 @@ export function ToastHost() {
   // or not a dashed empty box is behind it: 36 from the screen sides (Toast.css), 24 above the bottom bar (128, or 184
   // with filter chips) on Events and in the change room, 24 short of the notch round Try it on, 24 above a bottom
   // button elsewhere (12 + 48), and 36 from the bottom on Options, like the sides. Try-On covers it.
+  // On a laptop (SplitLayout) Events and the change room are open together, and the toast rests in the change room,
+  // 24 above the one-row bar (72), beside Try it on; View is left out, since the change room is already in view.
   const at = (path: string) => pathname === path || pathname.startsWith(`${path}/`)
+  const wide = useWide()
   const onEvents = at('/events')
-  const onChangeRoom = at('/change-room')
+  const split = wide && onEvents
+  const onChangeRoom = at('/change-room') || split
   const besideTryOn = onChangeRoom && state.bag.length > 0
-  const bottom = onEvents ? (state.filters.length > 0 ? 208 : 152) : onChangeRoom ? 152 : at('/options') ? 36 : 84
+  const bottom = split ? 96 : onEvents ? (state.filters.length > 0 ? 208 : 152) : onChangeRoom ? 152 : at('/menu') ? 36 : 84
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })
@@ -43,6 +48,7 @@ export function ToastHost() {
   return (
     <div
       className="toast-region"
+      data-beside={besideTryOn || undefined}
       role="status"
       aria-live="polite"
       style={

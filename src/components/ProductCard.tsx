@@ -20,7 +20,8 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="product-card__info">
         <h3 className="product-card__name">
           <Link className="product-card__link" to={`/product/${product.id}`}>
-            {product.brand} {product.name}
+            {/* Brand labels are names: page translators leave them as they are. */}
+            <span translate="no">{product.brand}</span> {product.name}
           </Link>
         </h3>
         <div className="product-card__price-row">
@@ -40,6 +41,8 @@ type AddToggleProps = { added: boolean; name: string; onToggle: () => void }
 
 // Figma add-toggle (325:7407): a black + circle that morphs into a light ✓ with an outline (0.2s ease-out), and back.
 // It follows the change room, so Undo and removals elsewhere animate it too. A 48 tap area round the 24 circle.
+// Its name says what a tap does ("Add …" / "Remove …"), so there's no aria-pressed as well: both together were read as
+// "Remove … from change room, toggle button, pressed".
 export function AddToggle({ added, name, onToggle }: AddToggleProps) {
   const reduceMotion = useReducedMotionConfig()
   const lines = added ? CHECK : PLUS
@@ -47,7 +50,6 @@ export function AddToggle({ added, name, onToggle }: AddToggleProps) {
     <button
       type="button"
       className={`add-toggle${added ? ' is-added' : ''}`}
-      aria-pressed={added}
       aria-label={added ? `Remove ${name} from change room` : `Add ${name} to change room`}
       onClick={onToggle}
     >

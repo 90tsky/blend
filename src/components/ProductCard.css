@@ -42,7 +42,7 @@
   overflow: hidden;
   font-size: var(--text-product-name-size);
   font-weight: var(--text-product-name-weight);
-  line-height: 14px;
+  line-height: 1.1667;
   text-align: center;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;

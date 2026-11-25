@@ -29,7 +29,7 @@ ux-writer follows this; the other helpers use the glossary words. Moved here fro
 | Event names in Figma | Casual, Outdoors, Office hours, Day off, Maternity, Working out, Night out, Beach day | | Decided 2026-11-01 for Figma; the coded app still uses a different set (Casual, Outdoors, Work, Beach, Evening, Maternity, Business casual) and changes when the app is reworked |
 | Putting a piece in | add | pick | "save" is fine for keeping settings, photos or addresses; just not for adding a piece |
 | Taking it out | remove | delete | |
-| Settings screen | Options | | The Figma name since 31 Oct; no logged rename yet. The app still says Settings, so propose it as an app change |
+| Settings screen | Menu (screen title, the ☰ button's spoken name, "in Menu" in hints) | Options, Settings | Renamed 2026-11-20 (the user: "options should be called menu, sounds more in tack with how the other things are named like events and change room"). Options was the Figma name from 31 Oct, Settings the app's before that. The coded app says Menu (route /menu; /options redirects); the Figma file still says Options until it's renamed there. Component and file names in code stay Options |
 | Handedness | (none in Figma) | | Left-handed mode was removed from the prototype on 2026-11-01; it stays planned in the coded app, which says "Dominant hand" |
 | Money | 42.00 EUR | €, Euro, BGN | |
 | Every top × bottom | Closet | Total Fits | Coded app only |

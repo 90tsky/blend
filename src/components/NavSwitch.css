@@ -1,5 +1,7 @@
 /* nav switch: 406 × 48 (fills the tabs row), no track. The knob is the shared raised white button look. */
 .nav-switch {
+  /* EVENTS' share of the width; the knob covers whichever tab is current. */
+  --split: 50%;
   position: relative;
   display: flex;
   flex: 1;
@@ -10,11 +12,20 @@
 
 .nav-switch__knob {
   position: absolute;
-  inset: 0 50% 0 0;
+  inset: 0 calc(100% - var(--split)) 0 0;
+  /* TAB_SWITCH (NavSwitch.tsx), shared with the screens' push: 0.35s, ease-in-out. */
+  transition:
+    left 0.35s ease-in-out,
+    right 0.35s ease-in-out;
   border-radius: var(--radius-full);
   background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
   box-shadow: var(--shadow-raised);
   pointer-events: none;
+}
+
+.nav-switch[data-tab='change-room'] .nav-switch__knob {
+  right: 0;
+  left: var(--split);
 }
 
 .nav-switch__tab {
@@ -36,17 +47,30 @@
   touch-action: manipulation;
 }
 
+.nav-switch__tab:first-of-type {
+  flex: 0 0 var(--split);
+}
+
+/* Under 360 the halves leave CHANGE ROOM too little room beside its badge (it wrapped onto two lines, the user, 25 Nov):
+   it gets 62% of the switch and EVENTS 38%, and the knob changes width as it slides. */
+@media (max-width: 359px) {
+  .nav-switch {
+    --split: 38%;
+  }
+}
+
 .nav-switch__tab:focus-visible {
   outline-offset: -2px;
 }
 
 /* Figma's 16px label fits from about 420 wide. On narrower phones the padding drops to 8 and the type shrinks with the
    screen (13 at the least), so "CHANGE ROOM" still fits beside the badge (it needs 115 at 16px; the label gets half
-   the screen minus 82). */
+   the screen minus 82). The labels have no 0.05em tracking, unlike the cta and Checkout labels (20 Nov): there's no
+   room for it. It cut CHANGE ROOM to "CHANGE RO…" at 360, 375, 390 and 420, and at 430 with a two-figure badge. */
 @media (max-width: 419px) {
   .nav-switch__tab {
     padding: 0 var(--space-8);
-    font-size: clamp(13px, calc(6.95vw - 12.5px), var(--text-label-size));
+    font-size: clamp(0.8125rem, calc(6.95vw - 12.5px), var(--text-label-size));
   }
 }
 

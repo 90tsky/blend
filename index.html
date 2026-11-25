@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en-GB" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -16,11 +16,22 @@
     <meta name="apple-mobile-web-app-title" content="blend" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- UI font plus one display font per event banner, as in the Figma file -->
+    <!-- UI font, every weight the app uses -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Serif+Display&family=Italiana&family=Kranky&family=Monoton&family=Notable&family=Pacifico&family=Racing+Sans+One&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&display=swap"
     />
+    <!-- One display font per event banner, as in the Figma file. Each loads only the letters of its own title (text=, one
+         request each, since text= covers every font in a request), so a font is a few KB, not the whole alphabet.
+         If a title changes in src/data/events.ts, or the banner CSS changes its case, change its text= too. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Notable&text=Casual&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&text=Outdoors&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&text=Office%20hours&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kranky&text=Day%20off&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&text=Maternity&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&text=Working%20out&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&text=Night%20out&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&text=Beach%20day&display=swap" />
   </head>
   <body>
     <div id="root"></div>

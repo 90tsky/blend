@@ -11,6 +11,12 @@
   background: var(--color-background);
 }
 
+/* Tabbing back up stops 12 clear of the pinned header (193 tall with its two-line subtitle at 1.5), which hid the
+   pickers. */
+:root:has(.options) {
+  scroll-padding-top: calc(193px + var(--space-12));
+}
+
 .options__body {
   display: flex;
   flex-direction: column;
@@ -75,6 +81,13 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: var(--space-12);
+}
+
+/* The card clips anything outside it (only the line between the photos showed), so the ring goes inside each half,
+   rounded like the card. */
+.gender__option:focus-visible {
+  border-radius: var(--radius-xl);
+  outline-offset: -4px;
 }
 
 /* The floor shadow under the feet. */

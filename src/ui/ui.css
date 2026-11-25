@@ -1,6 +1,7 @@
 /* Shared building blocks from the Figma components: cta (primary / secondary), round button, top bar, header. */
 
-/* cta: 48 tall, full pill, raised. Label in the "button" text style (16 medium, upper case). */
+/* cta: 48 tall, full pill, raised. Label in the "button" text style (16 medium, upper case), opened up by 0.05em as
+   small capitals need (the user liked it, 20 Nov; Checkout has it too, the nav switch has no room for it). */
 .cta {
   position: relative;
   display: flex;
@@ -14,6 +15,7 @@
   box-shadow: var(--shadow-raised);
   font-size: var(--text-button-size);
   font-weight: var(--text-button-weight);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
@@ -35,6 +37,7 @@
 
 .cta__amount {
   font-weight: var(--text-total-weight);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Round button: 72 × 48 raised white pill with an icon (search, turn around, menu, camera controls). */
@@ -151,10 +154,13 @@
   font-size: var(--text-title-size);
   font-weight: var(--text-title-weight);
   line-height: 1.2;
+  /* A title that wraps (a long piece name) splits into even lines rather than leaving one word behind. */
+  text-wrap: balance;
 }
 
 .header__subtitle {
   margin: var(--space-8) 0 0;
   font-size: var(--text-body-size);
   color: var(--color-hint);
+  text-wrap: pretty;
 }

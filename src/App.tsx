@@ -1,9 +1,12 @@
 import { Navigate, Outlet, Route, Routes, useLocation, useOutlet } from 'react-router'
 import { BottomBar } from './components/BottomBar'
 import type { Tab } from './components/NavSwitch'
+import { SplitLayout } from './components/SplitLayout'
 import { TabScreens } from './components/TabScreens'
 import { ToastHost } from './components/Toast'
 import { useFilteredEvents } from './features/search/filtering'
+import { useFiltersInUrl } from './features/search/useFiltersInUrl'
+import { useWide } from './lib/useWide'
 import { ChangeRoom } from './screens/ChangeRoom'
 import { Checkout } from './screens/Checkout'
 import { ComingSoon } from './screens/ComingSoon'
@@ -27,10 +30,15 @@ function AppShell() {
 }
 
 // Events and Change room share the top and bottom bars, so they stay put (and the knob slides) while the screens push
-// past under them.
+// past under them. On a laptop both are open side by side instead (SplitLayout), where the change room has no address
+// of its own: /change-room goes to /events, and /change-room/try-on to /events/try-on.
 function MainLayout() {
   const outlet = useOutlet()
-  const tab: Tab = useLocation().pathname.startsWith('/change-room') ? 'change-room' : 'events'
+  const { pathname, search } = useLocation()
+  const wide = useWide()
+  useFiltersInUrl()
+  const tab: Tab = pathname.startsWith('/change-room') ? 'change-room' : 'events'
+  if (wide) return tab === 'change-room' ? <Navigate to={pathname.replace('/change-room', '/events') + search} replace /> : <SplitLayout />
   return (
     <>
       <MainTopBar tab={tab} />
@@ -56,6 +64,8 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="events" element={<Events />}>
             <Route path="search" element={<SearchSheet />} />
+            {/* The laptop layout's Try it on: the change room is open beside Events there, so Try-On rises from here. */}
+            <Route path="try-on/*" element={<TryOn />} />
           </Route>
           <Route path="change-room" element={<ChangeRoom />}>
             {/* Try-On rises over the change room, which stays mounted underneath. */}
@@ -65,7 +75,10 @@ export default function App() {
         <Route path="product/:id" element={<Product />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order-placed" element={<OrderPlaced />} />
-        <Route path="options" element={<Options />} />
+        {/* The menu screen (called Options until 20 Nov: the user, "menu sounds more in tack with how the other things
+            are named, like events and change room"). Old links still land on it. */}
+        <Route path="menu" element={<Options />} />
+        <Route path="options" element={<Navigate to="/menu" replace />} />
         <Route path="coming-soon" element={<ComingSoon />} />
         <Route path="*" element={<Navigate to="/events" replace />} />
       </Route>

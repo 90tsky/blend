@@ -51,7 +51,12 @@ export function Result() {
     >
       <div className="try-card try-card--photo">
         <div className="try-photo-box">
-          <img className="try-photo" src={result.imageUrl} alt={own ? 'Your photo' : ''} />
+          {/* A model like you: the picture is the screen's main content, so it's named like its label. */}
+          <img
+            className="try-photo"
+            src={result.imageUrl}
+            alt={own ? 'Your photo' : result.isDemo ? 'Demo preview of a model in your outfit' : 'AI preview of a model in your outfit'}
+          />
         </div>
         <p className="result__label">{result.isDemo ? 'Demo preview' : 'AI preview'}</p>
         {outfit.length > 0 && (
@@ -59,7 +64,9 @@ export function Result() {
             {outfit.map((p) => (
               <li key={p.id}>
                 <Icon name={p.slot === 'top' ? 'glyph-top' : 'glyph-bottom'} size={12} />
-                {p.brand} {p.name}
+                <span>
+                  <span translate="no">{p.brand}</span> {p.name}
+                </span>
               </li>
             ))}
           </ul>

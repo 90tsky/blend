@@ -20,6 +20,15 @@ html {
   scrollbar-gutter: stable;
   /* The page never bounces or pulls to refresh. On html: the page takes it from the root element, not from body. */
   overscroll-behavior: none;
+  /* Tabbing to a control scrolls it clear of the fixed top bar (70), with 12 to spare for the focus ring. Screens with
+     more pinned at the top or bottom add theirs (Events, Product, Checkout, Options). */
+  scroll-padding-top: calc(70px + var(--space-12));
+  /* Text follows the screen's width (the user, 25 Nov: "can the text size change acordingly with the screen size"):
+     the design size on a 430 screen and anything wider, gently smaller on narrower ones (half as fast as the screen:
+     92% at 360, 84% at 290), never under 81%. Every text size is in rem, so it all scales; spacing and buttons are in
+     px and keep their size, so they stay easy to tap. rem here is the browser's own text size, so a reader's larger
+     text setting still counts, and the floor keeps zoom working. */
+  font-size: clamp(0.8125rem, calc(0.5rem + 1.8605vw), 1rem);
 }
 
 :root[data-theme='dark'] {
@@ -33,14 +42,18 @@ body {
   color: var(--color-on-surface);
   font-family: var(--font-ui);
   font-size: var(--text-body-size);
-  line-height: 1.3;
+  /* Body copy reads at 1.5. Short one-line labels and titles set their own, tighter line height (buttons below). */
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
 
+/* Button labels are short single lines: they keep the tighter 1.3. */
 button {
   font: inherit;
+  line-height: 1.3;
   color: inherit;
   background: none;
   border: 0;

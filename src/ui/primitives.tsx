@@ -33,7 +33,7 @@ export function TopBar({ variant = 'plain', menu = true }: { variant?: 'plain' |
   return (
     <header className={`top-bar top-bar--${variant}`}>
       <Logo className="top-bar__logo" />
-      {menu && <RoundButton icon="menu" label="Options" onClick={() => navigate('/options')} />}
+      {menu && <RoundButton icon="menu" label="Menu" onClick={() => navigate('/menu')} />}
     </header>
   )
 }

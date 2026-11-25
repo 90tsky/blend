@@ -36,13 +36,15 @@ export function Checkout() {
   }
 
   return (
-    <main className={`screen screen--below-top-bar checkout${paying ? ' checkout--paying' : ''}`} aria-busy={paying || undefined}>
+    <main className={`screen screen--below-top-bar checkout${paying ? ' checkout--paying' : ''}`}>
       <div className="checkout__top" inert={paying}>
         <TopBar />
       </div>
       <Header title="Checkout" subtitle="Everything in your change room." onLead={back} />
 
-      <div className="checkout__content">
+      {/* Busy here, not on <main>: a screen reader may hold back a live region's news inside a busy element, and the
+          "Keep this screen open…" line below has to be heard. */}
+      <div className="checkout__content" aria-busy={paying || undefined}>
         <ul className="checkout__items" aria-label="Pieces">
           {items.map((p) => (
             <li key={p.id} className="checkout-item">
@@ -50,7 +52,7 @@ export function Checkout() {
                 <img src={p.images.front.src} width={p.images.front.width} height={p.images.front.height} alt="" loading="lazy" decoding="async" />
               </span>
               <p className="checkout-item__name">
-                {p.brand} {p.name}
+                <span translate="no">{p.brand}</span> {p.name}
               </p>
               <p className="checkout-item__price">
                 {formatAmount(p.price, state.currency)} {state.currency}
@@ -84,7 +86,11 @@ export function Checkout() {
           </h2>
           <div className="checkout-card">
             <p className="checkout-card__text">
-              <span className="checkout-card__title">Visa •••• 4242</span>
+              {/* Read out as "Visa ending in 4242", not "bullet bullet bullet bullet". */}
+              <span className="checkout-card__title">
+                <span aria-hidden="true">Visa •••• 4242</span>
+                <span className="visually-hidden">Visa ending in 4242</span>
+              </span>
               <span className="checkout-card__line">Expires 08/28</span>
             </p>
             <button type="button" className="checkout-card__change" disabled={paying} aria-label="Change payment method">
@@ -95,11 +101,10 @@ export function Checkout() {
       </div>
 
       <div className="checkout__pay">
-        {paying && (
-          <p className="checkout__note" role="status">
-            Keep this screen open while we confirm your payment.
-          </p>
-        )}
+        {/* Always on the page and empty until paying, so the words are announced when they arrive. */}
+        <p className="checkout__note" role="status">
+          {paying && 'Keep this screen open while we confirm your payment.'}
+        </p>
         {paying ? (
           <Cta variant="secondary" className="checkout__paying" aria-disabled="true">
             <svg className="checkout__spinner" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">

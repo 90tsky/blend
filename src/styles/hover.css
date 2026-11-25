@@ -1,0 +1,171 @@
+/* Hover states (the user, 20 Nov: "add hover states for laptops"). Only where there's a mouse or trackpad: a phone's tap
+   would leave them stuck on. One small vocabulary, in the app's raised-and-pressed language:
+   - raised buttons lift by 1 and their glow grows; pressing sets them back down;
+   - the black buttons also lighten a little (mixed towards their label colour, so dark mode darkens them instead);
+   - flat icon buttons get a soft round tint, text buttons an underline;
+   - pickers preview the choice the way a press does (the half-colour figure, the knob-less option tinted);
+   - photos of pieces grow slightly (scale, never a squash).
+   The motion here is 150ms ease-out, and the reduce-motion switches in base.css still turn it off. */
+@media (hover: hover) and (pointer: fine) {
+  :root {
+    --hover-tint: color-mix(in srgb, var(--color-on-surface) 7%, transparent);
+    --shadow-raised-hover: 0px 10px 28px -6px var(--effect-glow), 0px 2px 4px 0px var(--effect-contact), inset 0px -2px 2px 0px var(--effect-bottom-shade), inset 0px 1px 0px 0px var(--effect-top-light);
+  }
+
+  /* Raised buttons */
+  .round-btn,
+  .chip-bar__add-face {
+    transition: translate 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .cta {
+    transition: background-color 0.2s ease-out, color 0.2s ease-out, translate 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .checkout-btn {
+    transition: color 0.2s ease-in-out, translate 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .checkout-btn.is-on {
+    transition: color 0.3s ease-out, translate 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .round-btn:hover:not(:disabled),
+  .cta:hover:not(:disabled),
+  .checkout-btn:not([aria-disabled='true']):hover,
+  .chip-bar__add:hover .chip-bar__add-face {
+    translate: 0 -1px;
+    box-shadow: var(--shadow-raised-hover);
+  }
+
+  .round-btn:active:not(:disabled),
+  .cta:active:not(:disabled),
+  .checkout-btn:not([aria-disabled='true']):active,
+  .chip-bar__add:active .chip-bar__add-face {
+    translate: 0 0;
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* The black buttons lighten. */
+  .cta--primary:hover:not(:disabled) {
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / 0.14)), color-mix(in srgb, var(--color-primary) 86%, var(--color-on-primary));
+  }
+
+  .checkout-btn.is-on:hover::before {
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / 0.14)), color-mix(in srgb, var(--color-primary) 86%, var(--color-on-primary));
+  }
+
+  /* Flat icon buttons: a soft round tint. */
+  .header__lead,
+  .size-guide__close,
+  .cr-chip__remove,
+  .chip-bar__x {
+    border-radius: var(--radius-full);
+  }
+
+  .header__lead:hover,
+  .size-guide__close:hover,
+  .cr-chip__remove:hover {
+    background-color: var(--hover-tint);
+  }
+
+  /* A filter chip's ✕ (the whole chip removes it) and the toast's chips: the pill deepens a little. */
+  .chip-bar__chip:hover .chip-bar__pill {
+    background: color-mix(in srgb, var(--color-active) 82%, var(--color-on-surface));
+  }
+
+  .toast__action:hover .toast__chip {
+    background: color-mix(in srgb, var(--color-toast-action) 75%, var(--color-on-primary));
+  }
+
+  /* Text buttons: an underline, from the font. */
+  .chip-bar__clear:hover,
+  .welcome__guest:hover,
+  .checkout-card__change:hover:not(:disabled),
+  .product__guide:hover,
+  .events__message:hover .events__message-hint strong {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-offset: 0.2em;
+  }
+
+  /* The no-results card and the search sheet's "Search “tee”" row: the plate tints. */
+  .events__message,
+  .search__go,
+  .suggestion__pill {
+    transition: background-color 0.15s ease-out;
+  }
+
+  .events__message:hover {
+    background: color-mix(in srgb, var(--color-surface) 93%, var(--color-on-surface));
+  }
+
+  .search__go:hover,
+  .suggestion:not(.suggestion--on):hover .suggestion__pill {
+    background-color: color-mix(in srgb, var(--color-background) 85%, var(--color-on-surface));
+  }
+
+  /* EVENTS / CHANGE ROOM: the tab you're not on tints, under its label (the knob shows the one you're on). */
+  .nav-switch__tab:not([aria-current]):hover {
+    background-color: var(--hover-tint);
+  }
+
+  /* Pickers: an option that isn't chosen tints; the gender and build photos show the half colour a press shows. */
+  .segmented__option:not([aria-checked='true']):hover,
+  .seg__option:not([aria-checked='true']):hover {
+    background-color: var(--hover-tint);
+  }
+
+  .gender__option:not(.gender__option--on):hover img,
+  .build:not(.build--on):hover .build__figure img {
+    filter: grayscale(0.5);
+  }
+
+  /* Pieces: the garment grows a touch on its plate; the card's name underlines, since the whole card opens it. */
+  .product-card .garment-photo,
+  .cr-piece img {
+    transition: scale 0.15s ease-out;
+  }
+
+  .add-toggle__icon {
+    transition: transform 0.15s ease-out, scale 0.15s ease-out;
+  }
+
+  .product-card:hover .garment-photo {
+    scale: 1.04;
+  }
+
+  .product-card:hover .product-card__link {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-offset: 0.15em;
+  }
+
+  .add-toggle:hover .add-toggle__icon {
+    scale: 1.12;
+  }
+
+  .cr-piece:hover img {
+    scale: 1.03;
+  }
+
+  /* The change room's add cards and empty boxes: the + circle grows. */
+  .cr-add__circle,
+  .cr-empty__circle {
+    transition: scale 0.15s ease-out;
+  }
+
+  .cr-add:hover .cr-add__circle,
+  .cr-empty:hover .cr-empty__circle {
+    scale: 1.08;
+  }
+
+  /* The light switch's track and the camera's shutter. */
+  .switch:hover {
+    filter: brightness(0.97);
+  }
+
+  .camera__shutter:hover:not(:disabled) span {
+    scale: 1.04;
+  }
+}

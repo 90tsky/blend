@@ -1,0 +1,187 @@
+/* The laptop layout (SplitLayout.tsx), from 900 × 560 (useWide). Everything here hangs off .split, which only exists in
+   that layout, so the phone layout is untouched. Events is the page on the left; the change room is a 430 column fixed
+   on the right (the phone's width, so its rows, frame and notch keep their phone sizes); one 72 bar runs along the
+   bottom of both. */
+:root:has(.split) {
+  --room-w: 430px;
+  --bar-h-wide: calc(72px + env(safe-area-inset-bottom, 0px));
+  /* The Events column's banners grow with it: 160 at most phone widths, 22% of the column on a laptop, 240 at most. */
+  --banner-h-wide: clamp(160px, (100vw - var(--room-w)) * 0.22, 240px);
+}
+
+/* The app is no longer a phone column here. */
+.app:has(> .split) {
+  max-width: none;
+}
+
+/* Events: the page, beside the change room. */
+.split__events {
+  margin-right: var(--room-w);
+}
+
+.split .events,
+.split .events--filtered {
+  padding-bottom: var(--bar-h-wide);
+}
+
+/* Tabbing stops 12 clear of the (taller) sticky banner and the bar. */
+:root:has(.split .events) {
+  scroll-padding-top: calc(var(--banner-h-wide) + var(--space-12));
+  scroll-padding-bottom: calc(var(--bar-h-wide) + var(--space-12));
+}
+
+/* Banners grow with the column, and their titles with them, in the same proportion as on a phone (63 on 160), up to
+   1.5×. 0.1375cqw = 22% of the banner's width over 160; the banner is a container, so cqw is its own width. */
+.split .event-banner {
+  height: var(--banner-h-wide);
+}
+
+.split .event-banner__title {
+  font-size: calc(var(--banner-size) * clamp(1px, 0.1375cqw, 1.5px));
+}
+
+/* The no-results message keeps its place under the top bar, as wide as two cards. */
+.split .events__message-wrap {
+  max-width: 860px;
+}
+
+/* Cards: two columns up to a 640 column, then three, then six (each event has six pieces: 4 tops, 2 bottoms). The
+   photo plate keeps the phone's proportions (169 × 156), so the garment grows with the card. */
+@media (min-width: 1070px) {
+  .split .event-section__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1730px) {
+  .split .event-section__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.split .product-card__plate {
+  position: relative;
+  height: auto;
+  aspect-ratio: 169 / 156;
+}
+
+/* The garment fills the plate inside its 8 padding, whatever the photo's own size. */
+.split .product-card__garment {
+  position: absolute;
+  inset: var(--space-8);
+  width: auto;
+  height: auto;
+}
+
+/* The change room: always open on the right, from the top of the screen to its own bar (below). It sits at the bars'
+   level (20); the top bar stacks above it (21), for ☰. */
+.split .change-room--panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: var(--bar-h-wide);
+  z-index: 20;
+  width: var(--room-w);
+  height: auto;
+  min-height: 0;
+  padding-bottom: 0;
+  background: var(--color-background);
+}
+
+/* Its name and count, in the top bar's row over the change room (where the phone shows the CHANGE ROOM tab): the
+   tab's label style, 20 in like the logo, with the split badge 8 after it. */
+.change-room__head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 70px;
+  padding-left: var(--space-20);
+}
+
+.change-room__title {
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The top bar runs the full width: the logo over Events, ☰ over the change room's right edge. Its plain fill and its
+   shade cover the Events part only; over the change room it's clear, so the heading shows through. */
+.split .top-bar {
+  left: 0;
+  z-index: 21;
+  width: 100%;
+  max-width: none;
+  transform: none;
+}
+
+.split .top-bar::before,
+.split .top-bar::after {
+  right: var(--room-w);
+}
+
+/* One row along the bottom, in two bars: search and the chips under Events (BottomBar `wide`), Checkout and Turn around
+   under the change room (its own bar, inside the change room, so Try it on's shadow falls over it as on the phone). */
+.split .bottom-bar {
+  right: var(--room-w);
+  left: 0;
+  width: auto;
+  max-width: none;
+  transform: none;
+}
+
+.bottom-bar__events {
+  flex: 1;
+  min-width: 0;
+}
+
+.bottom-bar__chips {
+  flex: 1;
+  min-width: 0;
+  max-width: 640px;
+}
+
+.change-room__bar {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  height: var(--bar-h-wide);
+  padding: 0 var(--layout-margin) env(safe-area-inset-bottom, 0px);
+  background: var(--color-background);
+}
+
+/* Toasts rest in the change room, where the pieces go: 24 above the bar, beside Try it on (Toast.tsx). */
+:root:has(.split) .toast-region {
+  right: 0;
+  left: auto;
+  max-width: var(--room-w);
+  transform: none;
+}
+
+/* Search rises in the Events column; the dim still covers both, since the page behind is inert. */
+:root:has(.split) .search__sheet {
+  right: var(--room-w);
+}
+
+/* Try-On rises over the change room, where it was opened, with its pop-ups. */
+:root:has(.split) .try-on {
+  right: 0;
+  left: auto;
+  width: var(--room-w);
+  margin: 0;
+}
+
+:root:has(.split) .try-on .popup--fixed {
+  right: 0;
+  left: auto;
+  width: var(--room-w);
+}

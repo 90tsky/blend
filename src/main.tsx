@@ -7,6 +7,8 @@ import './styles/figma-tokens.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import App from './App'
+// After every component's styles, so its transitions add to theirs.
+import './styles/hover.css'
 import { watchForUpdates } from './lib/update'
 import { StoreProvider, useStore } from './state/store'
 

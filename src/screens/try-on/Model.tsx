@@ -1,3 +1,4 @@
+import { useRef, type KeyboardEvent } from 'react'
 import type { Slot } from '../../data/products'
 import { SIZE_KEYS, sizeLabel } from '../../data/sizes'
 import { asset } from '../../lib/asset'
@@ -22,6 +23,17 @@ export function Model() {
   const { build, setBuild, setRoute, go } = useTryOn()
   const { state, dispatch } = useStore()
   const sizes = (slot: Slot) => SIZE_KEYS.map((k) => ({ value: k, label: sizeLabel(slot, k, state.sizeSystem) }))
+
+  // The build tiles are one radio group, like the pickers: Tab reaches the chosen tile, arrow keys move the choice.
+  const tiles = useRef<(HTMLButtonElement | null)[]>([])
+  const onBuildKey = (e: KeyboardEvent) => {
+    const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
+    if (!step) return
+    e.preventDefault()
+    const next = (BUILDS.findIndex((b) => b.value === build) + step + BUILDS.length) % BUILDS.length
+    setBuild(BUILDS[next].value)
+    tiles.current[next]?.focus()
+  }
 
   return (
     <Step
@@ -55,11 +67,22 @@ export function Model() {
           <h2 className="setting__label" id="try-on-build">
             Build
           </h2>
-          <div className="builds" role="radiogroup" aria-labelledby="try-on-build">
-            {BUILDS.map((b) => {
+          <div className="builds" role="radiogroup" aria-labelledby="try-on-build" onKeyDown={onBuildKey}>
+            {BUILDS.map((b, i) => {
               const on = build === b.value
               return (
-                <button key={b.value} type="button" role="radio" aria-checked={on} className={`build${on ? ' build--on' : ''}`} onClick={() => setBuild(b.value)}>
+                <button
+                  key={b.value}
+                  ref={(el) => {
+                    tiles.current[i] = el
+                  }}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  tabIndex={on ? 0 : -1}
+                  className={`build${on ? ' build--on' : ''}`}
+                  onClick={() => setBuild(b.value)}
+                >
                   <span className="build__figure">
                     <img src={asset(`try-on/build-${b.value}.webp`)} alt="" width={72} height={149} />
                   </span>

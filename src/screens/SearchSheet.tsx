@@ -153,8 +153,9 @@ export function SearchSheet() {
                 ref={inputRef}
                 className="search__input"
                 type="search"
+                name="q"
                 enterKeyHint="search"
-                placeholder="Search pieces or events"
+                placeholder="Search pieces or events…"
                 aria-label="Search pieces or events"
                 autoComplete="off"
                 autoCorrect="off"

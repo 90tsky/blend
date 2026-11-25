@@ -50,13 +50,14 @@
   margin: 0;
   font-size: var(--text-label-size);
   font-weight: var(--text-label-weight);
-  line-height: 19px;
+  line-height: 1.1875;
 }
 
 .setting__hint {
   margin: 0;
   color: var(--color-hint);
   font-size: var(--text-hint-size);
+  text-wrap: pretty;
 }
 
 .setting__hint b {

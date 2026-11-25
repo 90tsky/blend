@@ -29,14 +29,10 @@ export function NavSwitch({ tab }: { tab: Tab }) {
   const layout = { layout: { duration: 0.18, ease: 'easeOut' as const } }
 
   return (
-    <div className="nav-switch">
-      <motion.span
-        className="nav-switch__knob"
-        aria-hidden="true"
-        initial={false}
-        animate={{ x: tab === 'change-room' ? '100%' : '0%' }}
-        transition={TAB_SWITCH}
-      />
+    // The knob covers the current tab and slides (CSS, NavSwitch.css) in TAB_SWITCH's 0.35s ease-in-out. The tabs are
+    // halves, except on very narrow screens, where CHANGE ROOM gets more of the width (--split).
+    <div className="nav-switch" data-tab={tab}>
+      <span className="nav-switch__knob" aria-hidden="true" />
       <Link to="/events" className="nav-switch__tab" aria-current={tab === 'events' ? 'page' : undefined} onClick={toEvents}>
         <span className="nav-switch__area">
           <span className="nav-switch__label">Events</span>

@@ -46,6 +46,15 @@ export function padPath(w: number, h: number, r: number, px: number, py: number,
   return `${topEdge(w, r)} ${upper} A${c} ${c} 0 0 0 ${px - dxL * k} ${py - dyL * k} A${r} ${r} 0 0 1 ${px - dxL} ${h} ${leftEdge(h, r)}`
 }
 
+// The same outline moved right by dx (the paths above use M, A, H, V and Z only, with absolute coordinates).
+export function shiftPath(d: string, dx: number) {
+  return d.replace(/([MAH])([^MAHVZ]*)/g, (_, cmd: string, args: string) => {
+    const n = args.trim().split(/[\s,]+/).map(Number)
+    n[cmd === 'A' ? 5 : 0] += dx
+    return `${cmd}${n.join(' ')} `
+  })
+}
+
 // A rounded box path, optionally with the notch round the Try it on button at the bottom-right corner
 // (house rules › Corners). For the frame (inset 0) the button is 72 × 48 flush with the corner with 12 round it, so
 // the inside curve shares the button's centre (24 + 12 = 36); a box `inset` inside the frame gets the same notch

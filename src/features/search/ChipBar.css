@@ -60,6 +60,17 @@
   height: var(--control-height);
 }
 
+/* The scroller clips anything past the 48 track, which cut the ring round the button to two side bars. The ring goes
+   round the 32 pill instead, inside the track (as on the toast's chips). */
+.chip-bar__chip:focus-visible {
+  outline: none;
+}
+
+.chip-bar__chip:focus-visible .chip-bar__pill {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
 .chip-bar__pill {
   display: inline-flex;
   align-items: center;
@@ -70,7 +81,7 @@
   color: var(--color-on-primary);
   font-size: var(--text-label-small-size);
   font-weight: var(--text-label-small-weight);
-  line-height: 16px;
+  line-height: 1.1429;
   white-space: nowrap;
 }
 

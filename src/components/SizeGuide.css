@@ -56,6 +56,12 @@
   margin-top: calc(var(--size-control) / -2);
 }
 
+/* ✕ sits on the sheet's edge, which clipped the ring's right side: a round ring inside the 48 tap area instead. */
+.size-guide__close:focus-visible {
+  border-radius: var(--radius-full);
+  outline-offset: -4px;
+}
+
 .size-guide__group {
   display: flex;
   flex-direction: column;
@@ -66,6 +72,7 @@
   margin: 0;
   font-size: var(--text-label-size);
   font-weight: var(--text-label-weight);
+  line-height: 1.3;
 }
 
 .size-guide__card {
@@ -74,10 +81,13 @@
   background: var(--color-surface);
 }
 
+/* One-line cells: they keep the tight 1.3 (body copy's 1.5 is for the tip below). */
 .size-guide__table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
 }
 
 .size-guide__table th {
@@ -113,8 +123,10 @@
   color: var(--color-hint);
 }
 
+/* Three or four lines of body copy: 1.5 from body. */
 .size-guide__tip {
   margin: 0;
   font-size: var(--text-body-size);
   color: var(--color-hint);
+  text-wrap: pretty;
 }

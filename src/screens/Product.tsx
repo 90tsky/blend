@@ -40,7 +40,8 @@ export function Product() {
   if (!piece) return <Navigate to="/events" replace />
 
   const added = state.bag.includes(piece.id)
-  const details = [piece.brand, piece.material, eventsFor(piece.id).map((e) => e.title).join(', ')].join(' · ')
+  // After the brand: "Organic cotton · Casual, Working out"
+  const details = [piece.material, eventsFor(piece.id).map((e) => e.title).join(', ')].join(' · ')
   const back = () => (location.key === 'default' ? navigate('/events', { replace: true }) : navigate(-1))
 
   return (
@@ -56,7 +57,9 @@ export function Product() {
 
         <div className="product__info">
           <p className="product__price">{formatPrice(piece.price, state.currency)}</p>
-          <p className="product__details">{details}</p>
+          <p className="product__details">
+            <span translate="no">{piece.brand}</span> · {details}
+          </p>
         </div>
 
         <section className="product__group" aria-labelledby="product-size">

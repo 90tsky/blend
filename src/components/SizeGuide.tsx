@@ -111,11 +111,11 @@ function SizeGuideSheet({ onClose }: { onClose: () => void }) {
                 <tr key={key}>
                   <td>
                     <span className="size-guide__size">{sizeLabel('top', key, system)}</span>
-                    <span className="size-guide__cm">{MEASUREMENTS.top[key]} cm</span>
+                    <span className="size-guide__cm">{MEASUREMENTS.top[key]}&nbsp;cm</span>
                   </td>
                   <td>
                     <span className="size-guide__size">{sizeLabel('bottom', key, system)}</span>
-                    <span className="size-guide__cm">{MEASUREMENTS.bottom[key]} cm</span>
+                    <span className="size-guide__cm">{MEASUREMENTS.bottom[key]}&nbsp;cm</span>
                   </td>
                 </tr>
               ))}

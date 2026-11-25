@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from 'react'
 import { productsById, type Side, type Slot } from '../data/products'
+import { filtersFromAddress } from '../features/search/filterParams'
 import type { SizeKey, SizeSystem } from '../data/sizes'
 import type { Currency } from '../lib/format'
 
@@ -77,17 +78,18 @@ const initialState: State = {
   welcomed: false,
 }
 
-// Saved between visits (the rest resets on reload).
+// Saved between visits (the rest resets on reload). The filters come from the address instead (filterParams.ts).
 type Saved = Pick<State, 'bag' | 'current' | 'recentSearches' | 'sizeSystem' | 'sizes' | 'gender' | 'currency' | 'theme' | 'reduceMotion' | 'notify' | 'welcomed'>
 
 function load(): State {
+  const filters = filtersFromAddress()
   try {
     const saved: Partial<Saved> | null = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
-    if (!saved) return initialState
+    if (!saved) return { ...initialState, filters }
     const bag = (saved.bag ?? []).filter((id) => productsById[id])
-    return { ...initialState, ...saved, bag, current: pickCurrent(bag, saved.current ?? {}), toast: null, filters: [] }
+    return { ...initialState, ...saved, bag, current: pickCurrent(bag, saved.current ?? {}), toast: null, filters }
   } catch {
-    return initialState
+    return { ...initialState, filters }
   }
 }
 

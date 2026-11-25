@@ -9,8 +9,9 @@
 - What it is: blend, a sustainable capsule-wardrobe shop. Every piece in an event goes with every other piece, so any top works with any bottom, and each new piece multiplies the outfits. Keep that promise visible.
 - Who it's for: shoppers who want fewer clothes that all work together.
 - The main thing a user does here: find an outfit for an occasion, add pieces, try top × bottom combinations, buy.
-- Main parts: **Events** (shop by occasion; each event is a capsule). **Change room** (the shopping bag: two carousels, tops above bottoms, to try combinations before buying). **Rotate** (a bottom-bar button that flips all clothes front/back). **Try-On** (a photo of you in the outfit). **Options** (settings). **Closet** (every top × bottom) exists in the coded app only.
+- Main parts: **Events** (shop by occasion; each event is a capsule). **Change room** (the shopping bag: two carousels, tops above bottoms, to try combinations before buying). **Rotate** (a bottom-bar button that flips all clothes front/back). **Try-On** (a photo of you in the outfit). **Menu** (settings; called Options until 2026-11-20 and renamed in the coded app; the Figma file still says Options). **Closet** (every top × bottom) exists in the coded app only.
 - Platform and frame size: phone first, 430 × 932, used with one thumb. Left-handed mode was removed from the prototype on 2026-11-01 (one right-hand layout); it stays planned in the coded app.
+- Laptop (coded app only, from 900 × 560, 2026-11-20): Events on the left, the change room always open on the right (430 wide, with Checkout and Turn around under it), and no EVENTS / CHANGE ROOM switch. Hover states only where there's a mouse. See PROGRAMMER-NOTES.md §4.
 - Most screens are a few instances (top bar, stage, bottom bar) whose content is driven by variables while the prototype plays. On the canvas they show their default state, often empty: judge filled states from the reactions, the notes and the component structure, and say so.
 - There is also a coded React app in src/. Helpers only propose changes to it (file:line); the main chat edits code.
 
