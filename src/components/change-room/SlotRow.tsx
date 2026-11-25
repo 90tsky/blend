@@ -1,4 +1,14 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type RefObject } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type RefObject,
+} from 'react'
 import { flushSync } from 'react-dom'
 import { useNavigate } from 'react-router'
 import {
@@ -296,36 +306,67 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
     const a = Math.abs(v)
     return Math.sign(v) * (a <= r ? a : r + (a - r) / 0.25)
   }
-  // A finger on the row holds whatever is still moving (the step glide and the spring-back) where it is, the way a list
-  // stops under a finger. It used to run on under the finger until the drag began, about 3px later, or for as long as
-  // the finger stayed still (the re-test, 25 Nov). A drag takes it over from there (onPanStart); a finger lifted without
-  // one lets it finish. The glide stays the glide while it's held, so a tap still knows a piece is on its way (onPress).
+  // Every present piece's own ring position, and the add card's (RingPiece and below register them): a removal or Undo
+  // moves these on their own, so a finger has to hold them too (the review, 25 Nov).
+  const owns = useRef(new Set<Own>())
+  const resume = (t: Transition) =>
+    owns.current.forEach((o) => {
+      const r = o.rel()
+      if (o.u.isAnimating() || o.u.get() === r) return
+      if (reduced) o.u.jump(r)
+      else animate(o.u, r, t)
+    })
+  // A finger on the row holds whatever is still moving (the step glide, the spring-back, a removal's or Undo's
+  // close-up) where it is, the way a list stops under a finger. It used to run on under the finger until the drag began,
+  // about 3px later, or for as long as the finger stayed still (the re-test, 25 Nov). A drag takes it over from there
+  // (onPanStart); a finger lifted without one lets it finish. The glide stays the glide while it's held, so a tap still
+  // knows a piece is on its way (onPress).
   const held = useRef(false)
+  const ends = useRef<AbortController | null>(null)
+  const unlisten = () => {
+    ends.current?.abort()
+    ends.current = null
+  }
+  useEffect(() => unlisten, [])
   const letGo = () => {
+    unlisten()
     if (!held.current) return
     held.current = false
     if (glide.get() !== 0) animate(glide, 0, BACK)
     if (dragX.get() !== 0) settle(BACK)
+    resume(BACK)
   }
-  const hold = () => {
+  const hold = (e: ReactPointerEvent) => {
     panned.current = false
-    if (!glide.isAnimating() && !dragX.isAnimating()) return
+    // Only the first pointer's main button: a right click (or a Mac's Ctrl-click) opens a menu, and its release may never
+    // reach the page, which left the row frozen mid-step (the review, 25 Nov).
+    if (!e.isPrimary || e.button !== 0 || e.ctrlKey) return
+    const moving = [...owns.current].filter((o) => o.u.isAnimating())
+    if (!glide.isAnimating() && !dragX.isAnimating() && !moving.length) return
     glide.stop()
     dragX.stop()
+    moving.forEach((o) => o.u.stop())
     held.current = true
-    const up = () => {
-      window.removeEventListener('pointerup', up)
-      window.removeEventListener('pointercancel', up)
-      letGo()
+    unlisten()
+    const ac = new AbortController()
+    ends.current = ac
+    const id = e.pointerId
+    const up = (ev: PointerEvent) => {
+      if (ev.pointerId === id) letGo()
     }
-    window.addEventListener('pointerup', up)
-    window.addEventListener('pointercancel', up)
+    window.addEventListener('pointerup', up, { signal: ac.signal })
+    window.addEventListener('pointercancel', up, { signal: ac.signal })
+    window.addEventListener('contextmenu', letGo, { signal: ac.signal })
+    window.addEventListener('blur', letGo, { signal: ac.signal })
   }
   // A new drag takes over whatever is still moving from where the pieces are on screen, so they follow the new finger
-  // at once instead of finishing the old move under it.
+  // at once instead of finishing the old move under it. A close-up stays held under the drag and goes on to its
+  // places when the finger lifts (onPanEnd).
   const dragFrom = useRef(0)
   const onPanStart = () => {
+    unlisten()
     held.current = false
+    owns.current.forEach((o) => o.u.stop())
     dragX.stop()
     glide.stop()
     const now = dragX.get() + glide.get() * stepPx
@@ -343,6 +384,7 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
     const dir = dx < -48 || vx < -500 ? 1 : dx > 48 || vx > 500 ? -1 : 0
     if (dir === 0) settle(BACK)
     else step(dir)
+    resume(BACK) // a held close-up: a step carries it on itself (RingPiece), a spring-back or a wiggle doesn't
   }
   // Arrow keys: the focus moves to the piece that becomes current (the one that had it is parked, so it can't keep it).
   const keyStep = useRef(false)
@@ -356,6 +398,15 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
 
   const b = W > 0 && H > 0 ? boxes(slot, W, H, col) : null
   const atEnd = index === n - 1
+  // When a tap on the peek last stepped. Only then is a quick second tap on the piece still gliding in from the peek
+  // (already current) a second "next"; any other tap on the current piece opens it, even while it's still sliding in
+  // after a swipe, a removal or a step back (the review, 25 Nov: those skipped it, or wiggled and took Undo's place).
+  const peekTap = useRef(-Infinity)
+  const recentPeekTap = () => performance.now() - peekTap.current < 600
+  const stepFromPeek = () => {
+    peekTap.current = performance.now()
+    step(1)
+  }
   // A tap where the peek is steps, even when it lands between pieces: the second tap of a quick double tap does,
   // while the next peek is still on its way in from the right edge (the re-test, 25 Nov: under ~150ms apart, it was lost).
   const onTrackClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -364,7 +415,7 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
     const k = r.width / (e.currentTarget.offsetWidth || 1)
     const x = (e.clientX - r.left) / k
     const y = (e.clientY - r.top) / k
-    if (x >= b.peek.x && x <= b.peek.x + b.peek.w && y >= b.peek.y && y <= b.peek.y + b.peek.h) step(1)
+    if (x >= b.peek.x && x <= b.peek.x + b.peek.w && y >= b.peek.y && y <= b.peek.y + b.peek.h) stepFromPeek()
   }
 
   // One step along the ring in pixels: from the current piece's centre to the peek's (W / 2 - 18 in both rows), so a
@@ -401,6 +452,14 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
       if (off !== 0) animate(cardU, cardRel, SLIDE)
     } else animate(cardU, cardRel, cardLatest.current.move)
   }, [cardRel, cardU])
+  useEffect(() => {
+    const me: Own = { u: cardU, rel: () => lastCardRel.current }
+    const set = owns.current
+    set.add(me)
+    return () => {
+      set.delete(me)
+    }
+  }, [cardU])
 
   return (
     // No backdrop frame behind the pieces, in either mode (the user, 4 Nov: option A).
@@ -457,15 +516,17 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
                   leaving={leaving}
                   onKey={rel === 0 ? onKey : undefined}
                   keyStep={keyStep}
-                  // Decided by where the piece is: a second quick tap on the peek lands on the piece still gliding in
-                  // from it (already current), and steps again instead of opening the product. Coming in from the
-                  // left (a step back), a tap opens it: there's no peek on that side to mean "next".
-                  onPress={(at) => {
-                    if (panned.current) return
+                  owns={owns}
+                  // A second quick tap on the peek lands on the piece still gliding in from it (already current), and
+                  // steps again instead of opening the product (nothing, if it's the last). Anything else opens it.
+                  // Keys (Enter, Space) always act, even right after a mouse drag (the review, 25 Nov).
+                  onPress={(at, key) => {
+                    if (panned.current && !key) return
                     if (rel === 0) {
-                      if (at > 0.15) step(1)
-                      else navigate(`/product/${p.id}`)
-                    } else if (rel === 1) step(1)
+                      if (!key && at > 0.15 && recentPeekTap()) {
+                        if (items[index + 1]) stepFromPeek()
+                      } else navigate(`/product/${p.id}`)
+                    } else if (rel === 1) stepFromPeek()
                   }}
                 />
               )
@@ -480,8 +541,12 @@ function SlotContent({ slot, items, currentId, side, onAdd, W, H, col, enter }: 
           style={{ x: cardX, opacity: cardOpacity }}
           inert={!atEnd}
           aria-hidden={!atEnd || undefined}
-          onClick={() => {
-            if (!panned.current) onAdd()
+          // Keys always open it. A tap right after a tap on the peek doesn't: that's the second tap of a quick double tap
+          // on the last peek, landing on the card as it slides into the peek's place, not "add" (the review, 25 Nov: it
+          // jumped to Events, even when the card was only 10px from its place).
+          onClick={(e) => {
+            if (e.detail !== 0 && (panned.current || recentPeekTap())) return
+            onAdd()
           }}
         >
           <Box variant="dashed" />
@@ -533,14 +598,17 @@ type PieceProps = {
   leaving: boolean
   onKey?: (e: KeyboardEvent) => void
   keyStep: RefObject<boolean>
-  onPress: (at: number) => void
+  owns: RefObject<Set<Own>>
+  onPress: (at: number, key: boolean) => void
 }
+// A ring position that moves on its own (a piece's u, the add card's), and where it belongs now.
+type Own = { u: MotionValue<number>; rel: () => number }
 
 // One piece in the row. Its wrapper sits at the current-piece box and is moved and scaled to its ring position
 // (ringAt: its place in the row, `rel`, plus the drag), so a drag and a step follow one path. The button inside plays
 // what happens to the piece itself: shrinking in and out round its centre when it's added or taken away, and the
 // current piece turning away when it's removed (and back on Undo).
-function RingPiece({ p, side, slot, rel, cur, ring, turned, drag, glide, stepping, stepPx, move, reduced, leaving, onKey, keyStep, onPress }: PieceProps) {
+function RingPiece({ p, side, slot, rel, cur, ring, turned, drag, glide, stepping, stepPx, move, reduced, leaving, onKey, keyStep, owns, onPress }: PieceProps) {
   const present = useIsPresent()
   const btn = useRef<HTMLButtonElement>(null)
   const start = ringAt(rel, ring)
@@ -603,6 +671,17 @@ function RingPiece({ p, side, slot, rel, cur, ring, turned, drag, glide, steppin
     // An arrow-key step: the focus comes along to the new current piece.
     if (rel === 0 && keyStep.current) btn.current?.focus({ preventScroll: true })
   }, [rel, u, keyStep, stepping])
+  // While it's in the row, a finger on the row can hold its own glide too (SlotContent's hold). A removed piece turning
+  // away isn't held.
+  useEffect(() => {
+    if (!present) return
+    const me: Own = { u, rel: () => lastRel.current }
+    const set = owns.current
+    set.add(me)
+    return () => {
+      set.delete(me)
+    }
+  }, [present, owns, u])
 
   const parked = rel < 0 || rel > 1
   const rest = { x: 0, y: 0, scale: 1, rotateY: 0, opacity: 1 }
@@ -639,7 +718,7 @@ function RingPiece({ p, side, slot, rel, cur, ring, turned, drag, glide, steppin
         aria-label={rel === 0 ? `${p.brand} ${p.name}` : `Next ${slot}`}
         onKeyDown={onKey}
         // Enter or Space (detail 0) always acts on the piece as it is: the keyboard has no "still gliding".
-        onClick={(e) => onPress(e.detail === 0 ? 0 : gliding())}
+        onClick={(e) => onPress(e.detail === 0 ? 0 : gliding(), e.detail === 0)}
       >
         <img src={p.images[side].src} alt="" draggable={false} />
       </motion.button>
