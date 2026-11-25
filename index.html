@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4efee" />
+    <!-- Inside another page (the portfolio's phone preview): no scrollbars, as on a phone (base.css, html.is-embedded).
+         Set before the first paint, so the page never lays out round one. -->
+    <script>if (window.top !== window.self) document.documentElement.classList.add('is-embedded')</script>
     <meta name="description" content="blend: a capsule wardrobe shop where every top goes with every bottom. Mix them in the change room before you buy." />
     <title>blend</title>
     <link rel="icon" href="/brand/logo.svg" />

@@ -31,6 +31,21 @@ html {
   font-size: clamp(0.8125rem, calc(0.5rem + 1.8605vw), 1rem);
 }
 
+/* Inside another page (the portfolio's phone preview; index.html sets the class): no scrollbars and no room kept for
+   one, as on a phone. On a desktop with classic scrollbars the kept room showed as a light strip down the phone's
+   right edge (the user, 25 Nov). Lists still scroll with the wheel, a drag and the keys. */
+html.is-embedded,
+html.is-embedded * {
+  scrollbar-width: none;
+}
+html.is-embedded {
+  scrollbar-gutter: auto;
+}
+html.is-embedded::-webkit-scrollbar,
+html.is-embedded *::-webkit-scrollbar {
+  display: none;
+}
+
 :root[data-theme='dark'] {
   color-scheme: dark;
 }
