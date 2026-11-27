@@ -1,7 +1,7 @@
 import { motion, type Transition } from 'motion/react'
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { events } from '../data/events'
 import { productsById } from '../data/products'
 import { applyFilters, countLabel, findFilter, piecesOf } from '../features/search/filtering'
@@ -45,12 +45,18 @@ export function SearchSheet() {
     return () => window.clearTimeout(t)
   }, [typed])
 
-  // Back to the Events entry that opened the sheet, or to Events on a fresh load.
+  // Opened with the change room's search button (BottomBar), not from Events.
+  const fromChangeRoom = (useLocation().state as { from?: string } | null)?.from === 'change-room'
+  // Closed without picking: back to the screen that opened the sheet, or to Events on a fresh load.
   const back = () => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate('/events', { replace: true }))
+  // Picked a filter: the results are on Events, so that's where it lands. Opened from the change room, Back went there
+  // instead and the results only flashed past (the user, 27 Nov, with a video: adding or removing a category "moves to
+  // the change room"), so the sheet's own entry becomes Events; Back from Events still returns to the change room.
+  const toEvents = () => (fromChangeRoom ? navigate('/events', { replace: true }) : back())
   // The sheet slides down and the dim fades, then the route changes.
-  const close = () => {
+  const close = (then: () => void = back) => {
     inputRef.current?.blur()
-    setLeaving(() => back)
+    setLeaving(() => then)
   }
 
   // While open: Events behind is inert and doesn't scroll, Esc closes, and focus goes to the field (then back after).
@@ -78,7 +84,7 @@ export function SearchSheet() {
   const toggle = (f: Filter) => {
     const on = findFilter(filters, f)
     dispatch(on ? { type: 'removeFilter', filter: on } : { type: 'addFilter', filter: f })
-    close()
+    close(toEvents)
   }
 
   // Enter, the keyboard's Search key or the "Search “tee”" row: the typed word becomes a filter.
@@ -87,7 +93,7 @@ export function SearchSheet() {
     if (!query) return
     dispatch({ type: 'addFilter', filter: { kind: 'query', value: query } })
     dispatch({ type: 'addRecent', query })
-    close()
+    close(toEvents)
   }
 
   // Pieces open their Product page in place of the sheet, so Back from there lands on Events.
@@ -117,7 +123,7 @@ export function SearchSheet() {
         initial={{ opacity: 0 }}
         animate={{ opacity: leaving ? 0 : 1 }}
         transition={{ duration: 0.2 }}
-        onClick={close}
+        onClick={() => close()}
       />
       <motion.div
         className="search__sheet"

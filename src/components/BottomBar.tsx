@@ -26,7 +26,7 @@ export function BottomBar({ wide = false }: { wide?: boolean }) {
       icon="search"
       label={filters ? `Search, ${plural(filters, 'filter')} on` : 'Search'}
       dot={filters > 0}
-      onClick={() => navigate('/events/search')}
+      onClick={() => navigate('/events/search', { state: { from: tab } })}
     />
   )
   const turnAround = <RoundButton icon="turn-around" label="Turn around" aria-pressed={state.side === 'back'} onClick={() => dispatch({ type: 'rotate' })} />

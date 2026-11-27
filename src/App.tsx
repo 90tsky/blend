@@ -11,6 +11,11 @@ import { ChangeRoom } from './screens/ChangeRoom'
 import { Checkout } from './screens/Checkout'
 import { ComingSoon } from './screens/ComingSoon'
 import { Events } from './screens/Events'
+import { About } from './screens/menu/About'
+import { Account } from './screens/menu/Account'
+import { Currency } from './screens/menu/Currency'
+import { Help } from './screens/menu/Help'
+import { Notifications } from './screens/menu/Notifications'
 import { Options } from './screens/Options'
 import { OrderPlaced } from './screens/OrderPlaced'
 import { Product } from './screens/Product'
@@ -78,6 +83,12 @@ export default function App() {
         {/* The menu screen (called Options until 20 Nov: the user, "menu sounds more in tack with how the other things
             are named, like events and change room"). Old links still land on it. */}
         <Route path="menu" element={<Options />} />
+        {/* The menu's own pages (27 Nov), each opened from a row of the menu. */}
+        <Route path="menu/account" element={<Account />} />
+        <Route path="menu/notifications" element={<Notifications />} />
+        <Route path="menu/currency" element={<Currency />} />
+        <Route path="menu/help" element={<Help />} />
+        <Route path="menu/about" element={<About />} />
         <Route path="options" element={<Navigate to="/menu" replace />} />
         <Route path="coming-soon" element={<ComingSoon />} />
         <Route path="*" element={<Navigate to="/events" replace />} />

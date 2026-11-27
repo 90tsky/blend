@@ -33,6 +33,11 @@ const RENDERS = {
   'try-on/build-hips.webp': '1345:38',
   'try-on/build-shoulders.webp': '1345:45',
   'try-on/build-middle.webp': '1345:52',
+  // The men's builds (gender=male), for a shopper who chose Men's in Account (27 Nov).
+  'try-on/build-men-even.webp': '1420:185',
+  'try-on/build-men-hips.webp': '1420:186',
+  'try-on/build-men-shoulders.webp': '1420:187',
+  'try-on/build-men-middle.webp': '1420:188',
 }
 
 // Icon components, saved as SVG with their fill switched to currentColor.

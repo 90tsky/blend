@@ -7,7 +7,7 @@ import { useBagActions, useStore, type Toast, type ToastKind } from '../state/st
 import './Toast.css'
 
 // How long each message stays (Figma toast 745:3668). Undo stays available the whole time.
-const DURATION: Record<ToastKind, number> = { added: 4500, removed: 6000, emptied: 6000, 'only-one': 4500, 'checkout-empty': 4500, undone: 3300 }
+const DURATION: Record<ToastKind, number> = { added: 4500, removed: 6000, emptied: 6000, 'only-one': 4500, 'checkout-empty': 4500, undone: 3300, 'searches-cleared': 3300 }
 
 // The one toast for every screen: "Added to change room · Undo · View", "Removed <piece> · Undo", "Change room emptied ·
 // Undo", "Undone!", "That’s your only top/bottom · Add more", "Add pieces to check out · Add more". It rises 20px while
@@ -105,6 +105,8 @@ function messageOf(toast: Toast) {
       return `That’s your only ${toast.slot ?? 'piece'}`
     case 'checkout-empty':
       return 'Add pieces to check out'
+    case 'searches-cleared':
+      return 'Recent searches cleared'
   }
 }
 

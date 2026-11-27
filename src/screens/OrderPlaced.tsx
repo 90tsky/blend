@@ -21,7 +21,7 @@ export function OrderPlaced() {
       </div>
       <div className="order-placed__actions">
         {/* Track order isn't built yet; it opens the shared "coming soon" screen. */}
-        <Cta onClick={() => navigate('/coming-soon')}>Track order</Cta>
+        <Cta onClick={() => navigate('/coming-soon?for=orders')}>Track order</Cta>
         <Cta variant="secondary" onClick={() => navigate('/events')}>
           Keep shopping
         </Cta>

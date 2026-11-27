@@ -1,4 +1,5 @@
-/* Options (Figma Options 498:9264): a pinned header under the top bar, then three groups 48 apart. */
+/* The menu and its pages (Figma Options 498:9264, rearranged 27 Nov; rows and cards in menu/menu.css): a pinned header
+   under the top bar, then sections 48 apart. */
 .options {
   padding-bottom: calc(var(--layout-group) + env(safe-area-inset-bottom));
 }
@@ -120,15 +121,8 @@
   filter: none;
 }
 
-/* A setting with its control beside the label (Reduce motion). */
-.setting__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-12);
-}
 
-/* On/off switch, iOS-style in the house look: the sunken track of the chip bar (80 × 48) with the tab switch's raised
+/* On/off switch (menu rows, menu/List.tsx), iOS-style in the house look: the sunken track of the chip bar (80 × 48) with the tab switch's raised
    white knob (40, inset 4), which slides over in 0.35s ease-in-out as the track fills. */
 .switch {
   position: relative;
@@ -159,22 +153,4 @@
 
 .switch[aria-checked='true'] .switch__knob {
   transform: translateX(32px);
-}
-
-/* Account buttons, 24 apart. */
-.options__account {
-  display: flex;
-  flex-direction: column;
-  gap: var(--layout-section);
-}
-
-.options__version {
-  margin: var(--space-24) 0 0;
-  text-align: center;
-  font-size: var(--text-small-size);
-  color: var(--color-hint);
-}
-
-.options__account .cta:disabled {
-  color: var(--color-hint);
 }

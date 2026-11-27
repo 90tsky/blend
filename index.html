@@ -7,6 +7,9 @@
     <!-- Inside another page (the portfolio's phone preview): no scrollbars, as on a phone (base.css, html.is-embedded).
          Set before the first paint, so the page never lays out round one. -->
     <script>if (window.top !== window.self) document.documentElement.classList.add('is-embedded')</script>
+    <!-- The saved appearance (Menu › Appearance: light, dark or auto) before the first paint, so a dark page doesn't
+         open light for a moment. The store keeps it up to date after that (store.tsx). -->
+    <script>try { var t = JSON.parse(localStorage.getItem('blend:v2') || '{}').theme; if (t === 'dark' || t === 'auto') document.documentElement.dataset.theme = t } catch (e) {}</script>
     <meta name="description" content="blend: a capsule wardrobe shop where every top goes with every bottom. Mix them in the change room before you buy." />
     <title>blend</title>
     <link rel="icon" href="/brand/logo.svg" />

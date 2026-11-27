@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
 import type { Build, TryOnResult } from '../services/tryOn'
+import { useStore } from '../state/store'
 import { Camera } from './try-on/Camera'
 import { FlowContext, type Flow, type Photo, type Route as TryOnRoute } from './try-on/flow'
 import { Generating } from './try-on/Generating'
@@ -26,7 +27,11 @@ export function TryOn() {
   const [opener] = useState(() => (document.activeElement instanceof HTMLElement ? document.activeElement : null))
   const [photo, setPhotoState] = useState<Photo | null>(null)
   const [route, setRoute] = useState<TryOnRoute>('photo')
-  const [build, setBuild] = useState<Build>('even')
+  // The body type is the saved one (Menu › Account), so "A model like you" opens on it and a change here is kept
+  // everywhere (the user, 27 Nov: "remember it for the try on").
+  const { state, dispatch } = useStore()
+  const build = state.build
+  const setBuild = useMemo(() => (b: Build) => dispatch({ type: 'setBuild', build: b }), [dispatch])
   const [result, setResult] = useState<TryOnResult | null>(null)
   const [closing, setClosing] = useState(false)
   const at = location.pathname.indexOf('/try-on')
@@ -68,7 +73,7 @@ export function TryOn() {
       go: (step) => navigate(step ? `${base}/${step}` : base, { replace: true }),
       close: () => setClosing(true),
     }),
-    [base, photo, route, build, result, navigate],
+    [base, photo, route, build, setBuild, result, navigate],
   )
 
   const leave = () => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate('/change-room', { replace: true }))

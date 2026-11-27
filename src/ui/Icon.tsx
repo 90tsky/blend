@@ -7,7 +7,7 @@ const exportedByName = Object.fromEntries(Object.entries(exported).map(([file, s
 
 export type IconName =
   | 'menu' | 'search' | 'turn-around' | 'ai-sparkle' | 'back' | 'close' | 'tick' | 'cross'
-  | 'add' | 'check' | 'timer' | 'switch-camera' | 'glyph-top' | 'glyph-bottom'
+  | 'add' | 'check' | 'timer' | 'switch-camera' | 'glyph-top' | 'glyph-bottom' | 'chevron' | 'external'
 
 const STROKE: Partial<Record<IconName, string>> = {
   menu: 'M4 7h16M4 12h16M4 17h16',
@@ -21,6 +21,9 @@ const STROKE: Partial<Record<IconName, string>> = {
   check: 'm5 12.5 4.5 4.5L19 7.5',
   timer: 'M12 20a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm0-10v4.5M9.5 3h5M18 6l1.2-1.2',
   'switch-camera': 'M5.4 9.6a7 7 0 0 1 13.2 0M19.6 7.4l-1 2.2-2.2-1M18.6 14.4a7 7 0 0 1-13.2 0M4.4 16.6l1-2.2 2.2 1',
+  // The menu's rows: › opens a page, ↗ leaves blend (27 Nov; no Figma export yet).
+  chevron: 'm9.5 6 6 6-6 6',
+  external: 'M7 17 17 7M9.5 7H17v7.5',
   'ai-sparkle': 'M12 4l1.8 4.7L18.5 10.5l-4.7 1.8L12 17l-1.8-4.7L5.5 10.5l4.7-1.8L12 4Z',
 }
 

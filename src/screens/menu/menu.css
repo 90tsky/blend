@@ -1,0 +1,369 @@
+/* The menu's pages, arranged like an iPhone's settings (the user, 27 Nov) in the house look: rows on white cards (the
+   gender card's surface and soft glow), hairlines between rows, › for a page, ↗ for leaving blend. Groups sit 24 apart
+   inside the page's 48-apart sections. */
+
+.menu-group-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* A group's small title above its card ("New", "Tell me about"). */
+.menu-group__title {
+  margin: 0 var(--space-16);
+  color: var(--color-hint);
+  font-size: var(--text-hint-medium-size);
+  font-weight: var(--text-hint-medium-weight);
+}
+
+.menu-group {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow:
+    0 8px 24px -6px var(--effect-glow),
+    0 1px 3px 0 var(--effect-contact);
+}
+
+/* Hairlines between rows, from the text's left edge to the card's right, as on an iPhone. */
+.menu-group > li + li {
+  position: relative;
+}
+
+.menu-group > li + li::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: var(--space-16);
+  height: 1px;
+  background: var(--color-background);
+  content: '';
+  pointer-events: none;
+}
+
+.menu-group__note {
+  margin: 0 var(--space-16);
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+  text-wrap: pretty;
+}
+
+.menu-group__note b {
+  font-weight: var(--text-hint-strong-weight);
+}
+
+/* A row: 56 tall at least, the label and an optional second line, then a value, ✓ or ›. */
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-8) var(--space-16);
+  color: inherit;
+  text-align: start;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pressing a row shades it, like a tapped iPhone row. */
+a.menu-row:active,
+button.menu-row:not(:disabled):active,
+summary.menu-row:active {
+  background: var(--color-background);
+}
+
+.menu-row:focus-visible {
+  border-radius: var(--radius-xl);
+  outline-offset: -4px;
+}
+
+.menu-row__lead {
+  flex: none;
+  display: flex;
+}
+
+.menu-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.menu-row__label {
+  font-size: var(--text-body-medium-size);
+  font-weight: var(--text-body-medium-weight);
+  line-height: 1.3;
+}
+
+.menu-row__detail {
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.menu-row__value {
+  flex: none;
+  color: var(--color-hint);
+  font-size: var(--text-body-size);
+}
+
+.menu-row__check {
+  flex: none;
+  color: var(--color-on-surface);
+}
+
+.menu-row__trail {
+  flex: none;
+  color: var(--color-hint);
+}
+
+.menu-row--danger .menu-row__label {
+  color: var(--color-error);
+}
+
+.menu-row:disabled {
+  cursor: default;
+}
+
+.menu-row:disabled .menu-row__label {
+  color: var(--color-hint);
+}
+
+/* A switch row: the switch (80 × 48) keeps the row 64 tall. */
+.menu-row--switch {
+  min-height: 64px;
+  padding-right: var(--space-8);
+  cursor: pointer;
+}
+
+/* A row holding its own control under the label (Appearance). */
+.menu-row--control {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--space-12) var(--space-12);
+}
+
+.menu-row--control > .menu-row__label {
+  padding: 0 var(--space-4);
+}
+
+/* The profile at the top of the menu: photo, name and what's inside, one big row on its own card. */
+.menu-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow:
+    0 8px 24px -6px var(--effect-glow),
+    0 1px 3px 0 var(--effect-contact);
+  color: inherit;
+  text-decoration: none;
+}
+
+.menu-profile:active {
+  background: linear-gradient(var(--color-background), var(--color-background)) padding-box;
+}
+
+.menu-profile__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.menu-profile__name {
+  overflow: hidden;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-profile__detail {
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+}
+
+/* The round profile photo. Without one, the name's first letter (or a plain figure) on the accent colour. */
+.avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-accent);
+  /* A deep shade of the accent, in both modes (the accent itself stays the same; accent-strong turns light in dark). */
+  color: color-mix(in srgb, var(--color-accent) 40%, black);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Account: the photo centred on top, with Change and Remove under it. */
+.account-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.account-photo__button {
+  border-radius: 50%;
+  box-shadow:
+    0 8px 24px -6px var(--effect-glow),
+    0 1px 3px 0 var(--effect-contact);
+}
+
+.account-photo__actions {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.account-photo__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: var(--text-hint-size);
+}
+
+/* A small text button (Change photo, Remove): 48 tall to tap, the look of a link. */
+.text-btn {
+  min-height: var(--control-height);
+  padding: 0 var(--space-12);
+  border-radius: var(--radius-full);
+  font-size: var(--text-body-medium-size);
+  font-weight: var(--text-body-medium-weight);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.text-btn--quiet {
+  color: var(--color-hint);
+}
+
+/* Notifications: New and Earlier one above the other, 24 apart. */
+.inbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-section);
+}
+
+.note {
+  align-items: flex-start;
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-12);
+}
+
+.note__image {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-garment-backdrop);
+  object-fit: cover;
+}
+
+/* A piece shows whole on its backdrop, as on its card; an event's banner fills the square. */
+.note__image--piece {
+  padding: var(--space-4);
+  object-fit: contain;
+}
+
+.note__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.note__when {
+  flex: none;
+  color: var(--color-hint);
+  font-size: var(--text-hint-size);
+}
+
+.note .menu-row__trail {
+  align-self: center;
+}
+
+/* Help: each question opens its answer in place; + turns into −. */
+.faq__q {
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__mark {
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--color-hint);
+}
+
+.faq__mark::before,
+.faq__mark::after {
+  position: absolute;
+  top: 9px;
+  left: 3px;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  content: '';
+  transition: transform 0.2s ease-out;
+}
+
+.faq__mark::after {
+  transform: rotate(90deg);
+}
+
+.faq[open] .faq__mark::after {
+  transform: rotate(0deg);
+}
+
+.faq__a {
+  margin: 0;
+  padding: 0 var(--space-16) var(--space-16);
+  color: var(--color-hint);
+  font-size: var(--text-body-size);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* About: plain paragraphs. */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.prose p {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.prose b {
+  font-weight: var(--text-body-medium-weight);
+}
