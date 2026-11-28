@@ -22,10 +22,12 @@ export function BottomBar({ wide = false }: { wide?: boolean }) {
   const filterOn = tab === 'events' && filters > 0
 
   const search = (
+    // With filters on, its dot carries a white +: it's also where you add one (the chip bar's own + went, the user, 28 Nov).
     <RoundButton
       icon="search"
-      label={filters ? `Search, ${plural(filters, 'filter')} on` : 'Search'}
-      dot={filters > 0}
+      className="round-btn--search"
+      label={filters ? `Search or add a filter, ${plural(filters, 'filter')} on` : 'Search'}
+      dot={filters > 0 ? 'add' : false}
       onClick={() => navigate('/events/search', { state: { from: tab } })}
     />
   )

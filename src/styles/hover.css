@@ -13,8 +13,7 @@
   }
 
   /* Raised buttons */
-  .round-btn,
-  .chip-bar__add-face {
+  .round-btn {
     transition: translate 0.15s ease-out, box-shadow 0.15s ease-out;
   }
 
@@ -32,16 +31,14 @@
 
   .round-btn:hover:not(:disabled),
   .cta:hover:not(:disabled),
-  .checkout-btn:not([aria-disabled='true']):hover,
-  .chip-bar__add:hover .chip-bar__add-face {
+  .checkout-btn:not([aria-disabled='true']):hover {
     translate: 0 -1px;
     box-shadow: var(--shadow-raised-hover);
   }
 
   .round-btn:active:not(:disabled),
   .cta:active:not(:disabled),
-  .checkout-btn:not([aria-disabled='true']):active,
-  .chip-bar__add:active .chip-bar__add-face {
+  .checkout-btn:not([aria-disabled='true']):active {
     translate: 0 0;
     box-shadow: var(--shadow-raised);
   }
@@ -89,10 +86,10 @@
     text-underline-offset: 0.2em;
   }
 
-  /* The no-results card and the search sheet's "Search “tee”" row: the plate tints. */
+  /* The no-results card and the search sheet's "Search “tee”" row: the plate tints. (The suggestion pills' tint
+     shares their grow transition, SearchSheet.css.) */
   .events__message,
-  .search__go,
-  .suggestion__pill {
+  .search__go {
     transition: background-color 0.15s ease-out;
   }
 

@@ -38,7 +38,7 @@ export function Preview() {
           {CHECKS.map((c) => (
             <li key={c} className="badge">
               <Icon name="tick" />
-              {c}
+              <span className="pill-label">{c}</span>
             </li>
           ))}
         </ul>

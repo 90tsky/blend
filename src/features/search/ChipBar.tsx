@@ -1,6 +1,5 @@
 import { AnimatePresence, motion, useReducedMotionConfig } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { useWheelScrollX } from '../../lib/useWheelScrollX'
 import { useStore, type Filter } from '../../state/store'
 import { Icon } from '../../ui/Icon'
@@ -18,15 +17,14 @@ const pop = {
 } as const
 
 // The filter chips in the bottom bar's "filter on" row (Figma chip bar 1806:11153, design "A"): applied chips in a
-// pressed-in track, "Clear all" from 2 chips on, and a raised "+" that opens search. It reads the store itself, so it
-// needs no props, and renders nothing while no filter is on.
+// pressed-in track and "Clear all" from 2 chips on. Adding one is the search button's job: its dot carries a white +
+// while filters are on (the user, 28 Nov; the bar's own raised + at the end went: it looked like the + that adds a piece
+// to the change room). It reads the store itself, so it needs no props, and renders nothing while no filter is on.
 export function ChipBar() {
   const { state, dispatch } = useStore()
-  const navigate = useNavigate()
   const result = useFilteredEvents()
   const { filters } = state
   const scrollRef = useRef<HTMLDivElement>(null)
-  const addRef = useRef<HTMLButtonElement>(null)
   const shown = useRef(filters.length)
   const [spoken, setSpoken] = useState('')
 
@@ -48,9 +46,14 @@ export function ChipBar() {
 
   if (filters.length === 0) return null
 
-  const remove = (f: Filter) => {
+  // The keyboard stays on the chips: the next one, or the one before; with none left, the search button.
+  const toSearch = () => document.querySelector<HTMLButtonElement>('.round-btn--search')?.focus()
+  const remove = (f: Filter, i: number) => {
     dispatch({ type: 'removeFilter', filter: f })
-    addRef.current?.focus()
+    const chips = [...(scrollRef.current?.querySelectorAll<HTMLButtonElement>('.chip-bar__chip') ?? [])].filter((_, k) => k !== i)
+    const next = chips[i] ?? chips[i - 1]
+    if (next) next.focus()
+    else toSearch()
   }
 
   return (
@@ -58,9 +61,9 @@ export function ChipBar() {
       <motion.div layoutScroll ref={scrollRef} className={`chip-bar__scroll${filters.length >= 3 ? ' chip-bar__scroll--fade' : ''}`}>
         <ul className="chip-bar__row">
           <AnimatePresence initial={false} mode="popLayout">
-            {filters.map((f) => (
+            {filters.map((f, i) => (
               <motion.li key={keyOf(f)} layout {...pop}>
-                <button type="button" className="chip-bar__chip" aria-label={`${filterLabel(f)}, remove filter`} onClick={() => remove(f)}>
+                <button type="button" className="chip-bar__chip" aria-label={`${filterLabel(f)}, remove filter`} onClick={() => remove(f, i)}>
                   <span className="chip-bar__pill">
                     <span className="pill-label">{filterLabel(f)}</span>
                     <span className="chip-bar__x">
@@ -70,21 +73,28 @@ export function ChipBar() {
                 </button>
               </motion.li>
             ))}
-            {filters.length >= 2 && (
-              <motion.li key="clear-all" layout {...pop}>
-                <button type="button" className="chip-bar__clear" aria-label="Clear all filters" onClick={() => dispatch({ type: 'setFilters', filters: [] })}>
-                  Clear all
-                </button>
-              </motion.li>
-            )}
           </AnimatePresence>
         </ul>
       </motion.div>
-      <button ref={addRef} type="button" className="chip-bar__add" aria-label="Add a filter" onClick={() => navigate('/events/search')}>
-        <span className="chip-bar__add-face">
-          <Icon name="add" />
-        </span>
-      </button>
+      {/* "Clear all" stays at the end of the bar, where the chips scroll under it (the user, 28 Nov: "wouldnt it be
+          better if clear all is always at the end of the bar?"), not at the end of the chips, scrolled out of sight. */}
+      <AnimatePresence initial={false}>
+        {filters.length >= 2 && (
+          <motion.button
+            key="clear-all"
+            type="button"
+            className="chip-bar__clear"
+            aria-label="Clear all filters"
+            onClick={() => {
+              dispatch({ type: 'setFilters', filters: [] })
+              toSearch()
+            }}
+            {...pop}
+          >
+            <span className="pill-label">Clear all</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
       <p className="visually-hidden" aria-live="polite">
         {spoken}
       </p>

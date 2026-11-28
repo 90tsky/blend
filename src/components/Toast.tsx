@@ -130,17 +130,23 @@ function ToastPill({ toast, showView, onUndo, onView, onAddMore, onPause }: Pill
       <p className="toast__message">{message}</p>
       {canUndo && (
         <button type="button" className={`toast__action${toast.kind === 'added' && showView ? ' toast__action--first' : ''}`} onClick={onUndo}>
-          <span className="toast__chip">Undo</span>
+          <span className="toast__chip">
+            <span className="pill-label">Undo</span>
+          </span>
         </button>
       )}
       {toast.kind === 'added' && showView && (
         <button type="button" className="toast__action" onClick={onView}>
-          <span className="toast__chip">View</span>
+          <span className="toast__chip">
+            <span className="pill-label">View</span>
+          </span>
         </button>
       )}
       {addMore && (
         <button type="button" className="toast__action" onClick={onAddMore}>
-          <span className="toast__chip">Add more</span>
+          <span className="toast__chip">
+            <span className="pill-label">Add more</span>
+          </span>
         </button>
       )}
     </motion.div>

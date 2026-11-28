@@ -64,7 +64,8 @@
   display: flex;
   align-items: center;
   height: 32px;
-  padding: 0 var(--space-16);
+  /* 16, plus the round end's share (r 16 × (1 − π/4) ≈ 3): ui.css, .pill-label. */
+  padding: 0 calc(var(--space-16) + 16px * (1 - pi / 4));
   border-radius: var(--radius-full);
   background: var(--color-toast-action);
   font-size: var(--text-chip-size);

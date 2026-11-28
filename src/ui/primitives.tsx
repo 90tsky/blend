@@ -6,23 +6,34 @@ import './ui.css'
 
 type CtaProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary'; children: ReactNode }
 
-// The Figma "cta" button. Labels are written in sentence case; the style makes them upper case.
+// The Figma "cta" button. Labels are written in sentence case; the style makes them upper case. A plain label goes in a
+// span, so it's centred on its capitals like every pill's words (ui.css, .pill-label).
 export function Cta({ variant = 'primary', className = '', children, ...rest }: CtaProps) {
   return (
     <button type="button" className={`cta cta--${variant} ${className}`} {...rest}>
-      {children}
+      {typeof children === 'string' ? <span>{children}</span> : children}
     </button>
   )
 }
 
-type RoundButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { icon: IconName; label: string; dot?: boolean }
+type RoundButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { icon: IconName; label: string; dot?: boolean | 'add' }
 
-// 72 × 48 raised white pill with an icon. `label` is the spoken name.
+// 72 × 48 raised white pill with an icon. `label` is the spoken name. `dot` puts a small dark dot at the icon's top
+// right; 'add' draws a small white + in it (search with filters on: "add a filter", the user, 28 Nov), in the tags' ✕
+// line weight (1.15), so it doesn't read as the product cards' bold +.
 export function RoundButton({ icon, label, dot, className = '', ...rest }: RoundButtonProps) {
   return (
     <button type="button" className={`round-btn ${className}`} aria-label={label} {...rest}>
       <Icon name={icon} />
-      {dot && <span className="round-btn__dot" aria-hidden="true" />}
+      {dot && (
+        <span className={`round-btn__dot${dot === 'add' ? ' round-btn__dot--add' : ''}`} aria-hidden="true">
+          {dot === 'add' && (
+            <svg viewBox="0 0 10 10" width="10" height="10">
+              <path d="M5 2.4v5.2M2.4 5h5.2" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" />
+            </svg>
+          )}
+        </span>
+      )}
     </button>
   )
 }

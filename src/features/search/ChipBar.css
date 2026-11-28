@@ -41,7 +41,7 @@
   width: max-content;
   height: 100%;
   margin: 0;
-  padding: 0 0 0 var(--space-8);
+  padding: 0 var(--space-8);
   list-style: none;
 }
 
@@ -93,31 +93,18 @@
   height: 32px;
 }
 
+/* "Clear all", pinned at the track's end (the chips scroll on its left). The track's round end gets its share of
+   space like a pill's (12 + r 24 × (1 − π/4) ≈ 17): ui.css, .pill-label. */
 .chip-bar__clear {
+  flex: none;
   height: var(--control-height);
-  padding: 0 var(--space-8);
+  padding: 0 calc(var(--space-12) + 24px * (1 - pi / 4)) 0 var(--space-4);
   font-size: var(--text-label-small-size);
   font-weight: var(--text-label-small-weight);
   white-space: nowrap;
 }
 
-/* "+": a raised white 32 circle in a 48 tap area, fixed at the end of the track. */
-.chip-bar__add {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: var(--size-control);
-  height: var(--size-control);
-  border-radius: var(--radius-full);
-}
-
-.chip-bar__add-face {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(to bottom, rgb(0 0 0 / 0.03), rgb(0 0 0 / 0)), var(--color-surface);
-  box-shadow: var(--shadow-raised);
-  color: var(--color-on-surface);
+/* With "Clear all" after it, the scroller ends mid-track: only its left end follows the track's rounding. */
+.chip-bar:has(.chip-bar__clear) .chip-bar__scroll {
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
 }

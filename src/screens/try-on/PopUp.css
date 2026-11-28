@@ -22,7 +22,8 @@
   align-items: center;
   gap: var(--space-12);
   min-height: var(--control-height);
-  padding: 0 var(--space-20);
+  /* 16, plus the round end's share (r 24 × (1 − π/4) ≈ 5): ui.css, .pill-label. */
+  padding: 0 calc(var(--space-16) + 24px * (1 - pi / 4));
   border-radius: var(--radius-full);
   background: var(--color-primary);
   box-shadow: var(--shadow-raised);

@@ -56,7 +56,7 @@ export function Start({ blocked = false }: { blocked?: boolean }) {
             <figcaption>
               <span className="badge">
                 <Icon name="tick" />
-                Like this
+                <span className="pill-label">Like this</span>
               </span>
             </figcaption>
           </figure>
@@ -65,7 +65,7 @@ export function Start({ blocked = false }: { blocked?: boolean }) {
             <figcaption>
               <span className="badge">
                 <Icon name="cross" className="badge__no" />
-                Not like this
+                <span className="pill-label">Not like this</span>
               </span>
             </figcaption>
           </figure>

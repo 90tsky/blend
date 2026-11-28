@@ -96,7 +96,6 @@
 .suggestion__pill {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-4);
   height: 40px;
   /* 16, plus the round end's share (r 20 × (1 − π/4) ≈ 4): ui.css, .pill-label. */
   padding: 0 calc(var(--space-16) + 20px * (1 - pi / 4));
@@ -107,12 +106,42 @@
   font-weight: var(--text-label-small-weight);
   line-height: 1.1429;
   white-space: nowrap;
+  transition:
+    padding-left 0.2s ease-out,
+    background-color 0.15s ease-out,
+    color 0.15s ease-out;
 }
 
-/* Already on: inverted colours (UNDO grey), no ✓ (the user, 28 Nov). */
+/* The ✓, folded away (no width, no gap) until the pill is picked. */
+.suggestion__check {
+  display: grid;
+  flex: none;
+  width: 0;
+  margin-right: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.2s ease-out,
+    margin-right 0.2s ease-out,
+    opacity 0.15s ease-out;
+}
+
+.suggestion__check svg {
+  flex: none;
+}
+
+/* Already on: inverted colours (UNDO grey) and a ✓ at the round end, in a circle the pill's height (its 24 box 8 from
+   the end, so the tick's centre is the curve's centre), 4 before the word; the pill grows by about 16. */
 .suggestion--on .suggestion__pill {
+  padding-left: var(--space-8);
   background: var(--color-active);
   color: var(--color-on-primary);
+}
+
+.suggestion--on .suggestion__check {
+  width: 24px;
+  margin-right: var(--space-4);
+  opacity: 1;
 }
 
 /* "Search “tee”" with the live count on the right. */
@@ -123,7 +152,8 @@
   width: calc(100% - 2 * var(--layout-margin));
   height: var(--control-height);
   margin: 0 var(--layout-margin) var(--space-4);
-  padding: 0 var(--space-16);
+  /* 16, plus the round ends' share (r 24 × (1 − π/4) ≈ 5): ui.css, .pill-label. */
+  padding: 0 calc(var(--space-16) + 24px * (1 - pi / 4));
   border-radius: var(--radius-full);
   background: var(--color-background);
   text-align: left;

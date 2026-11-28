@@ -110,7 +110,7 @@ export function Checkout() {
             <svg className="checkout__spinner" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M10 3a7 7 0 1 1-6.06 3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
-            Paying…
+            <span>Paying…</span>
           </Cta>
         ) : (
           <Cta onClick={pay}>

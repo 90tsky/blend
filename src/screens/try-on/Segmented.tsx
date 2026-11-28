@@ -35,7 +35,7 @@ export function Segmented<T extends string>({ options, value, onChange, labelled
           className="seg__option"
           onClick={() => onChange(o.value)}
         >
-          {o.label}
+          <span className="pill-label">{o.label}</span>
         </button>
       ))}
     </div>

@@ -150,7 +150,9 @@
   align-items: center;
   gap: var(--space-4);
   height: 32px;
-  padding: 0 var(--space-12) 0 var(--space-8);
+  /* The ✓ or ✕ (24) in a circle the badge's height at its round end (4 from it, so the mark's centre is the curve's);
+     the words' end: 12, plus the round end's share (r 16 × (1 − π/4) ≈ 3). ui.css, .pill-label. */
+  padding: 0 calc(var(--space-12) + 16px * (1 - pi / 4)) 0 var(--space-4);
   border-radius: var(--radius-full);
   background: var(--color-surface);
   font-size: var(--text-hint-medium-size);

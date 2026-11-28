@@ -10,7 +10,9 @@
   gap: var(--space-8);
   width: 100%;
   height: var(--control-height);
-  padding: 0 var(--space-24);
+  /* 24, plus the round end's share (r 24 × (1 − π/4) ≈ 5): .pill-label below. Only the buttons as wide as their words
+     (Search) change; the full-width ones centre their words anyway. */
+  padding: 0 calc(var(--space-24) + 24px * (1 - pi / 4));
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-raised);
   font-size: var(--text-button-size);
@@ -64,6 +66,17 @@
   height: 10px;
   border-radius: 50%;
   background: var(--color-active);
+}
+
+/* The same dot with a small white + (search while filters are on: it opens search to add one). */
+.round-btn__dot--add {
+  display: grid;
+  place-items: center;
+  color: var(--color-on-primary);
+}
+
+.round-btn__dot--add svg {
+  display: block;
 }
 
 /* Top bar: logo left, menu right. 70 tall, fixed over the screen. */
@@ -170,7 +183,16 @@
    the end's radius (16 → about 20 in a 40 pill), which gives the same space on average as a square end would. An icon
    at a round end sits in a circle the pill's height, so it's concentric with the curve. And the words are centred on
    their capital height, not on the font's line box (which sits them a little low or high): */
+.pill-label,
+.cta > span,
+.checkout-btn__row > span,
+.checkout-btn__price > span,
+.nav-switch__label,
+.popup__pill > span,
+.search__go > span {
+  text-box: trim-both cap alphabetic;
+}
+
 .pill-label {
   display: block;
-  text-box: trim-both cap alphabetic;
 }
