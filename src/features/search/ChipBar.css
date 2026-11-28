@@ -75,7 +75,8 @@
   display: inline-flex;
   align-items: center;
   height: 32px;
-  padding-left: var(--space-16);
+  /* 16, plus the round end's share (r 16 × (1 − π/4) ≈ 3): ui.css, .pill-label. */
+  padding-left: calc(var(--space-16) + 16px * (1 - pi / 4));
   border-radius: var(--radius-full);
   background: var(--color-active);
   color: var(--color-on-primary);
@@ -88,7 +89,7 @@
 .chip-bar__x {
   display: grid;
   place-items: center;
-  width: var(--size-control);
+  width: 32px; /* a circle the chip's height at its round end, so the ✕ is concentric with the curve (it was 48 wide, 8 too far in) */
   height: 32px;
 }
 

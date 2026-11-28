@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotionConfig } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { useWheelScrollX } from '../../lib/useWheelScrollX'
 import { useStore, type Filter } from '../../state/store'
 import { Icon } from '../../ui/Icon'
 import { countLabel, filterLabel, useFilteredEvents } from './filtering'
@@ -43,6 +44,7 @@ export function ChipBar() {
     if (el && filters.length > shown.current) el.scrollTo({ left: el.scrollWidth, behavior: reduced ? 'auto' : 'smooth' })
     shown.current = filters.length
   }, [filters.length, reduced])
+  useWheelScrollX(scrollRef, filters.length > 0)
 
   if (filters.length === 0) return null
 
@@ -60,7 +62,7 @@ export function ChipBar() {
               <motion.li key={keyOf(f)} layout {...pop}>
                 <button type="button" className="chip-bar__chip" aria-label={`${filterLabel(f)}, remove filter`} onClick={() => remove(f)}>
                   <span className="chip-bar__pill">
-                    {filterLabel(f)}
+                    <span className="pill-label">{filterLabel(f)}</span>
                     <span className="chip-bar__x">
                       <Icon name="close" />
                     </span>

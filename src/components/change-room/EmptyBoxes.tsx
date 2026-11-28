@@ -39,8 +39,11 @@ const KINDS: Kind[] = ['top', 'bottom', 'all']
 const MARGIN = 12 // --layout-margin
 const CIRCLE = 76
 const LABEL_W = 112 // the add card's width, for its label
-// The + circle's top sits this far above the box's middle (further in the bottom box, which is notched round Try it on).
-const lift = (kind: Kind) => (kind === 'bottom' ? 72 : 52)
+// The words under the circle, as tall as they are on the design screen (the title 16 under the circle, then the hint,
+// on one line or, for the whole room, two). EmptyBoxes measures them once shown and on every resize.
+const WORDS_H: Record<Kind, number> = { top: 57, bottom: 57, all: 75 }
+// The notch round Try it on reaches this far up from the bottom box's bottom edge (the pad's centre 13 up, 48 round).
+const NOTCH_TOP = 61
 
 // A box that has shrunk into an add card goes a moment after the card shows (same drawing, so the overlap can't be
 // seen), never before it: two separate clocks could otherwise leave a frame with neither.
@@ -55,7 +58,12 @@ const modeOf = (tops: number, bottoms: number): Kind | null => (tops === 0 && bo
 // The boxes sit inside the frame, 12 in from it (x 24 on a 430 screen) and 12 apart: "No tops yet" fills the top row,
 // "No bottoms yet" the bottom row (notched round Try it on, the frame's notch offset 12 in), "Your change room is
 // empty" the whole frame. The rows split the stage 290 : 444, as in Figma.
-function homeShape(kind: Kind, W: number, H: number): Shape {
+// The + and its words sit in the middle of the box as one group, whatever the box's shape (the user, 28 Nov: on a
+// tall, narrow window the + didn't seem to know where the middle was). It used to be a fixed distance above the
+// middle, which left the group low in a short box. Now:
+//   group = circle + words        top = box top + (box height - group) / 2        + centre = top + circle / 2
+// In the box notched round Try it on, the group also ends at least 12 above the notch.
+function homeShape(kind: Kind, W: number, H: number, wordsH = WORDS_H[kind]): Shape {
   const topH = (H * 290) / 734
   const x = 2 * MARGIN
   const w = W - 4 * MARGIN
@@ -65,7 +73,10 @@ function homeShape(kind: Kind, W: number, H: number): Shape {
       : kind === 'bottom'
         ? { x, y: topH + MARGIN / 2, w, h: H - topH - 1.5 * MARGIN }
         : { x, y: MARGIN, w, h: H - 2 * MARGIN }
-  return { box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 - lift(kind) + CIRCLE / 2, d: CIRCLE, notch: kind === 'all' ? 0 : 1 }
+  const group = CIRCLE + wordsH
+  let top = box.y + (box.h - group) / 2
+  if (kind === 'bottom') top = Math.max(box.y + MARGIN, Math.min(top, box.y + box.h - NOTCH_TOP - MARGIN - group))
+  return { box, cx: box.x + box.w / 2, cy: top + CIRCLE / 2, d: CIRCLE, notch: kind === 'all' ? 0 : 1 }
 }
 
 // Try it on's pad, in the outline's stage coordinates: the centre of the "No bottoms yet" notch's inside curve (the
@@ -125,6 +136,23 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
   const live = useRef(new Map<number, Live>()).current
   // A copy merging in or splitting off: one outline round all the boxes (UnionOutline) instead of one each.
   const merging = ghosts.length > 0
+  // The words' heights as drawn (they wrap to the stage's width), for centring the + and its words (homeShape).
+  const [wordsH, setWordsH] = useState(WORDS_H)
+  const home = (kind: Kind) => homeShape(kind, W, H, wordsH[kind])
+  useLayoutEffect(() => {
+    const layer = ref.current
+    if (!layer) return
+    const next = { ...wordsH }
+    let changed = false
+    for (const k of KINDS) {
+      const words = layer.querySelector<HTMLElement>(`.cr-empty__words[data-kind="${k}"]`)
+      if (words && Math.abs(words.offsetHeight - next[k]) > 0.5) {
+        next[k] = words.offsetHeight
+        changed = true
+      }
+    }
+    if (changed) setWordsH(next)
+  }, [W, H, main?.key, wordsH])
 
   useLayoutEffect(() => {
     const prev = was.current
@@ -153,21 +181,22 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
         const bottom = measureCard(ref.current, 'bottom')
         if (top && bottom) {
           setMain((m) => m && { ...m, to: top, version })
-          copy(homeShape(before, W, H), bottom)
+          copy(home(before), bottom)
         } else {
           setMain(null)
         }
       }
     } else if (mode === 'all' && before !== 'all') {
       setMain((m) => m && { ...m, kind: 'all', to: null, version })
-      if (card) copy(card, homeShape('all', W, H))
+      if (card) copy(card, home('all'))
     } else if (before === 'all' && mode) {
       setMain((m) => m && { ...m, kind: mode, to: null, version })
-      if (card) copy(homeShape('all', W, H), card)
+      if (card) copy(home('all'), card)
     } else if (mode) {
       setMain({ key: keys.current++, kind: mode, from: null, to: null, version })
     }
-  }, [tops, bottoms, mode, W, H])
+    // home() reads wordsH; a re-run with the same mode returns at once.
+  }, [tops, bottoms, mode, W, H, wordsH])
 
   const pad = padCentre(W, H)
   return (
@@ -179,7 +208,7 @@ export function EmptyBoxes({ tops, bottoms, onOpen }: { tops: number; bottoms: n
           live={live}
           bare={merging}
           kind={main.to ? undefined : main.kind}
-          shape={main.to ?? homeShape(main.kind, W, H)}
+          shape={main.to ?? home(main.kind)}
           from={main.from}
           version={main.version}
           wordsW={W - 4 * MARGIN}
@@ -380,15 +409,20 @@ function MorphBox({ id, live, bare, kind, shape, from, version, wordsW, pad, onO
           <motion.path d={outline} transform="translate(0.5 0.5)" />
         </svg>
       )}
-      <motion.span className="cr-empty__circle" aria-hidden="true" style={{ x: circleX, y: circleY, scale: circleS }}>
-        <motion.span className="cr-empty__plus" style={{ opacity: big }}>
-          <PlusMark size={32} weight={2} />
-        </motion.span>
-        {card && (
-          <motion.span className="cr-empty__plus" style={{ opacity: small }}>
-            <PlusMark size={(plusPx * CIRCLE) / cardD} weight={(1.5 * (plusPx / 16) * CIRCLE) / cardD} />
+      {/* The spot carries the move, the circle only its size: the hover's grow (hover.css) then scales the circle round
+          its own centre. On the circle itself it also scaled the move, and the + dropped onto the words (the user, 28
+          Nov), the more the taller the box. */}
+      <motion.span className="cr-empty__spot" aria-hidden="true" style={{ x: circleX, y: circleY }}>
+        <motion.span className="cr-empty__circle" style={{ scale: circleS }}>
+          <motion.span className="cr-empty__plus" style={{ opacity: big }}>
+            <PlusMark size={32} weight={2} />
           </motion.span>
-        )}
+          {card && (
+            <motion.span className="cr-empty__plus" style={{ opacity: small }}>
+              <PlusMark size={(plusPx * CIRCLE) / cardD} weight={(1.5 * (plusPx / 16) * CIRCLE) / cardD} />
+            </motion.span>
+          )}
+        </motion.span>
       </motion.span>
       {card && (
         <motion.span
@@ -411,7 +445,13 @@ function MorphBox({ id, live, bare, kind, shape, from, version, wordsW, pad, onO
         </motion.span>
       )}
       {KINDS.map((k) => (
-        <motion.span key={k} className="cr-empty__words" aria-hidden={k !== kind || undefined} style={{ x: wordsX, y: wordsY, opacity: wordsOp[k], width: wordsW }}>
+        <motion.span
+          key={k}
+          className="cr-empty__words"
+          data-kind={k}
+          aria-hidden={k !== kind || undefined}
+          style={{ x: wordsX, y: wordsY, opacity: wordsOp[k], width: wordsW }}
+        >
           <span className="cr-empty__title">{COPY[k].title}</span>
           <span className="cr-empty__hint">
             Tap + to add <strong>{COPY[k].noun}</strong>

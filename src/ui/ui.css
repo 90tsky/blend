@@ -164,3 +164,13 @@
   color: var(--color-hint);
   text-wrap: pretty;
 }
+
+/* Pills, measured by eye (the user, 28 Nov, with a video on styling pill buttons). A pill's round end takes space away
+   from the text beside it, so the text sits further in there: the straight padding plus r × (1 − π/4), about a fifth of
+   the end's radius (16 → about 20 in a 40 pill), which gives the same space on average as a square end would. An icon
+   at a round end sits in a circle the pill's height, so it's concentric with the curve. And the words are centred on
+   their capital height, not on the font's line box (which sits them a little low or high): */
+.pill-label {
+  display: block;
+  text-box: trim-both cap alphabetic;
+}

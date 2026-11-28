@@ -98,7 +98,8 @@
   align-items: center;
   gap: var(--space-4);
   height: 40px;
-  padding: 0 var(--space-16);
+  /* 16, plus the round end's share (r 20 × (1 − π/4) ≈ 4): ui.css, .pill-label. */
+  padding: 0 calc(var(--space-16) + 20px * (1 - pi / 4));
   border-radius: var(--radius-full);
   background: var(--color-background);
   color: var(--color-on-surface);
@@ -108,9 +109,8 @@
   white-space: nowrap;
 }
 
-/* Already on: UNDO grey with a ✓. */
+/* Already on: inverted colours (UNDO grey), no ✓ (the user, 28 Nov). */
 .suggestion--on .suggestion__pill {
-  padding-left: var(--space-12);
   background: var(--color-active);
   color: var(--color-on-primary);
 }
@@ -145,7 +145,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The typing bar: a sunken track holding the white field, then Search (the user, 28 Nov), which puts every picked
+/* The typing bar: one sunken field like Account's Name (the user, 28 Nov: it was a white field inside a sunken track),
+   then Search (the user, 28 Nov), which puts every picked
    filter and the typed word on Events. */
 .search__bar {
   display: flex;
@@ -167,7 +168,7 @@
   min-width: 0;
   align-items: center;
   height: var(--control-height);
-  padding: 0 var(--space-8);
+  padding: 0 var(--space-4) 0 var(--space-20);
   border-radius: var(--radius-full);
   background: var(--color-background);
   box-shadow: var(--shadow-track);
@@ -188,10 +189,10 @@
   flex: 1;
   align-items: center;
   min-width: 0;
-  height: 32px;
-  padding-left: var(--space-16);
+  height: 100%;
+  padding-left: 0;
   border-radius: var(--radius-full);
-  background: var(--color-surface);
+  background: none;
 }
 
 /* 16px so phones don't zoom into the field (Figma draws it at 14). */
@@ -205,7 +206,7 @@
   background: none;
   caret-color: var(--color-on-surface);
   font-size: var(--text-field-size);
-  font-weight: var(--text-label-small-weight);
+  font-weight: var(--text-field-weight);
   -webkit-appearance: none;
   appearance: none;
 }

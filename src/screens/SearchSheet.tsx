@@ -7,6 +7,7 @@ import { productsById } from '../data/products'
 import { applyFilters, countLabel, findFilter, piecesOf } from '../features/search/filtering'
 import { Suggestion } from '../features/search/Suggestion'
 import { useVisualViewport } from '../features/search/useVisualViewport'
+import { useWheelScrollX } from '../lib/useWheelScrollX'
 import { useStore, type Filter } from '../state/store'
 import { Icon } from '../ui/Icon'
 import { Cta } from '../ui/primitives'
@@ -209,12 +210,16 @@ export function SearchSheet() {
   )
 }
 
-// One suggestion group: its title, then a row of pills that scrolls sideways.
+// One suggestion group: its title, then a row of pills that scrolls sideways (with a mouse wheel too).
 function Group({ title, children }: { title: string; children: ReactNode }) {
+  const row = useRef<HTMLUListElement>(null)
+  useWheelScrollX(row)
   return (
     <section className="search__group">
       <h2 className="search__label">{title}</h2>
-      <ul className="search__row">{children}</ul>
+      <ul ref={row} className="search__row">
+        {children}
+      </ul>
     </section>
   )
 }

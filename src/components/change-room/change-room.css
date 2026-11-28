@@ -322,7 +322,7 @@
 
 /* Empty boxes (EmptyBoxes.tsx), over the stage: "No tops yet" (406 × 286), "No bottoms yet" (406 × 440, notched round
    Try it on), "Your change room is empty" (the whole stage). Each is placed and sized from script, so it can stretch
-   out of an add card. The + circle sits 14 above the middle (34 in the notched box). */
+   out of an add card. The + and its words sit in the middle of the box as one group (EmptyBoxes homeShape). */
 .cr-empties {
   position: absolute;
   inset: 0;
@@ -363,11 +363,17 @@
 }
 
 /* The circle, the words and the add card's label are placed from script (centred on the circle), so they travel with
-   the box; the words keep the box's full width, so they wrap the same way while it stretches. */
-.cr-empty__circle {
+   the box; the words keep the box's full width, so they wrap the same way while it stretches. The spot is where the
+   circle goes; the circle inside it only grows and shrinks (and grows on hover, round its own centre). */
+.cr-empty__spot {
   position: absolute;
   top: 0;
   left: 0;
+  width: 76px;
+  height: 76px;
+}
+
+.cr-empty__circle {
   display: grid;
   place-items: center;
   width: 76px;
