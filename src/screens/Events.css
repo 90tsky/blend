@@ -1,5 +1,5 @@
 /* Events: no strip at the top (the first banner starts at 0, under the fixed top bar). The end of the list
-   clears the bottom bar: 128, or 184 while filter chips show. */
+   clears the bottom bar: 132, or 192 while filter chips show. */
 .events {
   padding-bottom: var(--bottom-bar-h);
 }

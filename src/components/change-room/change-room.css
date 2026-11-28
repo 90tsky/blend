@@ -9,7 +9,7 @@
   height: 100dvh;
   min-height: 560px;
   padding-top: 70px;
-  padding-bottom: var(--bottom-bar-h, 128px);
+  padding-bottom: var(--bottom-bar-h, 132px);
 }
 
 /* The change room only moves sideways (the user, 10 Nov): a finger drag here never scrolls, bounces or pulls the page

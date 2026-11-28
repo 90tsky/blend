@@ -29,7 +29,7 @@ export function ToastHost() {
   }, [toast, paused, dispatch])
 
   // Where the toast rests: one place on every screen (the user, 5 Nov), 24 inside the frame or content edge, whether
-  // or not a dashed empty box is behind it: 36 from the screen sides (Toast.css), 24 above the bottom bar (128, or 184
+  // or not a dashed empty box is behind it: 36 from the screen sides (Toast.css), 24 above the bottom bar (132, or 192
   // with filter chips) on Events and in the change room, 24 short of the notch round Try it on, 24 above a bottom
   // button elsewhere (12 + 48), and 36 from the bottom on Options, like the sides. Try-On covers it.
   // On a laptop (SplitLayout) Events and the change room are open together, and the toast rests in the change room,
@@ -40,7 +40,7 @@ export function ToastHost() {
   const split = wide && onEvents
   const onChangeRoom = at('/change-room') || split
   const besideTryOn = onChangeRoom && state.bag.length > 0
-  const bottom = split ? 96 : onEvents ? (state.filters.length > 0 ? 208 : 152) : onChangeRoom ? 152 : at('/menu') ? 36 : 84
+  const bottom = split ? 96 : onEvents ? (state.filters.length > 0 ? 216 : 156) : onChangeRoom ? 156 : at('/menu') ? 36 : 84
   const covered = pathname.includes('/try-on')
 
   const hide = () => dispatch({ type: 'toast', toast: null })

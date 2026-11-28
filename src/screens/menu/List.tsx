@@ -147,7 +147,9 @@ export function SwitchRow({ id, label, detail, on, onChange }: { id: string; lab
 }
 
 // A row holding its own control under the label (Appearance's Light · Dark · Auto).
-export function ControlRow({ labelId, label, children }: { labelId: string; label: string; children: ReactNode }) {
+// `hint` sits under the control, inside the row (the user, 28 Nov: "Auto follows…" belongs under Appearance, not under
+// the whole card).
+export function ControlRow({ labelId, label, hint, children }: { labelId: string; label: string; hint?: ReactNode; children: ReactNode }) {
   return (
     <li>
       <div className="menu-row menu-row--control">
@@ -155,6 +157,7 @@ export function ControlRow({ labelId, label, children }: { labelId: string; labe
           {label}
         </span>
         {children}
+        {hint && <p className="menu-row__detail menu-row__hint">{hint}</p>}
       </div>
     </li>
   )

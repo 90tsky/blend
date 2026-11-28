@@ -9,6 +9,7 @@ import { Suggestion } from '../features/search/Suggestion'
 import { useVisualViewport } from '../features/search/useVisualViewport'
 import { useStore, type Filter } from '../state/store'
 import { Icon } from '../ui/Icon'
+import { Cta } from '../ui/primitives'
 import './SearchSheet.css'
 
 // "Popular pieces" in the Figma sheet: Cocoa Oversized Hoodie, Cropped Leather Jacket, Indigo Denim Cargo Trousers.
@@ -22,8 +23,8 @@ const RISE: Transition = { duration: 0.3, ease: 'easeOut' }
 const DROP: Transition = { duration: 0.25, ease: 'easeIn' }
 
 // Search is a filter on Events (route /events/search, Figma Events · search open 1807:14046): a sheet over the Events
-// list with suggestions, and the typing bar on top of the phone's own keyboard. Picking something adds a filter chip
-// and goes back to Events, which stayed mounted underneath, so the shopper's place is kept.
+// list with suggestions, and the typing bar on top of the phone's own keyboard. Pills switch filters on and off in the
+// sheet; Search puts them on Events, which stayed mounted underneath, so the shopper's place is kept.
 export function SearchSheet() {
   const { state, dispatch } = useStore()
   const navigate = useNavigate()
@@ -31,19 +32,28 @@ export function SearchSheet() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [text, setText] = useState('')
   const [leaving, setLeaving] = useState<(() => void) | null>(null)
-  const { filters } = state
   const typedText = text.trim()
   const query = typedText.toLowerCase()
 
-  // What pressing Search would show: the typed word on top of the filters already on.
-  const typed = useMemo(() => (query ? applyFilters([...filters, { kind: 'query', value: query }]) : null), [query, filters])
+  // The filters picked in the sheet wait here until Search (the user, 28 Nov: picking a tag closed the sheet, "what if
+  // i want to click more tags + there should be a search button"). Closing without Search leaves Events as it was.
+  const [draft, setDraft] = useState<Filter[]>(state.filters)
+  const changed = draft !== state.filters
 
-  // The count is read out once typing pauses ("5 events, 4 pieces").
+  // What pressing Search would put on: the picked filters and the typed word, and what that shows.
+  const picked = useMemo<Filter[]>(() => {
+    const word: Filter = { kind: 'query', value: query }
+    return query && !findFilter(draft, word) ? [...draft, word] : draft
+  }, [query, draft])
+  const typed = useMemo(() => (query ? applyFilters(picked) : null), [query, picked])
+  const result = useMemo(() => typed ?? applyFilters(draft), [typed, draft])
+
+  // The count is read out once typing or picking pauses ("5 events, 4 pieces").
   const [spokenCount, setSpokenCount] = useState('')
   useEffect(() => {
-    const t = window.setTimeout(() => setSpokenCount(typed ? countLabel(typed, ', ') : ''), 700)
+    const t = window.setTimeout(() => setSpokenCount(query || changed ? countLabel(result, ', ') : ''), 700)
     return () => window.clearTimeout(t)
-  }, [typed])
+  }, [result, query, changed])
 
   // Opened with the change room's search button (BottomBar), not from Events.
   const fromChangeRoom = (useLocation().state as { from?: string } | null)?.from === 'change-room'
@@ -80,30 +90,31 @@ export function SearchSheet() {
     }
   }, [])
 
-  // Categories, events and recent words switch their filter on or off.
-  const toggle = (f: Filter) => {
-    const on = findFilter(filters, f)
-    dispatch(on ? { type: 'removeFilter', filter: on } : { type: 'addFilter', filter: f })
-    close(toEvents)
-  }
+  // Categories, events and recent words switch their filter on or off; the sheet stays open for more.
+  const toggle = (f: Filter) =>
+    setDraft((d) => {
+      const on = findFilter(d, f)
+      return on ? d.filter((x) => x !== on) : [...d, f]
+    })
 
-  // Enter, the keyboard's Search key or the "Search “tee”" row: the typed word becomes a filter.
+  // Search (the button, Enter, the keyboard's Search key or the "Search “tee”" row): the picked filters and the typed
+  // word go on Events.
   const search = (e?: FormEvent) => {
     e?.preventDefault()
-    if (!query) return
-    dispatch({ type: 'addFilter', filter: { kind: 'query', value: query } })
-    dispatch({ type: 'addRecent', query })
+    dispatch({ type: 'setFilters', filters: picked })
+    if (query) dispatch({ type: 'addRecent', query })
     close(toEvents)
   }
 
-  // Pieces open their Product page in place of the sheet, so Back from there lands on Events.
+  // Pieces open their Product page in place of the sheet, so Back from there lands on Events, with the picked filters.
   const openPiece = (id: string) => {
+    if (changed) dispatch({ type: 'setFilters', filters: draft })
     if (query) dispatch({ type: 'addRecent', query })
     navigate(`/product/${id}`, { replace: true })
   }
 
   const filterPill = (f: Filter, label: string) => {
-    const on = Boolean(findFilter(filters, f))
+    const on = Boolean(findFilter(draft, f))
     return <Suggestion key={`${f.kind}:${f.value}`} label={label} selected={on} spoken={`${label}, ${on ? 'remove' : 'add'} filter`} onPick={() => toggle(f)} />
   }
   const piecePill = (id: string) => <Suggestion key={id} label={productsById[id].name} onPick={() => openPiece(id)} />
@@ -185,6 +196,9 @@ export function SearchSheet() {
               )}
             </div>
           </div>
+          <Cta type="submit" className="search__submit" aria-label={`Search, ${countLabel(result, ', ')}`}>
+            Search
+          </Cta>
         </form>
         <p className="visually-hidden" aria-live="polite">
           {spokenCount}

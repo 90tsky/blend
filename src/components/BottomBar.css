@@ -1,10 +1,11 @@
-/* Screens under the bar leave this much room (the bar is 128 tall, 184 with the chip bar). */
+/* Screens under the bar leave this much room (the bar is 132 tall, 192 with the chip bar). */
 :root {
-  --bottom-bar-h: calc(128px + env(safe-area-inset-bottom, 0px));
-  --bottom-bar-h-filter: calc(184px + env(safe-area-inset-bottom, 0px));
+  --bottom-bar-h: calc(132px + env(safe-area-inset-bottom, 0px));
+  --bottom-bar-h-filter: calc(192px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Rows of 48, 8 apart; 12 above the first row, and the actions row ends 12 above the screen bottom. */
+/* Rows of 48, 12 apart (the user, 28 Nov: every gap round the change room's corner follows one rule; this one was 8),
+   12 above the first row, and the actions row ends 12 above the screen bottom. */
 .bottom-bar {
   position: fixed;
   left: 50%;
@@ -12,7 +13,7 @@
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-12);
   width: 100%;
   max-width: 430px;
   padding: var(--space-12) 0 calc(var(--space-12) + env(safe-area-inset-bottom, 0px));

@@ -136,10 +136,11 @@ summary.menu-row:active {
   color: var(--color-hint);
 }
 
-/* A switch row: the switch (80 × 48) keeps the row 64 tall. */
+/* A switch row: the switch (80 × 48) keeps the row 64 tall. It ends 12 from the card's edge, in line with a control
+   row's control (Appearance) above it (the user, 28 Nov: at 8 it stuck out). */
 .menu-row--switch {
   min-height: 64px;
-  padding-right: var(--space-8);
+  padding-right: var(--space-12);
   cursor: pointer;
 }
 
@@ -153,6 +154,16 @@ summary.menu-row:active {
 
 .menu-row--control > .menu-row__label {
   padding: 0 var(--space-4);
+}
+
+/* A control row's hint, under its control ("Auto follows…" under Appearance). */
+.menu-row__hint {
+  margin: calc(-1 * var(--space-4)) 0 0;
+  padding: 0 var(--space-4);
+}
+
+.menu-row__hint b {
+  font-weight: var(--text-hint-strong-weight);
 }
 
 /* The profile at the top of the menu: photo, name and what's inside, one big row on its own card. */

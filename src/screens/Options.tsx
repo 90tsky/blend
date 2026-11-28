@@ -43,15 +43,16 @@ export function Options() {
         <LinkRow to="/menu/currency" label="Currency" value={state.currency} spoken={`Currency: ${CURRENCY_NAMES[state.currency]}`} />
       </Group>
 
-      <Group
-        label="Display"
-        note={
-          <>
-            <b>Auto</b> follows your phone’s light or dark mode.
-          </>
-        }
-      >
-        <ControlRow labelId="menu-appearance" label="Appearance">
+      <Group label="Display">
+        <ControlRow
+          labelId="menu-appearance"
+          label="Appearance"
+          hint={
+            <>
+              <b>Auto</b> follows your phone’s light or dark mode.
+            </>
+          }
+        >
           <Segmented labelledBy="menu-appearance" options={THEMES} value={state.theme} onChange={(theme) => dispatch({ type: 'setTheme', theme })} />
         </ControlRow>
         <SwitchRow

@@ -145,15 +145,26 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The typing bar: a sunken track holding the white field. */
+/* The typing bar: a sunken track holding the white field, then Search (the user, 28 Nov), which puts every picked
+   filter and the typed word on Events. */
 .search__bar {
+  display: flex;
   flex: none;
+  align-items: center;
+  gap: var(--space-8);
   padding: var(--space-12) var(--space-12) calc(var(--space-12) + var(--safe-bottom, 0px));
   background: var(--color-surface);
 }
 
+.search__submit {
+  flex: none;
+  width: auto;
+}
+
 .search__track {
   display: flex;
+  flex: 1;
+  min-width: 0;
   align-items: center;
   height: var(--control-height);
   padding: 0 var(--space-8);

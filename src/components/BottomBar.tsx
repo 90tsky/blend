@@ -9,7 +9,7 @@ import './BottomBar.css'
 
 // Bottom bar for Events and the change room (Figma bottom-bar 494:242), fixed at the bottom of the column:
 // the EVENTS / CHANGE ROOM switch, then search, Checkout and Turn around. On a filtered Events page
-// ("filter on", 184 tall) the chip bar sits above the switch, 12 below the bar's top and 8 above the switch.
+// ("filter on", 192 tall) the chip bar sits above the switch, 12 below the bar's top and 12 above the switch.
 // `wide` (the laptop layout, SplitLayout): no switch, since both are open; this bar holds search and the chips under
 // Events, and the change room carries Checkout and Turn around in its own bar beside it (ChangeRoom `panel`), so the
 // two read as one row along the bottom of the screen.
